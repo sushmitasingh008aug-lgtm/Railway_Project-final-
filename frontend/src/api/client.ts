@@ -17,6 +17,9 @@ export interface HighLevelMetrics {
   planning_horizon: string;
   success_rate: string;
   planning_minutes: string;
+  combined_blocks_count?: number;
+  disruptions_avoided?: number;
+  coordinated_tasks?: number;
 }
 
 export interface DeptWorkload {
@@ -60,6 +63,7 @@ export interface ScheduledTask {
   end_minute: number;
   assigned_start_time: string;
   assigned_end_time: string;
+  combined_group_id?: string;
 }
 
 export interface Section {
@@ -102,4 +106,26 @@ export interface TestStatusResponse {
   total_tests: number;
   test_cases: TestCase[];
   raw_output: string;
+}
+
+export interface ImpactScenario {
+  description: string;
+  collision_events: number;
+  trains_affected: number;
+  total_delay_minutes: number;
+  trains_on_time_pct: number;
+}
+
+export interface ImpactResponse {
+  status: string;
+  tasks_evaluated: number;
+  train_movements_analyzed: number;
+  baseline: ImpactScenario;
+  optimized: ImpactScenario;
+  impact: {
+    delay_avoided_minutes: number;
+    delay_avoided_hours: string;
+    collision_events_avoided: number;
+    avg_delay_recovered_per_train_min: number;
+  };
 }

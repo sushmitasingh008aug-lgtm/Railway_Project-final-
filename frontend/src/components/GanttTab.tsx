@@ -7,17 +7,26 @@ interface GanttTabProps {
   onRefreshSchedule: () => void;
 }
 
+const HORIZON_OPTIONS = [
+  { days: 7, label: 'Weekly', minutes: 7 * 1440 },
+  { days: 30, label: 'Monthly', minutes: 30 * 1440 },
+];
+
 export const GanttTab: React.FC<GanttTabProps> = ({ schedule, onRefreshSchedule }) => {
   const [optimizing, setOptimizing] = useState(false);
   const [selectedDept, setSelectedDept] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [notification, setNotification] = useState<string | null>(null);
+  const [horizonDays, setHorizonDays] = useState(7);
 
-  const handleRunOptimizer = async () => {
+  const horizonMinutes = horizonDays * 1440;
+  const dayLabels = Array.from({ length: horizonDays }, (_, i) => `D${i + 1}`);
+
+  const handleRunOptimizer = async (days: number) => {
     setOptimizing(true);
     setNotification(null);
     try {
-      const res = await apiClient.post('/schedule/generate');
+      const res = await apiClient.post(`/schedule/generate?horizon_days=${days}`);
       setNotification(res.data.message || 'Optimization Complete! Schedule generated.');
       onRefreshSchedule();
     } catch (err: any) {
@@ -45,30 +54,50 @@ export const GanttTab: React.FC<GanttTabProps> = ({ schedule, onRefreshSchedule 
       <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-            <span>📅</span> Interactive Master Block Schedule (7-Day Horizon)
+            <span>📅</span> Interactive Master Block Schedule ({horizonDays}-Day {horizonDays > 7 ? 'Monthly' : 'Weekly'} Horizon)
           </h2>
           <p className="text-xs text-slate-400 mt-1">
-            Visualizing time-aware maintenance intervals dodging chronological train movements (10,080 minutes total).
+            Time-aware maintenance intervals dodging train movements ({horizonMinutes.toLocaleString()} minutes). White-outlined bars = combined multi-department blocks.
           </p>
         </div>
 
-        <button
-          onClick={handleRunOptimizer}
-          disabled={optimizing}
-          className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold rounded-lg shadow-lg shadow-blue-500/20 flex items-center gap-2 transition-all disabled:opacity-50"
-        >
-          {optimizing ? (
-            <>
-              <RefreshCw className="w-4 h-4 animate-spin" />
-              <span>Engine Running (CP-SAT)...</span>
-            </>
-          ) : (
-            <>
-              <Play className="w-4 h-4 fill-white" />
-              <span>Re-run CP-SAT Optimizer</span>
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Planning Horizon Selector (PS Point 4: Weekly & Monthly) */}
+          <div className="flex rounded-lg overflow-hidden border border-[#334155]">
+            {HORIZON_OPTIONS.map((opt) => (
+              <button
+                key={opt.days}
+                onClick={() => setHorizonDays(opt.days)}
+                disabled={optimizing}
+                className={`px-4 py-2.5 text-xs font-semibold transition-all disabled:opacity-50 ${
+                  horizonDays === opt.days
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-[#182234] text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                {opt.label} ({opt.days}d)
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => handleRunOptimizer(horizonDays)}
+            disabled={optimizing}
+            className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold rounded-lg shadow-lg shadow-blue-500/20 flex items-center gap-2 transition-all disabled:opacity-50"
+          >
+            {optimizing ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                <span>Engine Running (CP-SAT)...</span>
+              </>
+            ) : (
+              <>
+                <Play className="w-4 h-4 fill-white" />
+                <span>Regenerate {horizonDays > 7 ? 'Monthly' : 'Weekly'} Plan</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {notification && (
@@ -85,15 +114,14 @@ export const GanttTab: React.FC<GanttTabProps> = ({ schedule, onRefreshSchedule 
           <span>Corridor & Section Gantt Lanes</span>
         </h3>
 
-        {/* 7-Day Timeline Ruler */}
-        <div className="grid grid-cols-7 text-[11px] font-semibold text-slate-400 border-b border-[#1f2937] pb-2 text-center">
-          <div>Day 1 (Sun)</div>
-          <div>Day 2 (Mon)</div>
-          <div>Day 3 (Tue)</div>
-          <div>Day 4 (Wed)</div>
-          <div>Day 5 (Thu)</div>
-          <div>Day 6 (Fri)</div>
-          <div>Day 7 (Sat)</div>
+        {/* Dynamic Horizon Timeline Ruler */}
+        <div
+          className="grid text-[10px] font-semibold text-slate-400 border-b border-[#1f2937] pb-2 text-center"
+          style={{ gridTemplateColumns: `repeat(${horizonDays}, minmax(0, 1fr))` }}
+        >
+          {dayLabels.map((label) => (
+            <div key={label}>{label}</div>
+          ))}
         </div>
 
         {/* Section Lanes */}
@@ -109,10 +137,9 @@ export const GanttTab: React.FC<GanttTabProps> = ({ schedule, onRefreshSchedule 
                 {/* Lane Bar */}
                 <div className="h-7 w-full bg-[#0d1424] rounded-md relative border border-[#1f2937] overflow-hidden flex items-center">
                   {secTasks.map((t) => {
-                    // Position based on 10080 minutes
-                    const leftPct = (t.start_minute / 10080) * 100;
-                    const widthPct = Math.max(0.6, (t.duration_minutes / 10080) * 100);
-                    
+                    const leftPct = (t.start_minute / horizonMinutes) * 100;
+                    const widthPct = Math.max(0.6, (t.duration_minutes / horizonMinutes) * 100);
+
                     let bg = 'bg-sky-500';
                     if (t.department === 'Traction') bg = 'bg-orange-500';
                     if (t.department === 'S&T') bg = 'bg-emerald-500';
@@ -121,8 +148,10 @@ export const GanttTab: React.FC<GanttTabProps> = ({ schedule, onRefreshSchedule 
                       <div
                         key={t.task_id}
                         style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
-                        title={`${t.task_id} (${t.department}): ${t.task_type} | ${t.assigned_start_time} - ${t.assigned_end_time} | Priority: ${t.priority_score}`}
-                        className={`absolute h-5 rounded cursor-pointer ${bg} opacity-85 hover:opacity-100 hover:scale-110 transition-transform shadow-sm`}
+                        title={`${t.task_id} (${t.department}): ${t.task_type} | ${t.assigned_start_time} - ${t.assigned_end_time} | Priority: ${t.priority_score}${t.combined_group_id ? ` | Combined Block ${t.combined_group_id}` : ''}`}
+                        className={`absolute h-5 rounded cursor-pointer ${bg} opacity-85 hover:opacity-100 hover:scale-110 transition-transform shadow-sm ${
+                          t.combined_group_id ? 'ring-2 ring-white/70 z-10' : ''
+                        }`}
                       ></div>
                     );
                   })}

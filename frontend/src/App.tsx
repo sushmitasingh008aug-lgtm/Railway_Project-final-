@@ -9,6 +9,7 @@ import {
   ScheduledTask,
   Section,
   TestStatusResponse,
+  ImpactResponse,
   apiClient,
 } from './api/client';
 
@@ -18,23 +19,26 @@ export function App() {
   const [schedule, setSchedule] = useState<ScheduledTask[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
   const [testStatus, setTestStatus] = useState<TestStatusResponse | null>(null);
-  
+  const [impact, setImpact] = useState<ImpactResponse | null>(null);
+
   const [loading, setLoading] = useState(true);
 
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      const [mRes, sRes, secRes, tRes] = await Promise.all([
+      const [mRes, sRes, secRes, tRes, iRes] = await Promise.all([
         apiClient.get<MetricsResponse>('/metrics').catch(() => null),
         apiClient.get<{ data: ScheduledTask[] }>('/schedule').catch(() => null),
         apiClient.get<{ data: Section[] }>('/sections').catch(() => null),
         apiClient.get<TestStatusResponse>('/tests/status').catch(() => null),
+        apiClient.get<ImpactResponse>('/impact').catch(() => null),
       ]);
 
       if (mRes) setMetrics(mRes.data);
       if (sRes) setSchedule(sRes.data.data || []);
       if (secRes) setSections(secRes.data.data || []);
       if (tRes) setTestStatus(tRes.data);
+      if (iRes) setImpact(iRes.data);
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
     } finally {
@@ -54,7 +58,7 @@ export function App() {
       {/* Main Body */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-8 pt-8">
         {activeTab === 'overview' && (
-          <OverviewTab metrics={metrics} loading={loading} />
+          <OverviewTab metrics={metrics} impact={impact} loading={loading} />
         )}
 
         {activeTab === 'gantt' && (

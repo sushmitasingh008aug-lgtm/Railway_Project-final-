@@ -101,8 +101,38 @@ def run_test_suite():
 
     results.append({"id": "3.2", "name": "Resource Saturation Check", "passed": True, "details": "Physical machinery and department capacities strictly respected"})
 
+    # -------------------------------------------------------------
+    # TEST 4: MULTI-DEPARTMENT COORDINATION INTEGRITY (Python)
+    # -------------------------------------------------------------
+    print("\n[TEST 4] Multi-Department Coordination Integrity (Python)")
+    if 'combined_group_id' not in df_schedule.columns:
+        df_schedule['combined_group_id'] = ''
+    df_schedule['combined_group_id'] = df_schedule['combined_group_id'].fillna('')
+
+    grouped = df_schedule[df_schedule['combined_group_id'] != '']
+    TOLERANCE_MIN = 15
+    if len(grouped):
+        violations = 0
+        group_summary = []
+        for gid, grp in grouped.groupby('combined_group_id'):
+            n_depts = grp['department'].nunique()
+            same_section = grp['section_id'].nunique() == 1
+            aligned = (grp['start_minute'].max() - grp['start_minute'].min()) <= TOLERANCE_MIN
+            if n_depts < 2 or not same_section or not aligned:
+                violations += 1
+            group_summary.append(f"{gid}:{n_depts} depts")
+        assert violations == 0, f"Test 4.1 FAILED: {violations} malformed combined blocks!"
+        print(f"  • Test 4.1 Combined Block Structure: {grouped['combined_group_id'].nunique()} groups verified (>=2 depts, same section, starts within {TOLERANCE_MIN} min)")
+        results.append({"id": "4.1", "name": "Combined Block Structure", "passed": True,
+                        "details": f"{grouped['combined_group_id'].nunique()} multi-department blocks share single corridor windows"})
+    else:
+        print("  • Test 4.1 Combined Block Structure: no combined groups present (coordination bonus may be disabled)")
+        results.append({"id": "4.1", "name": "Combined Block Structure", "passed": True,
+                        "details": "No combined blocks in current plan"})
+
+    total = len(results)
     print("\n" + "=" * 70)
-    print("🏆 ALL 6 TEST CASES PASSED WITH ZERO VIOLATIONS!")
+    print(f"🏆 ALL {total} TEST CASES PASSED WITH ZERO VIOLATIONS!")
     print("=" * 70 + "\n")
     return results
 

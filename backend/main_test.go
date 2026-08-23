@@ -23,10 +23,76 @@ func setupTestApp() *fiber.App {
 	api.Get("/tasks", handleGetTasks)
 	api.Get("/sections", handleGetSections)
 	api.Get("/schedule", handleGetSchedule)
+	api.Get("/impact", handleGetImpact)
 	api.Post("/tasks/submit", handleSubmitTask)
 	api.Get("/tests/status", handleGetTestsStatus)
 
 	return app
+}
+
+func TestEvaluateDelays(t *testing.T) {
+	blocks := map[string][]placedBlock{
+		"SEC_A": {{startMin: 0, endMin: 120}, {startMin: 200, endMin: 300}},
+		"SEC_B": {{startMin: 60, endMin: 90}},
+	}
+	trains := map[string][]trainWindow{
+		"SEC_A": {
+			{entryMin: 60, exitMin: 80},   // hit by block1 -> delay = 120-60 = 60
+			{entryMin: 250, exitMin: 260}, // hit by block2 -> delay = 300-250 = 50
+		},
+		"SEC_C": {
+			{entryMin: 10, exitMin: 20}, // no blocks on SEC_C -> untouched
+		},
+	}
+
+	collisions, affected, delay := evaluateDelays(blocks, trains)
+	if collisions != 2 {
+		t.Errorf("Expected 2 collisions, got %d", collisions)
+	}
+	if affected != 2 {
+		t.Errorf("Expected 2 affected journeys, got %d", affected)
+	}
+	if delay != 110 {
+		t.Errorf("Expected total delay 110 minutes, got %d", delay)
+	}
+}
+
+func TestNaiveScheduleCollidesButOptimizedDoesNot(t *testing.T) {
+	tasks := []ScheduledTask{
+		{TaskID: "T1", SectionID: "S1", DurationMinutes: 240, PriorityScore: 100},
+		{TaskID: "T2", SectionID: "S1", DurationMinutes: 240, PriorityScore: 50},
+	}
+	trains := map[string][]trainWindow{
+		"S1": {{entryMin: 100, exitMin: 140}},
+	}
+
+	naive := buildNaiveSchedule(tasks)
+	nColl, _, nDelay := evaluateDelays(naive, trains)
+	if nColl == 0 || nDelay == 0 {
+		t.Errorf("Traffic-blind baseline should collide with trains, got collisions=%d delay=%d", nColl, nDelay)
+	}
+
+	actual := buildActualSchedule([]ScheduledTask{
+		{TaskID: "T1", SectionID: "S1", StartMinute: 200, EndMinute: 440, PriorityScore: 100},
+		{TaskID: "T2", SectionID: "S1", StartMinute: 500, EndMinute: 740, PriorityScore: 50},
+	})
+	oColl, oAffected, oDelay := evaluateDelays(actual, trains)
+	if oColl != 0 || oAffected != 0 || oDelay != 0 {
+		t.Errorf("Optimized schedule must have zero impact, got collisions=%d affected=%d delay=%d", oColl, oAffected, oDelay)
+	}
+}
+
+func TestGetImpactEndpoint(t *testing.T) {
+	app := setupTestApp()
+	req := httptest.NewRequest("GET", "/api/impact", nil)
+	resp, err := app.Test(req, 10000)
+	if err != nil {
+		t.Fatalf("Impact request failed: %v", err)
+	}
+	// 200 (CSV+DB present) or 404 (schedule not generated yet) are both valid states.
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNotFound {
+		t.Errorf("Expected status 200 or 404, got %d", resp.StatusCode)
+	}
 }
 
 func TestHealthCheck(t *testing.T) {

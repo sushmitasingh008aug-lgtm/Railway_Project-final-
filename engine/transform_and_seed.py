@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 import sqlalchemy
@@ -89,6 +90,12 @@ def transform_and_seed():
     }
 
     base_date = datetime(2026, 8, 23)
+    # Department -> source system (mirrors real IR stack: TMS/TDMS/SMMS feeds)
+    source_systems = {
+        'Engineering': 'TMS',
+        'Traction': 'TDMS',
+        'S&T': 'SMMS',
+    }
     tasks = []
     crit_choices = ['Critical', 'High', 'Medium', 'Low']
     crit_probs = [0.15, 0.30, 0.35, 0.20]
@@ -97,7 +104,7 @@ def transform_and_seed():
         dept = row['department']
         task_type = random.choice(defect_types.get(dept, ['Routine Track Maintenance']))
         criticality = np.random.choice(crit_choices, p=crit_probs)
-        
+
         if criticality == 'Critical':
             due_offset = random.randint(-1, 2)
         elif criticality == 'High':
@@ -106,7 +113,7 @@ def transform_and_seed():
             due_offset = random.randint(3, 7)
         else:
             due_offset = random.randint(5, 10)
-            
+
         due_date = (base_date + timedelta(days=due_offset)).strftime('%Y-%m-%d')
         duration = random.choice([60, 90, 120, 180])
 
@@ -118,7 +125,8 @@ def transform_and_seed():
             'due_date': due_date,
             'duration_minutes': duration,
             'priority_score': None,
-            'status': 'Pending'
+            'status': 'Pending',
+            'source_system': source_systems.get(dept, 'SYNTHETIC'),
         })
     df_tasks = pd.DataFrame(tasks)
 
@@ -174,8 +182,8 @@ def transform_and_seed():
 
     print("Step 6: Writing to PostgreSQL...")
     with engine.begin() as conn:
-        conn.execute(text("TRUNCATE TABLE train_movements, maintenance_tasks, assets, sections, resources CASCADE;"))
-        
+        conn.execute(text("TRUNCATE TABLE train_movements, maintenance_tasks, assets, sections, resources, department_feeds CASCADE;"))
+
         df_sections.to_sql('sections', conn, if_exists='append', index=False)
         print(f"  ✓ Inserted {len(df_sections)} sections.")
         
@@ -191,6 +199,25 @@ def transform_and_seed():
         
         df_resources.to_sql('resources', conn, if_exists='append', index=False)
         print(f"  ✓ Inserted {len(df_resources)} physical resources.")
+
+    print("Step 7: Emitting Sample Departmental Feed Drops (BDMS-style)...")
+    feeds_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data_feeds')
+    os.makedirs(feeds_dir, exist_ok=True)
+    feed_samples = {
+        'tms_engineering.csv': df_tasks[df_tasks['source_system'] == 'TMS'].head(5),
+        'tdms_traction.csv': df_tasks[df_tasks['source_system'] == 'TDMS'].head(5),
+        'smms_sndt.csv': df_tasks[df_tasks['source_system'] == 'SMMS'].head(5),
+    }
+    severity_map = {'Critical': 1, 'High': 2, 'Medium': 3, 'Low': 4}
+    for fname, chunk in feed_samples.items():
+        feed = pd.DataFrame({
+            'asset_id': chunk['asset_id'],
+            'raw_type': chunk['task_type'],
+            'severity': chunk['criticality'].map(severity_map),
+            'reported_date': chunk['due_date'],
+        })
+        feed.to_csv(os.path.join(feeds_dir, fname), index=False)
+    print(f"  ✓ Wrote {len(feed_samples)} sample feed files to data_feeds/ (ingest with ingest_feeds.py).")
 
     print("\nPhase 1 Database Seed Completed Successfully!")
 

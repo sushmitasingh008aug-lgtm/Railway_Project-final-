@@ -25,7 +25,19 @@ CREATE TABLE IF NOT EXISTS maintenance_tasks (
     due_date DATE,
     duration_minutes INT,
     priority_score FLOAT,
-    status VARCHAR(20) DEFAULT 'Pending'
+    status VARCHAR(20) DEFAULT 'Pending',
+    source_system VARCHAR(10)
+);
+
+-- 3a. Departmental Feed Staging (BDMS-style ingestion: TMS/TDMS/SMMS drops)
+CREATE TABLE IF NOT EXISTS department_feeds (
+    feed_id SERIAL PRIMARY KEY,
+    source_system VARCHAR(10),
+    asset_id VARCHAR(50),
+    raw_type VARCHAR(100),
+    severity VARCHAR(20),
+    reported_date DATE,
+    ingested_at TIMESTAMP DEFAULT NOW()
 );
 
 -- 4. Traffic & Constraints

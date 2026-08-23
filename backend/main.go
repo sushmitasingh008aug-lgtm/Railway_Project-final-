@@ -122,6 +122,9 @@ func main() {
 	// 3. Operational Sections List
 	api.Get("/sections", handleGetSections)
 
+	// 3b. Train Timetable (optimizer-relative minutes, for Gantt overlay)
+	api.Get("/trains", handleGetTrains)
+
 	// 4. Master Schedule (Gantt Data)
 	api.Get("/schedule", handleGetSchedule)
 
@@ -384,6 +387,53 @@ func handleGetSections(c *fiber.Ctx) error {
 		}
 	}
 	return c.JSON(fiber.Map{"status": "success", "data": sections})
+}
+
+// handleGetTrains serves train movements as minutes relative to the optimizer
+// base time so frontend bars align exactly with scheduled block positions.
+func handleGetTrains(c *fiber.Ctx) error {
+	rows, err := db.Query(`
+		SELECT movement_id, train_id, section_id, COALESCE(train_type, 'Unknown'), entry_time, exit_time
+		FROM train_movements
+		ORDER BY entry_time ASC
+	`)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to query train movements")
+	}
+	defer rows.Close()
+
+	const maxDays = 30
+	horizonMin := maxDays * 24 * 60
+	movements := make([]fiber.Map, 0)
+	for rows.Next() {
+		var id int
+		var tid, sid, ttype string
+		var entryT, exitT time.Time
+		if err := rows.Scan(&id, &tid, &sid, &ttype, &entryT, &exitT); err != nil {
+			continue
+		}
+		entryMin := int(entryT.Sub(planBaseTime).Minutes())
+		exitMin := int(exitT.Sub(planBaseTime).Minutes())
+		if exitMin <= 0 || entryMin >= horizonMin || exitMin <= entryMin {
+			continue
+		}
+		if entryMin < 0 {
+			entryMin = 0
+		}
+		if exitMin > horizonMin {
+			exitMin = horizonMin
+		}
+		movements = append(movements, fiber.Map{
+			"movement_id": id,
+			"train_id":    tid,
+			"section_id":  sid,
+			"train_type":  ttype,
+			"entry_min":   entryMin,
+			"exit_min":    exitMin,
+		})
+	}
+
+	return c.JSON(fiber.Map{"status": "success", "count": len(movements), "data": movements})
 }
 
 func handleGetSchedule(c *fiber.Ctx) error {

@@ -73,6 +73,15 @@ export interface Section {
   length_km: number;
 }
 
+export interface TrainMovement {
+  movement_id: number;
+  train_id: string;
+  section_id: string;
+  train_type: string;
+  entry_min: number;
+  exit_min: number;
+}
+
 export interface SubmitBlockRequest {
   department: string;
   target_section: string;

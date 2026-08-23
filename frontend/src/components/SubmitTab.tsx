@@ -65,6 +65,9 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
     try {
       const res = await apiClient.post<SubmitBlockResponse>('/tasks/submit', payload);
       setResult(res.data);
+      // Fire-and-forget: kick off background plan regeneration so the new
+      // request flows into the live schedule without a manual re-run.
+      apiClient.post('/schedule/generate').catch(() => {});
       if (onSubmissionSuccess) onSubmissionSuccess();
     } catch (err: any) {
       setErrorMsg(err.response?.data?.message || 'Failed to submit block request. Please check inputs.');
@@ -283,7 +286,10 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
             {/* Blue Info Banner */}
             <div className="p-4 rounded-lg bg-[#0e1d38] border border-[#1e3a8a]/60 text-blue-300 text-sm flex items-center gap-3">
               <Lightbulb className="w-5 h-5 text-blue-400 flex-shrink-0" />
-              <span>{result.message}</span>
+              <span>
+                {result.message} Background plan regeneration has been triggered automatically —
+                open <strong className="text-white">Master Block Schedule &amp; Gantt</strong> in ~1 minute to see this block placed.
+              </span>
             </div>
           </div>
         )}

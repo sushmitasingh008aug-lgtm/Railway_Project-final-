@@ -10,6 +10,7 @@ import {
   Section,
   TestStatusResponse,
   ImpactResponse,
+  TrainMovement,
   apiClient,
 } from './api/client';
 
@@ -20,18 +21,20 @@ export function App() {
   const [sections, setSections] = useState<Section[]>([]);
   const [testStatus, setTestStatus] = useState<TestStatusResponse | null>(null);
   const [impact, setImpact] = useState<ImpactResponse | null>(null);
+  const [trains, setTrains] = useState<TrainMovement[]>([]);
 
   const [loading, setLoading] = useState(true);
 
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      const [mRes, sRes, secRes, tRes, iRes] = await Promise.all([
+      const [mRes, sRes, secRes, tRes, iRes, trRes] = await Promise.all([
         apiClient.get<MetricsResponse>('/metrics').catch(() => null),
         apiClient.get<{ data: ScheduledTask[] }>('/schedule').catch(() => null),
         apiClient.get<{ data: Section[] }>('/sections').catch(() => null),
         apiClient.get<TestStatusResponse>('/tests/status').catch(() => null),
         apiClient.get<ImpactResponse>('/impact').catch(() => null),
+        apiClient.get<{ data: TrainMovement[] }>('/trains').catch(() => null),
       ]);
 
       if (mRes) setMetrics(mRes.data);
@@ -39,6 +42,7 @@ export function App() {
       if (secRes) setSections(secRes.data.data || []);
       if (tRes) setTestStatus(tRes.data);
       if (iRes) setImpact(iRes.data);
+      if (trRes) setTrains(trRes.data.data || []);
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
     } finally {
@@ -64,6 +68,7 @@ export function App() {
         {activeTab === 'gantt' && (
           <GanttTab
             schedule={schedule}
+            trains={trains}
             onRefreshSchedule={fetchAllData}
           />
         )}

@@ -12,6 +12,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -124,8 +125,9 @@ func main() {
 	// 4. Master Schedule (Gantt Data)
 	api.Get("/schedule", handleGetSchedule)
 
-	// 5. Trigger CP-SAT Optimizer Engine
+	// 5. Trigger CP-SAT Optimizer Engine (async) + status polling
 	api.Post("/schedule/generate", handleGenerateSchedule)
+	api.Get("/schedule/status", handleGenerateStatus)
 
 	// 6. Submit New Maintenance Block Request
 	api.Post("/tasks/submit", handleSubmitTask)
@@ -460,6 +462,17 @@ func loadScheduleTasks() ([]ScheduledTask, error) {
 	return tasks, nil
 }
 
+// Background optimizer job state — generate returns instantly, clients poll /status.
+var (
+	genMu          sync.Mutex
+	genRunning     bool
+	genSuccess     bool
+	genFinished    bool
+	genHorizonDays int
+	genMessage     string
+	genOutputTail  string
+)
+
 func handleGenerateSchedule(c *fiber.Ctx) error {
 	pythonPath := filepath.Join("..", ".venv", "bin", "python")
 	scriptPath := filepath.Join("..", "engine", "optimizer_core.py")
@@ -480,24 +493,73 @@ func handleGenerateSchedule(c *fiber.Ctx) error {
 		horizonDays = h
 	}
 
-	cmd := exec.Command(pythonPath, scriptPath, "--horizon-days", strconv.Itoa(horizonDays))
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Printf("Optimizer execution failed: %v, Output: %s", err, string(output))
-		return fiber.NewError(fiber.StatusInternalServerError, "Optimizer execution failed: "+err.Error())
+	genMu.Lock()
+	if genRunning {
+		genMu.Unlock()
+		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
+			"status":       "busy",
+			"message":      "Optimizer is already running. Poll /api/schedule/status.",
+		})
 	}
+	genRunning = true
+	genFinished = false
+	genHorizonDays = horizonDays
+	genMu.Unlock()
 
-	horizonLabel := "Weekly"
-	if horizonDays > 7 {
-		horizonLabel = "Monthly"
-	}
+	go func() {
+		defer func() {
+			genMu.Lock()
+			genRunning = false
+			genFinished = true
+			genMu.Unlock()
+		}()
 
+		// Background execution: no HTTP timeout pressure, so allow a full
+		// 60s of solver time for better plan quality.
+		cmd := exec.Command(pythonPath, scriptPath, "--horizon-days", strconv.Itoa(horizonDays), "--max-solver-time", "60")
+		output, err := cmd.CombinedOutput()
+
+		outStr := string(output)
+		if len(outStr) > 1500 {
+			outStr = outStr[len(outStr)-1500:]
+		}
+
+		horizonLabel := "Weekly"
+		if horizonDays > 7 {
+			horizonLabel = "Monthly"
+		}
+		msg := fmt.Sprintf("Optimization Complete! %s schedule generated with zero train collisions.", horizonLabel)
+		success := true
+		if err != nil {
+			success = false
+			msg = "Optimizer execution failed: " + err.Error()
+			log.Printf("Optimizer execution failed: %v, Output: %s", err, outStr)
+		}
+
+		genMu.Lock()
+		genSuccess = success
+		genMessage = msg
+		genOutputTail = outStr
+		genMu.Unlock()
+	}()
+
+	return c.Status(fiber.StatusAccepted).JSON(fiber.Map{
+		"status":       "started",
+		"message":      "CP-SAT optimizer started in background. Poll /api/schedule/status for completion.",
+		"horizon_days": horizonDays,
+	})
+}
+
+func handleGenerateStatus(c *fiber.Ctx) error {
+	genMu.Lock()
+	defer genMu.Unlock()
 	return c.JSON(fiber.Map{
-		"status":        "success",
-		"message":       fmt.Sprintf("Optimization Complete! %s schedule generated with zero train collisions.", horizonLabel),
-		"horizon_days":  horizonDays,
-		"horizon_label": horizonLabel,
-		"output":        string(output),
+		"running":       genRunning,
+		"finished":      genFinished,
+		"success":       genSuccess,
+		"horizon_days":  genHorizonDays,
+		"message":       genMessage,
+		"output_tail":   genOutputTail,
 	})
 }
 

@@ -24,6 +24,7 @@ func setupTestApp() *fiber.App {
 	api.Get("/sections", handleGetSections)
 	api.Get("/schedule", handleGetSchedule)
 	api.Get("/impact", handleGetImpact)
+	api.Get("/schedule/status", handleGenerateStatus)
 	api.Post("/tasks/submit", handleSubmitTask)
 	api.Get("/tests/status", handleGetTestsStatus)
 

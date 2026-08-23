@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ScheduledTask, apiClient } from '../api/client';
 import { Play, RefreshCw, CheckCircle2, AlertTriangle, Clock, Layers } from 'lucide-react';
 
@@ -22,17 +22,50 @@ export const GanttTab: React.FC<GanttTabProps> = ({ schedule, onRefreshSchedule 
   const horizonMinutes = horizonDays * 1440;
   const dayLabels = Array.from({ length: horizonDays }, (_, i) => `D${i + 1}`);
 
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => () => {
+    if (pollRef.current) clearInterval(pollRef.current);
+  }, []);
+
   const handleRunOptimizer = async (days: number) => {
+    if (optimizing) return;
     setOptimizing(true);
     setNotification(null);
     try {
-      const res = await apiClient.post(`/schedule/generate?horizon_days=${days}`);
-      setNotification(res.data.message || 'Optimization Complete! Schedule generated.');
-      onRefreshSchedule();
+      // Kick off the optimizer as a background job — returns immediately.
+      await apiClient.post(`/schedule/generate?horizon_days=${days}`);
+
+      // Poll status every 3s until the engine finishes.
+      const started = Date.now();
+      pollRef.current = setInterval(async () => {
+        const elapsed = Math.round((Date.now() - started) / 1000);
+        try {
+          const st = await apiClient.get('/schedule/status');
+          if (st.data?.running) {
+            setNotification(`CP-SAT engine running for ${elapsed}s — exploring coordinated block arrangements...`);
+            return;
+          }
+          if (pollRef.current) clearInterval(pollRef.current);
+          pollRef.current = null;
+          setOptimizing(false);
+          if (st.data?.success) {
+            setNotification(st.data.message || 'Optimization Complete!');
+            onRefreshSchedule();
+          } else {
+            setNotification('Optimizer failed. ' + (st.data?.output_tail || '').split('\n').slice(-3).join(' | '));
+          }
+        } catch {
+          /* transient poll error — keep waiting */
+        }
+      }, 3000);
     } catch (err: any) {
-      setNotification('Optimization failed: ' + (err.response?.data?.message || err.message));
-    } finally {
       setOptimizing(false);
+      if (err.response?.status === 409) {
+        setNotification('Engine is already running — hold on, it will refresh automatically.');
+      } else {
+        setNotification('Failed to start optimizer: ' + (err.response?.data?.message || err.message));
+      }
     }
   };
 

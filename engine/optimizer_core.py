@@ -1,10 +1,15 @@
 import os
+import sys
 import pandas as pd
 import numpy as np
 import sqlalchemy
 from sqlalchemy import text
 from datetime import datetime, timedelta
 from ortools.sat.python import cp_model
+from db_helper import get_db_engine
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SCHEDULE_CSV = os.path.join(BASE_DIR, 'optimized_schedule.csv')
@@ -20,8 +25,8 @@ COMBINED_TOLERANCE_MIN = 15
 # keeping the pairwise boolean layer small enough for fast propagation.
 COMBINED_TOP_N = 4
 
-def time_aware_optimizer(db_url="postgresql://postgres:postgres@localhost:5432/block_planning", horizon_days=7, max_solver_time=30.0):
-    engine = sqlalchemy.create_engine(db_url)
+def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
+    engine = get_db_engine() if db_url is None else sqlalchemy.create_engine(db_url)
 
     print("=" * 60)
     print(f"🚀 EXECUTING PHASE 3: TIME-AWARE CP-SAT OPTIMIZER ({horizon_days}-DAY HORIZON)")
@@ -155,6 +160,17 @@ def time_aware_optimizer(db_url="postgresql://postgres:postgres@localhost:5432/b
             exit_m = int(train['exit_min'])
             for tid, _ in task_list:
                 _avoid_train(tid, entry_m, exit_m, f"trn_{train['movement_id']}")
+
+    # IR Peak Traffic Rule: No maintenance blocks granted between 12:00 and 18:00 (12 PM - 6 PM)
+    # unless task criticality is explicitly 'Critical'.
+    for _, t in df_tasks.iterrows():
+        tid = t['task_id']
+        crit = str(t['criticality'])
+        if crit != 'Critical':
+            for d in range(int(horizon_days)):
+                f_start = d * 1440 + 720   # 12:00 PM
+                f_end = d * 1440 + 1080    # 06:00 PM
+                _avoid_train(tid, f_start, f_end, f"ir_peak_d{d}")
 
         for a in range(len(task_list)):
             for b in range(a + 1, len(task_list)):

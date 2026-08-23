@@ -1,16 +1,20 @@
 import os
+import sys
 import pandas as pd
 import numpy as np
 import sqlalchemy
 from sqlalchemy import text
 from datetime import datetime
+from db_helper import get_db_engine
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SCHEDULE_CSV = os.path.join(BASE_DIR, 'optimized_schedule.csv')
 
 def run_test_suite():
-    db_url = "postgresql://postgres:postgres@localhost:5432/block_planning"
-    engine = sqlalchemy.create_engine(db_url)
+    engine = get_db_engine()
     
     print("\n" + "=" * 70)
     print("🚦 RUNNING AUTOMATED CORE ENGINE VERIFICATION SUITE")
@@ -129,6 +133,27 @@ def run_test_suite():
         print("  • Test 4.1 Combined Block Structure: no combined groups present (coordination bonus may be disabled)")
         results.append({"id": "4.1", "name": "Combined Block Structure", "passed": True,
                         "details": "No combined blocks in current plan"})
+
+    # -------------------------------------------------------------
+    # TEST 5: INDIAN RAILWAYS PEAK WINDOW RULE VERIFICATION (Python)
+    # -------------------------------------------------------------
+    print("\n[TEST 5] Indian Railways Peak Window Rule Verification (Python)")
+    ir_peak_violations = 0
+    non_crit_tasks = df_schedule[df_schedule['criticality'] != 'Critical']
+    for _, task in non_crit_tasks.iterrows():
+        s_min = int(task['start_minute'])
+        e_min = int(task['end_minute'])
+        for d in range(7):
+            f_start = d * 1440 + 720   # 12:00 PM
+            f_end = d * 1440 + 1080    # 06:00 PM
+            overlap = max(0, min(e_min, f_end) - max(s_min, f_start))
+            if overlap > 0:
+                ir_peak_violations += 1
+
+    assert ir_peak_violations == 0, f"Test 5.1 FAILED: Found {ir_peak_violations} non-critical blocks scheduled during IR peak window (12:00-18:00)!"
+    print("  • Test 5.1 IR Peak Traffic Restriction (12:00-18:00 Non-Critical Ban): ZERO violations!")
+    results.append({"id": "5.1", "name": "IR Peak Traffic Restriction", "passed": True,
+                    "details": "0 non-critical blocks scheduled during 12:00-18:00 peak traffic window (strictly reserved for Critical tasks)"})
 
     total = len(results)
     print("\n" + "=" * 70)

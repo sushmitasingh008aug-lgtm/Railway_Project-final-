@@ -1,11 +1,16 @@
+import sys
 import pandas as pd
 import numpy as np
 import sqlalchemy
 from sqlalchemy import text
 from datetime import datetime
+from db_helper import get_db_engine
 
-def calculate_priorities(db_url="postgresql://postgres:postgres@localhost:5432/block_planning"):
-    engine = sqlalchemy.create_engine(db_url)
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+
+def calculate_priorities(db_url=None):
+    engine = get_db_engine() if db_url is None else sqlalchemy.create_engine(db_url)
     
     print("Executing Phase 2: Explainable Priority Rules Engine...")
     

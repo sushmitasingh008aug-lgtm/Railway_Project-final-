@@ -1,10 +1,15 @@
 import os
+import sys
 import pandas as pd
+import sqlalchemy
 from datetime import datetime
+from db_helper import get_db_engine
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FEEDS_DIR = os.path.join(BASE_DIR, 'data_feeds')
-DB_URL = 'postgresql://postgres:postgres@localhost:5432/block_planning'
 
 # Department -> source system mapping (mirrors real IR stack)
 SOURCE_SYSTEMS = {
@@ -16,14 +21,14 @@ SOURCE_SYSTEMS = {
 CRIT_MAP = {'1': 'Critical', '2': 'High', '3': 'Medium', '4': 'Low'}
 
 
-def ingest_feeds(db_url=DB_URL):
+def ingest_feeds(db_url=None):
     """Normalize departmental CSV drops into maintenance_tasks with provenance.
 
     Expected feed file format (per source system):
         asset_id,raw_type,severity(1-4),reported_date
     Missing feed files are skipped gracefully so the synthetic pipeline keeps working.
     """
-    engine = sqlalchemy.create_engine(db_url)
+    engine = get_db_engine() if db_url is None else sqlalchemy.create_engine(db_url)
 
     print("=" * 60)
     print("EXECUTING PHASE 1b: DEPARTMENTAL FEED INGESTION")

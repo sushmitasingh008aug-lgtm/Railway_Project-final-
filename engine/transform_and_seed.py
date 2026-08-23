@@ -1,17 +1,24 @@
 import os
+import sys
 import pandas as pd
 import numpy as np
 import sqlalchemy
 from sqlalchemy import text
 from datetime import datetime, timedelta
 import random
+from db_helper import get_db_engine
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def transform_and_seed():
-    db_url = 'postgresql://postgres:postgres@localhost:5432/block_planning'
-    engine = sqlalchemy.create_engine(db_url)
+    engine = get_db_engine()
 
     print("Step 1: Ingesting mapped_assets.csv...")
-    df_assets = pd.read_csv('mapped_assets.csv')
+    csv_path = os.path.join(BASE_DIR, 'mapped_assets.csv')
+    df_assets = pd.read_csv(csv_path)
 
     def parse_lat(loc):
         try:
@@ -180,9 +187,13 @@ def transform_and_seed():
     ]
     df_resources = pd.DataFrame(resources)
 
-    print("Step 6: Writing to PostgreSQL...")
+    print("Step 6: Writing to Database...")
     with engine.begin() as conn:
-        conn.execute(text("TRUNCATE TABLE train_movements, maintenance_tasks, assets, sections, resources, department_feeds CASCADE;"))
+        if engine.name == 'sqlite':
+            for tbl in ['department_feeds', 'train_movements', 'maintenance_tasks', 'assets', 'sections', 'resources']:
+                conn.execute(text(f"DELETE FROM {tbl};"))
+        else:
+            conn.execute(text("TRUNCATE TABLE train_movements, maintenance_tasks, assets, sections, resources, department_feeds CASCADE;"))
 
         df_sections.to_sql('sections', conn, if_exists='append', index=False)
         print(f"  ✓ Inserted {len(df_sections)} sections.")

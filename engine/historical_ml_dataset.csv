@@ -1,0 +1,1501 @@
+asset_id,section_id,department,task_type,asset_importance,asset_age,condition_score,inspection_score,days_overdue,days_since_last_maintenance,defects_30d,failures_90d,traffic_density,passenger_train_count,goods_train_count,future_failure_or_critical_event_30d
+AST_ENG_6191,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.79,7,84,76,2,126,0,0,Low,6,13,0
+AST_ENG_2184,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.65,22,67,63,0,179,0,1,Low,23,13,0
+AST_TRA_4890,SEC_HWH_DLI_01,Traction,Contact Wire Sag,0.83,9,80,87,0,62,0,0,Medium,16,9,1
+AST_S&T_4943,SEC_BSB_LKO_02,S&T,Point Machine Detection Fault,0.87,6,84,84,1,155,2,0,High,71,54,0
+AST_TRA_5887,SEC_HWH_DLI_01,Traction,Contact Wire Sag,0.67,28,40,31,4,54,0,1,Low,28,12,1
+AST_TRA_6892,SEC_BSB_LKO_01,Traction,Contact Wire Sag,0.95,26,64,71,0,171,0,0,Medium,9,4,0
+AST_ENG_9110,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.85,1,78,71,6,36,0,0,Low,17,20,1
+AST_TRA_2757,SEC_BSB_LKO_04,Traction,Neutral Section Inspection,0.57,7,77,82,2,169,0,0,High,51,59,0
+AST_ENG_4627,SEC_DDU_YARD_04,Engineering,Point Machine Mechanical Fault,0.7,11,78,71,1,199,0,0,Medium,24,14,0
+AST_ENG_5413,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.61,19,62,57,1,169,0,0,Medium,21,21,0
+AST_TRA_2636,SEC_BSB_LKO_01,Traction,Contact Wire Sag,0.64,17,71,73,1,96,0,1,Low,16,7,0
+AST_TRA_5218,SEC_HWH_DLI_04,Traction,Contact Wire Sag,0.62,6,100,100,2,148,1,0,Medium,20,4,0
+AST_TRA_2986,SEC_DDU_YARD_02,Traction,Contact Wire Sag,0.9,20,65,57,5,137,0,0,Medium,29,19,0
+AST_S&T_7287,SEC_HWH_DLI_03,S&T,Signal Aspect Lamp Fail,0.9,25,57,61,3,169,0,0,Medium,20,17,0
+AST_S&T_2648,SEC_BSB_LKO_01,S&T,Point Machine Detection Fault,0.58,6,62,71,5,108,1,0,Medium,7,17,0
+AST_ENG_5493,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.66,20,74,81,2,137,0,0,Medium,27,23,0
+AST_S&T_6895,SEC_BSB_LKO_03,S&T,Track Circuit Short,0.81,2,100,100,2,70,0,0,High,26,58,0
+AST_S&T_2060,SEC_HWH_DLI_02,S&T,Track Circuit Short,0.95,17,69,69,4,125,0,0,High,76,32,0
+AST_S&T_2895,SEC_BSB_LKO_03,S&T,Axle Counter Error,0.53,18,75,75,4,26,1,0,Medium,14,24,0
+AST_ENG_6625,SEC_DDU_YARD_04,Engineering,Point Machine Mechanical Fault,0.5,4,91,98,8,153,0,0,Low,6,3,0
+AST_TRA_4769,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.77,29,34,38,9,179,2,1,Medium,9,8,1
+AST_ENG_7966,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.57,16,19,20,18,154,1,1,Low,27,10,1
+AST_ENG_8805,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.55,25,56,69,5,31,1,0,Low,26,15,1
+AST_ENG_7617,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.74,7,100,96,2,19,2,0,High,10,83,0
+AST_TRA_7303,SEC_HWH_DLI_03,Traction,Neutral Section Inspection,0.96,24,43,44,5,198,2,1,Low,17,13,1
+AST_ENG_3082,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.66,26,53,59,1,67,1,0,High,30,50,1
+AST_TRA_2122,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.7,18,81,82,1,46,0,0,High,39,31,0
+AST_ENG_5492,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.94,17,78,77,0,137,0,0,Low,9,4,0
+AST_TRA_4636,SEC_BSB_LKO_04,Traction,OHE Dropper Broken,0.89,25,65,78,0,84,0,0,High,26,21,0
+AST_ENG_7938,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.85,5,90,78,3,118,0,0,High,54,18,0
+AST_TRA_6301,SEC_DDU_YARD_04,Traction,Contact Wire Sag,0.85,10,62,53,11,150,0,0,High,70,53,0
+AST_TRA_2214,SEC_DDU_YARD_01,Traction,Cantilever Insulator Flashover,0.73,25,44,44,10,173,3,0,Medium,25,23,1
+AST_S&T_2353,SEC_DDU_YARD_03,S&T,Track Circuit Short,0.97,8,80,74,2,131,0,0,Medium,22,6,0
+AST_S&T_6320,SEC_BSB_LKO_01,S&T,Axle Counter Error,0.65,20,55,51,4,44,2,0,Medium,28,19,0
+AST_ENG_3193,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.98,17,64,75,2,68,2,0,Medium,20,24,0
+AST_S&T_6989,SEC_HWH_DLI_01,S&T,Signal Aspect Lamp Fail,0.95,23,48,35,7,119,1,0,High,41,48,1
+AST_ENG_9865,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.73,3,91,100,3,142,0,0,Medium,19,24,0
+AST_TRA_5530,SEC_DDU_YARD_03,Traction,Cantilever Insulator Flashover,0.94,28,36,46,19,88,2,1,Medium,27,11,1
+AST_S&T_7327,SEC_DDU_YARD_02,S&T,Point Machine Detection Fault,0.91,17,76,75,1,62,0,0,Medium,15,20,0
+AST_ENG_7031,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.81,8,87,85,5,164,0,0,Low,23,22,0
+AST_ENG_7981,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.56,9,70,60,2,35,1,0,High,72,62,1
+AST_ENG_2276,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.98,15,97,94,2,87,0,0,Low,28,20,0
+AST_S&T_6870,SEC_DDU_YARD_03,S&T,Axle Counter Error,0.51,18,52,53,2,128,0,0,Medium,11,23,0
+AST_ENG_7168,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.83,3,100,95,5,43,0,0,Medium,14,10,0
+AST_S&T_1876,SEC_BSB_LKO_02,S&T,Point Machine Detection Fault,0.66,25,53,49,1,84,0,0,Low,13,24,1
+AST_ENG_6342,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.94,20,38,40,17,122,3,1,High,14,84,0
+AST_TRA_5208,SEC_BSB_LKO_01,Traction,Neutral Section Inspection,0.76,1,96,82,4,148,1,0,Medium,28,11,0
+AST_TRA_2619,SEC_HWH_DLI_04,Traction,Cantilever Insulator Flashover,0.62,5,91,82,0,47,0,0,High,71,74,0
+AST_ENG_6256,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.6,3,100,100,0,73,1,0,High,44,51,0
+AST_TRA_1600,SEC_BSB_LKO_04,Traction,Cantilever Insulator Flashover,0.93,25,70,66,5,41,0,0,High,24,39,0
+AST_ENG_4687,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.61,7,91,95,0,51,0,0,Medium,24,8,0
+AST_S&T_1950,SEC_BSB_LKO_01,S&T,Track Circuit Short,0.57,4,90,92,4,106,0,0,Medium,17,21,0
+AST_TRA_3891,SEC_BSB_LKO_04,Traction,OHE Dropper Broken,0.88,27,53,68,5,52,0,0,High,47,20,1
+AST_ENG_3443,SEC_DDU_YARD_03,Engineering,Track Gauge Spread,0.95,8,79,79,3,69,0,0,High,14,51,0
+AST_ENG_7024,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.71,29,53,49,0,99,1,1,Medium,12,16,1
+AST_ENG_4507,SEC_DDU_YARD_02,Engineering,Broken Rail Weld,0.89,26,65,46,2,84,1,0,High,52,73,0
+AST_ENG_2990,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.58,21,55,40,12,159,0,0,Medium,21,21,0
+AST_TRA_6182,SEC_DDU_YARD_04,Traction,Cantilever Insulator Flashover,0.99,17,63,50,1,188,0,0,Medium,21,14,0
+AST_S&T_1768,SEC_BSB_LKO_02,S&T,Signal Aspect Lamp Fail,0.88,15,56,78,3,175,1,0,Low,7,11,1
+AST_TRA_1054,SEC_BSB_LKO_01,Traction,Neutral Section Inspection,0.58,18,65,47,10,76,0,0,Low,26,16,0
+AST_S&T_8970,SEC_HWH_DLI_04,S&T,Point Machine Detection Fault,0.62,14,54,46,4,16,0,0,High,28,50,0
+AST_TRA_7035,SEC_HWH_DLI_01,Traction,OHE Dropper Broken,0.66,2,100,94,2,146,0,0,High,33,88,0
+AST_S&T_4186,SEC_BSB_LKO_01,S&T,Signal Aspect Lamp Fail,0.75,9,67,72,3,31,2,0,Medium,15,7,0
+AST_ENG_8184,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.7,6,77,84,8,21,0,0,Medium,21,22,0
+AST_TRA_4067,SEC_BSB_LKO_02,Traction,Neutral Section Inspection,0.97,1,84,88,0,158,1,1,Medium,26,3,0
+AST_S&T_8479,SEC_HWH_DLI_01,S&T,Axle Counter Error,0.61,4,90,87,3,90,0,0,Medium,6,22,0
+AST_ENG_1060,SEC_DDU_YARD_01,Engineering,Broken Rail Weld,0.84,10,88,83,3,58,0,1,Low,20,20,0
+AST_S&T_3421,SEC_HWH_DLI_01,S&T,Signal Aspect Lamp Fail,0.81,8,70,69,1,163,0,0,Low,20,8,0
+AST_TRA_1390,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.52,21,54,52,6,68,1,0,High,27,73,0
+AST_ENG_8138,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.77,13,70,80,0,192,0,0,High,13,39,0
+AST_TRA_9502,SEC_DDU_YARD_02,Traction,OHE Dropper Broken,0.73,2,97,100,0,169,1,0,Low,21,22,0
+AST_TRA_5361,SEC_DDU_YARD_01,Traction,Neutral Section Inspection,0.54,7,64,61,3,77,1,0,High,24,63,0
+AST_ENG_2828,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.89,11,83,84,4,162,1,0,High,63,88,1
+AST_ENG_7402,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.9,5,88,78,0,187,0,1,Medium,17,16,1
+AST_S&T_2290,SEC_BSB_LKO_02,S&T,Track Circuit Short,0.93,3,87,86,1,85,0,0,High,20,73,0
+AST_ENG_6370,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.85,26,64,64,3,76,0,0,Medium,17,2,0
+AST_TRA_2704,SEC_DDU_YARD_04,Traction,Neutral Section Inspection,0.66,13,80,92,5,175,0,0,High,40,37,1
+AST_S&T_4998,SEC_HWH_DLI_03,S&T,Track Circuit Short,0.5,2,78,78,8,22,0,1,Medium,28,14,0
+AST_ENG_6352,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.97,28,49,52,5,77,1,0,Medium,5,23,0
+AST_ENG_9954,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.56,29,63,59,2,67,0,0,Medium,8,18,1
+AST_S&T_3844,SEC_HWH_DLI_03,S&T,Signal Aspect Lamp Fail,0.84,20,44,49,9,36,2,0,High,68,20,0
+AST_ENG_1933,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.61,29,58,63,1,27,1,1,High,62,22,0
+AST_S&T_1959,SEC_HWH_DLI_03,S&T,Point Machine Detection Fault,0.64,24,52,55,12,162,0,0,Medium,24,5,0
+AST_ENG_6109,SEC_HWH_DLI_02,Engineering,Point Machine Mechanical Fault,0.66,2,78,62,7,81,0,0,Medium,19,7,0
+AST_TRA_5197,SEC_DDU_YARD_04,Traction,OHE Dropper Broken,0.94,11,74,70,3,130,0,0,Medium,24,2,0
+AST_ENG_1001,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.76,9,72,69,2,112,0,0,High,53,63,0
+AST_ENG_3056,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.96,7,85,83,4,81,1,0,High,16,89,0
+AST_TRA_9601,SEC_HWH_DLI_02,Traction,Cantilever Insulator Flashover,0.74,9,100,96,0,21,0,0,High,28,69,0
+AST_TRA_3356,SEC_HWH_DLI_03,Traction,OHE Dropper Broken,0.82,19,76,60,0,68,0,0,Medium,26,16,0
+AST_ENG_1158,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.7,24,47,35,2,29,2,0,Low,6,5,0
+AST_S&T_2394,SEC_HWH_DLI_03,S&T,Axle Counter Error,0.64,29,69,80,1,152,0,0,Medium,27,11,0
+AST_S&T_5648,SEC_HWH_DLI_01,S&T,Signal Aspect Lamp Fail,0.62,28,69,83,2,93,0,0,Medium,29,3,0
+AST_ENG_5555,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.56,13,82,79,1,127,0,0,Medium,13,2,0
+AST_TRA_1575,SEC_BSB_LKO_01,Traction,Neutral Section Inspection,0.68,28,66,75,0,174,1,0,High,15,75,1
+AST_S&T_1281,SEC_HWH_DLI_01,S&T,Track Circuit Short,0.52,23,65,57,1,21,0,2,High,59,43,0
+AST_ENG_4249,SEC_DDU_YARD_03,Engineering,Ballast Deep Screening,0.67,6,81,86,0,128,0,0,High,38,19,0
+AST_ENG_6238,SEC_HWH_DLI_03,Engineering,Broken Rail Weld,0.96,10,91,86,0,56,0,0,High,55,82,0
+AST_ENG_9125,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.82,18,73,69,4,98,2,0,High,13,33,0
+AST_TRA_2388,SEC_HWH_DLI_03,Traction,OHE Dropper Broken,0.9,24,48,57,1,74,1,0,Medium,29,2,1
+AST_ENG_8010,SEC_HWH_DLI_02,Engineering,Point Machine Mechanical Fault,0.58,14,48,42,4,35,4,0,Medium,19,13,1
+AST_ENG_7570,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.51,23,62,65,2,60,0,1,Low,8,17,0
+AST_TRA_8311,SEC_DDU_YARD_04,Traction,OHE Dropper Broken,0.54,18,58,58,2,117,0,0,High,65,56,1
+AST_S&T_2798,SEC_BSB_LKO_04,S&T,Point Machine Detection Fault,0.9,12,86,87,0,128,0,0,Medium,13,16,0
+AST_ENG_7295,SEC_DDU_YARD_02,Engineering,Broken Rail Weld,0.67,26,69,61,1,109,0,0,Low,8,11,0
+AST_TRA_1482,SEC_BSB_LKO_01,Traction,Contact Wire Sag,0.93,1,100,100,1,169,0,0,Medium,29,3,0
+AST_TRA_7780,SEC_BSB_LKO_03,Traction,Cantilever Insulator Flashover,0.85,17,84,79,0,77,1,0,Low,12,6,0
+AST_ENG_6189,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.67,4,94,100,2,181,0,0,High,59,81,0
+AST_ENG_6249,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.99,2,92,92,2,125,0,0,High,40,61,0
+AST_TRA_4083,SEC_DDU_YARD_01,Traction,Cantilever Insulator Flashover,0.67,12,20,16,19,32,1,3,Medium,10,23,1
+AST_TRA_3785,SEC_HWH_DLI_01,Traction,OHE Dropper Broken,0.53,4,84,73,1,94,0,0,Medium,7,21,0
+AST_S&T_9453,SEC_HWH_DLI_03,S&T,Axle Counter Error,0.95,11,55,64,4,21,1,0,Medium,28,11,0
+AST_S&T_8693,SEC_HWH_DLI_03,S&T,Point Machine Detection Fault,0.54,21,64,59,0,29,0,1,Medium,5,5,0
+AST_ENG_9429,SEC_HWH_DLI_02,Engineering,Point Machine Mechanical Fault,0.59,3,70,77,15,145,0,0,Medium,17,13,0
+AST_ENG_6777,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.64,6,91,89,0,160,0,0,High,19,16,0
+AST_TRA_9648,SEC_HWH_DLI_04,Traction,Contact Wire Sag,0.71,9,82,76,0,124,0,0,Medium,8,8,0
+AST_ENG_4292,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.81,28,48,53,9,71,2,0,Low,26,6,1
+AST_ENG_3293,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.89,21,55,46,7,74,0,0,Medium,25,19,1
+AST_ENG_5592,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.77,21,50,42,9,43,0,0,Medium,13,21,0
+AST_ENG_5200,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.55,24,55,69,1,38,0,1,High,37,89,0
+AST_ENG_8088,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.8,28,53,55,2,17,0,0,High,60,38,1
+AST_ENG_1365,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.99,20,45,49,7,195,0,0,High,73,24,1
+AST_ENG_2246,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.88,8,67,62,4,58,0,0,Low,29,24,1
+AST_S&T_9843,SEC_BSB_LKO_04,S&T,Track Circuit Short,0.73,2,100,100,4,41,0,0,Low,21,9,0
+AST_ENG_5941,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.72,25,65,63,0,181,0,0,Medium,7,24,0
+AST_ENG_3196,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.87,21,34,46,19,160,1,3,Low,25,16,1
+AST_S&T_5183,SEC_BSB_LKO_03,S&T,Signal Aspect Lamp Fail,0.67,22,63,83,3,127,0,0,High,34,22,0
+AST_ENG_1514,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.99,8,89,95,1,19,1,0,Medium,20,14,0
+AST_TRA_9505,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.52,17,82,88,0,29,0,0,Medium,28,20,0
+AST_ENG_2929,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.93,3,91,87,0,182,0,0,Medium,18,4,1
+AST_TRA_4959,SEC_BSB_LKO_04,Traction,Contact Wire Sag,0.8,2,85,85,4,156,0,0,Low,17,13,0
+AST_TRA_9623,SEC_BSB_LKO_04,Traction,Contact Wire Sag,0.68,23,47,36,6,122,5,0,High,24,84,0
+AST_TRA_4471,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.6,20,67,52,2,118,1,0,Medium,9,6,0
+AST_ENG_4331,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.52,7,100,96,3,79,0,0,Low,29,21,0
+AST_S&T_5713,SEC_HWH_DLI_04,S&T,Axle Counter Error,0.64,28,64,58,1,147,0,0,Medium,17,7,1
+AST_ENG_3643,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.8,11,59,66,0,16,0,0,High,29,29,0
+AST_ENG_4959,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.63,25,48,52,3,58,3,0,Low,8,11,1
+AST_TRA_1572,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.92,26,57,68,3,107,0,0,Medium,25,6,0
+AST_S&T_1097,SEC_DDU_YARD_02,S&T,Axle Counter Error,0.92,19,54,54,5,177,0,0,High,72,63,1
+AST_ENG_6774,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.6,21,53,47,5,134,0,1,Low,29,4,0
+AST_TRA_5869,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.68,23,62,57,8,60,0,0,Low,13,5,1
+AST_ENG_7971,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.84,12,66,76,0,36,0,1,Medium,12,6,0
+AST_S&T_8133,SEC_BSB_LKO_04,S&T,Track Circuit Short,0.8,22,52,47,9,128,1,1,Medium,8,7,0
+AST_TRA_9004,SEC_DDU_YARD_03,Traction,Neutral Section Inspection,0.77,1,93,97,0,142,1,0,High,15,74,0
+AST_ENG_3504,SEC_DDU_YARD_04,Engineering,Ballast Deep Screening,0.68,2,81,89,8,30,0,0,High,44,66,0
+AST_TRA_2098,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.82,16,75,79,4,103,1,0,Medium,6,4,0
+AST_ENG_7344,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.82,1,89,78,9,13,1,0,Low,29,22,0
+AST_TRA_8568,SEC_DDU_YARD_04,Traction,Neutral Section Inspection,0.88,3,98,100,0,143,1,0,Medium,10,15,0
+AST_TRA_6661,SEC_BSB_LKO_03,Traction,Contact Wire Sag,0.89,27,53,56,2,185,2,0,High,54,85,0
+AST_TRA_2531,SEC_HWH_DLI_03,Traction,Neutral Section Inspection,0.81,20,73,87,0,177,0,0,Medium,24,15,0
+AST_ENG_6827,SEC_DDU_YARD_01,Engineering,Ballast Deep Screening,0.53,28,49,62,9,178,4,0,Medium,18,19,1
+AST_TRA_8851,SEC_BSB_LKO_04,Traction,Neutral Section Inspection,0.56,29,39,38,3,156,3,1,Medium,11,5,1
+AST_ENG_1193,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.63,27,70,70,6,15,1,0,Medium,12,20,0
+AST_S&T_9333,SEC_BSB_LKO_01,S&T,Track Circuit Short,0.8,13,84,100,3,58,0,0,Low,5,8,0
+AST_TRA_6482,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.52,9,84,77,2,97,0,0,Medium,11,14,0
+AST_ENG_9210,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.7,8,86,76,5,170,2,0,Medium,27,14,0
+AST_ENG_5033,SEC_BSB_LKO_02,Engineering,Point Machine Mechanical Fault,0.83,1,83,80,3,165,0,0,Medium,23,16,0
+AST_ENG_1201,SEC_DDU_YARD_01,Engineering,Broken Rail Weld,0.68,11,64,64,4,130,0,0,Medium,25,3,0
+AST_S&T_7401,SEC_HWH_DLI_04,S&T,Axle Counter Error,0.51,12,100,96,1,110,0,0,Medium,27,7,0
+AST_TRA_3658,SEC_BSB_LKO_04,Traction,Cantilever Insulator Flashover,0.54,9,81,92,1,107,0,0,Medium,13,24,0
+AST_TRA_2141,SEC_DDU_YARD_03,Traction,Cantilever Insulator Flashover,0.85,1,79,79,3,16,0,0,Medium,24,20,1
+AST_TRA_6546,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.69,27,66,56,2,78,0,0,Medium,10,2,1
+AST_ENG_8069,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.51,27,35,23,3,15,2,1,High,44,20,1
+AST_S&T_6619,SEC_DDU_YARD_03,S&T,Track Circuit Short,0.52,16,61,64,7,150,0,0,High,60,17,1
+AST_ENG_1340,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.67,12,81,91,1,138,0,0,Medium,19,3,0
+AST_ENG_4835,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.65,22,46,49,4,94,0,0,High,28,78,0
+AST_TRA_7538,SEC_DDU_YARD_04,Traction,Cantilever Insulator Flashover,0.77,5,84,81,7,21,2,0,High,79,69,0
+AST_ENG_3454,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.69,11,73,66,12,190,1,0,High,13,21,0
+AST_ENG_1115,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.5,17,55,63,9,22,1,0,High,31,57,0
+AST_TRA_2999,SEC_HWH_DLI_01,Traction,Neutral Section Inspection,0.9,9,94,98,1,80,0,0,Medium,9,2,0
+AST_ENG_3235,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.82,1,72,73,9,18,1,0,Low,15,4,0
+AST_TRA_3092,SEC_BSB_LKO_02,Traction,OHE Dropper Broken,0.97,27,32,34,10,171,2,0,Medium,19,3,1
+AST_S&T_4965,SEC_HWH_DLI_04,S&T,Axle Counter Error,0.63,22,49,47,1,167,2,0,Low,21,24,0
+AST_ENG_6575,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.77,20,68,60,5,62,1,0,Low,27,9,0
+AST_ENG_5945,SEC_BSB_LKO_02,Engineering,Track Gauge Spread,0.9,11,72,70,1,102,0,0,High,59,22,1
+AST_ENG_8818,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.91,11,76,82,1,109,2,0,High,60,51,1
+AST_ENG_8094,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.5,23,61,62,1,33,2,0,Low,23,20,0
+AST_ENG_6423,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.69,9,83,76,3,114,0,0,Medium,17,5,0
+AST_ENG_4893,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.93,1,91,89,7,45,1,0,Medium,12,23,0
+AST_S&T_2548,SEC_DDU_YARD_03,S&T,Point Machine Detection Fault,0.53,22,43,43,7,83,0,0,Medium,26,18,1
+AST_ENG_3158,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.66,12,73,70,4,131,0,0,Medium,20,16,0
+AST_ENG_6818,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.69,9,96,90,0,195,0,0,Medium,20,12,0
+AST_TRA_5552,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.77,8,71,82,7,68,0,0,Medium,6,3,0
+AST_TRA_9707,SEC_DDU_YARD_04,Traction,Contact Wire Sag,0.97,9,100,100,1,84,1,0,Medium,16,8,0
+AST_TRA_8468,SEC_DDU_YARD_03,Traction,Cantilever Insulator Flashover,0.64,13,51,63,8,165,0,0,High,63,74,0
+AST_ENG_8763,SEC_BSB_LKO_02,Engineering,Track Gauge Spread,0.81,11,66,60,0,24,0,2,High,71,88,1
+AST_ENG_2116,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.74,13,84,86,0,165,0,0,Medium,20,13,0
+AST_ENG_1619,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.89,27,47,59,2,89,2,0,High,74,57,0
+AST_ENG_6973,SEC_BSB_LKO_02,Engineering,Point Machine Mechanical Fault,0.92,12,69,73,0,113,1,0,Medium,29,4,0
+AST_ENG_8927,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.99,2,35,22,24,126,0,0,Medium,18,18,1
+AST_ENG_4162,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.7,1,96,88,1,50,0,0,Low,6,14,0
+AST_ENG_3871,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.78,3,91,92,1,56,2,0,High,24,22,0
+AST_ENG_5570,SEC_DDU_YARD_04,Engineering,Ballast Deep Screening,0.53,15,48,47,10,36,2,0,Medium,7,3,0
+AST_TRA_1278,SEC_BSB_LKO_04,Traction,Neutral Section Inspection,0.96,21,47,47,7,147,0,0,Low,24,4,0
+AST_ENG_4109,SEC_DDU_YARD_04,Engineering,Point Machine Mechanical Fault,0.86,4,79,88,6,59,2,0,Low,20,16,0
+AST_S&T_9501,SEC_HWH_DLI_02,S&T,Point Machine Detection Fault,0.79,17,85,80,2,41,0,0,Medium,15,11,0
+AST_ENG_1152,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.56,5,100,100,0,45,1,0,Low,11,7,0
+AST_TRA_4664,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.52,9,71,61,1,61,0,0,High,56,69,0
+AST_ENG_2567,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.69,4,89,92,2,141,0,0,High,58,54,1
+AST_TRA_1999,SEC_HWH_DLI_02,Traction,Contact Wire Sag,0.59,3,69,66,15,98,0,0,Medium,28,23,0
+AST_TRA_9566,SEC_HWH_DLI_04,Traction,Contact Wire Sag,0.78,16,22,27,20,81,0,1,Medium,16,18,0
+AST_ENG_7261,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.62,1,100,94,1,132,0,0,High,22,68,0
+AST_ENG_9319,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.87,24,22,20,23,114,1,1,High,78,42,1
+AST_TRA_4802,SEC_BSB_LKO_04,Traction,Cantilever Insulator Flashover,0.75,7,86,74,1,11,0,0,High,52,69,1
+AST_ENG_3600,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.55,12,77,69,3,62,0,1,Medium,5,17,0
+AST_TRA_3305,SEC_DDU_YARD_04,Traction,Contact Wire Sag,0.92,1,100,92,0,68,1,0,Medium,6,14,0
+AST_ENG_1816,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.77,19,52,49,15,115,1,0,Medium,26,19,1
+AST_TRA_4676,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.75,27,76,87,0,130,1,0,Medium,25,24,1
+AST_S&T_7136,SEC_BSB_LKO_01,S&T,Point Machine Detection Fault,0.51,11,80,74,1,71,0,0,Low,20,24,0
+AST_S&T_8610,SEC_BSB_LKO_04,S&T,Signal Aspect Lamp Fail,0.64,24,76,81,1,129,1,0,Medium,10,12,0
+AST_ENG_5744,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.52,27,40,45,3,197,2,0,High,27,77,1
+AST_ENG_9326,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.53,22,60,52,0,12,0,0,Medium,10,22,1
+AST_ENG_3068,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.87,3,72,74,8,78,0,1,Medium,29,22,0
+AST_ENG_3591,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.9,5,91,73,1,48,0,0,High,15,49,0
+AST_TRA_1086,SEC_DDU_YARD_02,Traction,OHE Dropper Broken,0.91,23,57,56,3,38,0,0,High,32,59,1
+AST_ENG_9837,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.89,22,51,36,3,169,1,0,Low,8,3,0
+AST_TRA_3294,SEC_HWH_DLI_03,Traction,Cantilever Insulator Flashover,0.62,19,71,83,2,116,0,0,Medium,23,4,0
+AST_TRA_6618,SEC_BSB_LKO_02,Traction,OHE Dropper Broken,0.77,1,80,80,4,186,0,1,High,26,85,1
+AST_TRA_1816,SEC_HWH_DLI_03,Traction,Contact Wire Sag,0.97,1,100,91,0,126,0,0,High,63,42,0
+AST_TRA_7773,SEC_DDU_YARD_01,Traction,OHE Dropper Broken,0.89,14,69,78,3,24,0,0,Medium,12,19,0
+AST_ENG_3581,SEC_HWH_DLI_04,Engineering,Point Machine Mechanical Fault,0.73,15,65,66,3,75,0,1,High,76,17,1
+AST_ENG_6626,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.68,11,80,70,5,58,0,0,Low,28,16,1
+AST_TRA_7457,SEC_DDU_YARD_02,Traction,OHE Dropper Broken,0.88,13,87,93,2,108,1,0,Low,13,7,0
+AST_S&T_2812,SEC_BSB_LKO_03,S&T,Signal Aspect Lamp Fail,0.82,4,91,93,9,85,0,0,Medium,12,9,0
+AST_ENG_2629,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.93,10,69,81,3,99,0,1,Medium,29,16,0
+AST_TRA_7111,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.59,26,69,72,1,83,0,0,High,32,84,0
+AST_TRA_1160,SEC_DDU_YARD_04,Traction,Neutral Section Inspection,0.71,1,86,73,3,105,0,0,Low,22,17,0
+AST_S&T_9092,SEC_HWH_DLI_04,S&T,Signal Aspect Lamp Fail,0.71,13,59,64,8,191,2,0,High,70,88,1
+AST_ENG_3850,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.51,27,39,38,9,57,1,0,High,58,46,1
+AST_TRA_9706,SEC_BSB_LKO_03,Traction,Cantilever Insulator Flashover,0.81,21,57,55,2,38,1,0,Medium,24,17,0
+AST_S&T_7838,SEC_BSB_LKO_02,S&T,Axle Counter Error,0.8,27,50,26,3,122,0,1,High,70,32,1
+AST_S&T_4716,SEC_HWH_DLI_03,S&T,Point Machine Detection Fault,0.53,27,36,42,5,92,3,0,Medium,21,15,1
+AST_ENG_9566,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.58,15,49,73,9,103,4,0,Low,15,23,1
+AST_ENG_5735,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.8,23,34,38,10,54,3,1,Medium,9,11,1
+AST_TRA_2230,SEC_HWH_DLI_04,Traction,OHE Dropper Broken,0.92,14,78,80,2,103,0,0,High,67,48,0
+AST_ENG_7628,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.76,5,77,80,7,65,0,0,Medium,28,11,0
+AST_ENG_3148,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.58,4,100,96,0,136,0,0,High,20,60,0
+AST_ENG_2447,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.65,24,55,40,4,154,0,1,High,62,70,1
+AST_ENG_6067,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.88,15,90,92,1,49,0,0,Medium,20,10,0
+AST_ENG_1226,SEC_DDU_YARD_04,Engineering,Ballast Deep Screening,0.89,16,89,86,1,71,2,0,High,69,28,0
+AST_ENG_2695,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.64,6,75,73,9,140,0,0,Medium,10,9,0
+AST_ENG_5482,SEC_BSB_LKO_03,Engineering,Track Gauge Spread,0.94,12,78,81,4,199,1,0,Medium,24,8,0
+AST_TRA_9112,SEC_DDU_YARD_02,Traction,OHE Dropper Broken,0.81,13,82,68,1,26,0,0,High,32,60,0
+AST_S&T_5876,SEC_DDU_YARD_03,S&T,Signal Aspect Lamp Fail,0.73,17,69,81,7,154,1,0,High,22,57,1
+AST_ENG_7771,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.83,20,57,57,3,189,0,0,High,10,58,1
+AST_ENG_2504,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.88,25,46,41,4,74,1,0,Medium,21,2,1
+AST_TRA_5485,SEC_HWH_DLI_04,Traction,OHE Dropper Broken,0.68,6,91,100,0,186,0,0,Low,23,3,0
+AST_S&T_9464,SEC_DDU_YARD_03,S&T,Point Machine Detection Fault,0.82,24,65,69,1,186,0,1,High,69,72,1
+AST_ENG_5891,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.63,18,30,30,23,123,1,0,Low,16,24,0
+AST_ENG_2273,SEC_BSB_LKO_03,Engineering,Track Gauge Spread,0.5,22,65,71,5,19,0,0,Low,20,18,1
+AST_ENG_7305,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.92,18,48,52,11,192,0,0,High,12,35,1
+AST_S&T_7589,SEC_HWH_DLI_01,S&T,Axle Counter Error,0.74,20,48,47,1,189,3,0,Low,16,16,1
+AST_TRA_3773,SEC_DDU_YARD_04,Traction,OHE Dropper Broken,0.76,3,98,98,2,70,1,0,Medium,17,7,0
+AST_ENG_8616,SEC_BSB_LKO_02,Engineering,Point Machine Mechanical Fault,0.84,19,51,51,5,99,1,0,Medium,13,8,0
+AST_ENG_7686,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.53,12,65,66,3,191,1,0,High,17,76,0
+AST_ENG_1165,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.73,14,42,44,12,81,3,0,High,15,83,0
+AST_TRA_7169,SEC_BSB_LKO_02,Traction,OHE Dropper Broken,0.96,26,61,53,2,155,0,1,Medium,16,24,0
+AST_TRA_8504,SEC_DDU_YARD_04,Traction,Contact Wire Sag,0.82,20,75,72,3,113,0,0,High,59,79,0
+AST_TRA_2956,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.53,15,70,70,1,153,0,0,Low,17,3,0
+AST_ENG_4558,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.61,8,65,59,0,134,0,0,High,27,83,0
+AST_ENG_8549,SEC_DDU_YARD_03,Engineering,Track Gauge Spread,0.57,5,95,92,0,15,0,0,Medium,13,6,0
+AST_ENG_4177,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.5,17,53,47,5,142,2,0,Medium,27,12,0
+AST_TRA_3123,SEC_DDU_YARD_04,Traction,OHE Dropper Broken,0.82,1,84,79,2,92,1,0,High,34,42,1
+AST_TRA_2609,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.94,25,63,58,5,34,0,0,Low,7,12,1
+AST_S&T_4792,SEC_HWH_DLI_03,S&T,Track Circuit Short,0.61,2,65,64,13,84,0,0,High,68,30,1
+AST_TRA_1075,SEC_DDU_YARD_02,Traction,Contact Wire Sag,0.68,4,40,42,18,36,2,0,Low,16,14,0
+AST_S&T_5471,SEC_BSB_LKO_01,S&T,Track Circuit Short,0.63,8,60,52,13,102,0,0,Medium,18,11,0
+AST_S&T_7940,SEC_HWH_DLI_01,S&T,Track Circuit Short,0.66,4,69,71,5,30,1,0,Low,10,5,0
+AST_ENG_4939,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.79,19,66,56,5,109,2,0,Medium,10,21,0
+AST_S&T_4121,SEC_BSB_LKO_04,S&T,Track Circuit Short,0.69,20,51,51,5,77,0,0,High,16,82,0
+AST_TRA_6308,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.81,21,37,20,7,69,2,0,Medium,28,2,1
+AST_ENG_9497,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.62,17,59,53,11,139,0,0,Low,15,9,1
+AST_S&T_1194,SEC_DDU_YARD_04,S&T,Signal Aspect Lamp Fail,0.83,17,53,52,14,86,0,0,Medium,26,17,1
+AST_ENG_6672,SEC_DDU_YARD_03,Engineering,Track Gauge Spread,0.99,26,43,41,4,99,0,0,Medium,24,8,0
+AST_ENG_2409,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.83,14,78,88,2,93,0,0,Low,18,6,0
+AST_ENG_5427,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.57,6,81,66,6,89,1,0,High,29,32,0
+AST_ENG_6060,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.82,8,82,81,0,149,0,0,Medium,11,15,0
+AST_ENG_7638,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.74,5,100,94,0,132,0,0,Low,7,18,0
+AST_ENG_1935,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.94,20,53,53,4,162,0,0,High,10,58,1
+AST_ENG_2367,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.7,22,41,49,10,120,1,0,Medium,20,20,1
+AST_TRA_8531,SEC_DDU_YARD_03,Traction,OHE Dropper Broken,0.84,13,75,85,1,28,1,0,Low,26,21,0
+AST_TRA_5039,SEC_BSB_LKO_03,Traction,Contact Wire Sag,0.56,10,69,60,3,86,0,0,Low,11,20,0
+AST_TRA_3657,SEC_DDU_YARD_03,Traction,Cantilever Insulator Flashover,0.74,6,98,85,1,74,1,0,High,16,25,0
+AST_S&T_2893,SEC_DDU_YARD_02,S&T,Point Machine Detection Fault,0.77,11,72,73,14,130,2,1,High,16,25,1
+AST_TRA_4569,SEC_HWH_DLI_03,Traction,OHE Dropper Broken,0.79,15,72,82,2,106,0,0,Medium,21,4,0
+AST_ENG_1946,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.5,27,69,62,5,175,0,0,High,50,88,0
+AST_TRA_7106,SEC_BSB_LKO_02,Traction,OHE Dropper Broken,0.67,1,96,96,0,141,0,0,Medium,22,10,0
+AST_ENG_3339,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.76,27,38,40,5,165,1,0,Medium,8,6,1
+AST_S&T_4715,SEC_HWH_DLI_03,S&T,Axle Counter Error,0.6,22,71,74,3,27,0,0,Medium,27,14,0
+AST_TRA_9210,SEC_HWH_DLI_02,Traction,Neutral Section Inspection,0.75,5,97,100,0,176,1,0,Medium,25,16,0
+AST_ENG_9465,SEC_HWH_DLI_02,Engineering,Point Machine Mechanical Fault,0.79,11,81,82,3,117,0,0,High,77,36,0
+AST_S&T_7646,SEC_DDU_YARD_01,S&T,Axle Counter Error,0.79,23,62,62,1,188,0,0,Low,9,24,0
+AST_ENG_4854,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.81,27,54,49,0,44,0,0,Medium,23,4,0
+AST_S&T_1556,SEC_BSB_LKO_04,S&T,Point Machine Detection Fault,0.77,16,69,77,4,86,0,1,High,31,38,0
+AST_ENG_2231,SEC_DDU_YARD_03,Engineering,Track Gauge Spread,0.91,24,64,69,3,87,0,0,High,78,57,1
+AST_S&T_2342,SEC_DDU_YARD_04,S&T,Signal Aspect Lamp Fail,0.83,19,62,73,2,77,0,0,High,17,20,0
+AST_ENG_2141,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.8,18,48,69,5,72,2,0,High,62,40,0
+AST_S&T_5658,SEC_HWH_DLI_04,S&T,Point Machine Detection Fault,0.86,22,61,69,0,192,0,0,Medium,24,18,0
+AST_S&T_2191,SEC_BSB_LKO_03,S&T,Signal Aspect Lamp Fail,0.77,13,65,65,4,37,1,0,Low,27,23,0
+AST_S&T_5758,SEC_DDU_YARD_01,S&T,Track Circuit Short,0.65,23,41,32,3,155,1,0,Medium,17,13,1
+AST_TRA_1681,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.73,16,76,67,4,118,0,0,Medium,17,14,0
+AST_ENG_2627,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.79,9,76,62,1,84,0,0,Low,18,3,0
+AST_ENG_6650,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.81,17,66,61,2,10,0,0,High,25,33,0
+AST_TRA_8209,SEC_BSB_LKO_03,Traction,Cantilever Insulator Flashover,0.59,2,91,100,0,98,0,0,Medium,13,17,0
+AST_TRA_7899,SEC_DDU_YARD_01,Traction,Cantilever Insulator Flashover,0.78,24,73,82,2,146,0,0,Medium,29,21,0
+AST_TRA_1622,SEC_BSB_LKO_02,Traction,Contact Wire Sag,0.83,13,72,77,0,114,1,0,High,20,56,0
+AST_TRA_8675,SEC_HWH_DLI_01,Traction,Neutral Section Inspection,0.87,20,68,69,3,112,1,1,High,40,64,1
+AST_ENG_4084,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.71,28,36,36,1,91,0,0,Medium,26,20,0
+AST_S&T_4432,SEC_HWH_DLI_04,S&T,Point Machine Detection Fault,0.68,25,54,57,1,111,0,0,High,25,65,1
+AST_ENG_2577,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.77,13,66,70,9,162,1,0,Medium,27,18,0
+AST_ENG_8037,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.65,3,95,93,0,185,0,0,High,60,34,0
+AST_TRA_4968,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.79,8,83,80,5,113,2,0,Low,15,11,0
+AST_ENG_7120,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.65,17,72,75,3,125,1,0,High,70,45,1
+AST_ENG_6969,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.7,14,74,69,1,59,0,0,Medium,19,14,0
+AST_TRA_7924,SEC_BSB_LKO_04,Traction,Neutral Section Inspection,0.98,15,76,58,2,168,0,0,Low,26,3,1
+AST_TRA_3644,SEC_BSB_LKO_04,Traction,Neutral Section Inspection,0.7,22,69,77,1,122,0,0,Low,8,22,0
+AST_TRA_7468,SEC_HWH_DLI_03,Traction,OHE Dropper Broken,0.63,16,64,85,2,179,0,0,High,73,36,0
+AST_TRA_8104,SEC_BSB_LKO_01,Traction,Contact Wire Sag,0.61,1,76,77,0,180,1,0,High,69,84,1
+AST_ENG_5567,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.52,13,97,94,0,180,1,0,High,39,72,1
+AST_S&T_8942,SEC_DDU_YARD_02,S&T,Axle Counter Error,0.87,22,50,57,7,123,0,0,Medium,19,13,0
+AST_ENG_7103,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.53,8,78,71,1,184,0,0,Low,7,23,0
+AST_S&T_3601,SEC_DDU_YARD_01,S&T,Signal Aspect Lamp Fail,0.55,16,73,76,6,193,0,0,Low,16,3,0
+AST_ENG_3757,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.54,19,59,62,3,132,1,0,High,73,57,1
+AST_S&T_4398,SEC_DDU_YARD_04,S&T,Signal Aspect Lamp Fail,0.75,2,100,82,2,80,0,0,Low,21,6,0
+AST_TRA_9320,SEC_BSB_LKO_04,Traction,OHE Dropper Broken,0.58,21,58,63,2,106,0,0,High,53,41,0
+AST_ENG_9895,SEC_HWH_DLI_03,Engineering,Broken Rail Weld,0.56,5,88,90,0,96,0,0,Medium,7,16,0
+AST_TRA_3728,SEC_DDU_YARD_01,Traction,OHE Dropper Broken,0.95,3,84,85,8,114,0,0,Medium,11,11,1
+AST_TRA_7269,SEC_HWH_DLI_01,Traction,Neutral Section Inspection,0.62,1,88,79,1,65,0,0,High,37,78,0
+AST_S&T_7257,SEC_BSB_LKO_04,S&T,Axle Counter Error,0.93,15,68,66,1,83,1,0,Medium,28,9,1
+AST_TRA_5920,SEC_HWH_DLI_01,Traction,Neutral Section Inspection,0.5,25,55,63,1,26,0,1,High,30,32,0
+AST_TRA_3321,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.86,20,35,23,12,186,0,0,Medium,28,16,0
+AST_ENG_8950,SEC_DDU_YARD_03,Engineering,Ballast Deep Screening,0.61,23,52,58,6,163,0,0,High,12,80,0
+AST_TRA_5272,SEC_BSB_LKO_01,Traction,Neutral Section Inspection,0.65,3,87,95,2,61,1,0,Medium,28,23,0
+AST_ENG_3511,SEC_HWH_DLI_02,Engineering,Track Gauge Spread,0.69,8,89,77,6,89,0,0,Low,18,8,0
+AST_ENG_6555,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.76,26,22,10,15,149,3,1,Medium,12,3,1
+AST_ENG_7447,SEC_HWH_DLI_03,Engineering,Broken Rail Weld,0.77,20,51,56,9,49,2,0,Medium,10,14,0
+AST_ENG_6365,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.79,19,90,100,1,93,1,0,High,20,29,0
+AST_ENG_4364,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.56,3,99,83,1,81,2,0,Medium,10,13,0
+AST_TRA_2936,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.56,19,75,83,3,130,2,0,Medium,12,20,0
+AST_ENG_3567,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.64,28,57,52,3,17,1,0,High,30,64,1
+AST_S&T_6413,SEC_HWH_DLI_03,S&T,Signal Aspect Lamp Fail,0.52,12,81,76,1,47,0,0,High,79,71,0
+AST_ENG_9119,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.87,20,44,39,9,119,3,0,Medium,12,24,1
+AST_ENG_7401,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.63,1,100,100,2,155,0,0,Low,16,22,0
+AST_TRA_4257,SEC_BSB_LKO_02,Traction,Contact Wire Sag,0.78,1,79,86,4,156,1,0,Medium,20,2,1
+AST_ENG_5152,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.77,26,47,37,3,99,1,0,High,37,16,1
+AST_ENG_7159,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.52,28,43,33,8,83,1,0,High,16,54,1
+AST_ENG_2876,SEC_BSB_LKO_04,Engineering,Ballast Deep Screening,0.68,4,87,87,1,94,0,0,High,49,37,0
+AST_ENG_5711,SEC_BSB_LKO_04,Engineering,Ballast Deep Screening,0.78,21,40,41,1,191,1,1,Medium,17,17,0
+AST_ENG_2204,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.66,24,47,34,4,191,1,1,High,34,50,1
+AST_TRA_8082,SEC_BSB_LKO_02,Traction,OHE Dropper Broken,0.96,25,54,65,1,178,0,0,Medium,20,13,1
+AST_ENG_3911,SEC_HWH_DLI_03,Engineering,Broken Rail Weld,0.67,16,48,56,15,176,0,0,High,13,63,1
+AST_TRA_5567,SEC_BSB_LKO_02,Traction,Contact Wire Sag,0.56,15,72,74,2,107,1,0,Medium,17,16,0
+AST_S&T_4491,SEC_DDU_YARD_04,S&T,Axle Counter Error,0.87,17,73,82,0,58,0,0,High,53,45,0
+AST_ENG_7811,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.65,21,77,76,1,167,0,0,Medium,24,21,0
+AST_ENG_1579,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.68,2,92,94,2,131,0,0,High,60,35,1
+AST_TRA_8892,SEC_HWH_DLI_01,Traction,Contact Wire Sag,0.54,17,59,50,7,198,1,0,Medium,17,15,0
+AST_TRA_4875,SEC_BSB_LKO_01,Traction,Contact Wire Sag,0.73,10,79,79,3,30,1,1,Medium,29,6,1
+AST_TRA_6724,SEC_DDU_YARD_01,Traction,Cantilever Insulator Flashover,0.9,1,33,27,33,49,0,0,Medium,27,21,1
+AST_ENG_9118,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.85,6,95,96,2,90,0,1,Medium,14,11,0
+AST_TRA_1574,SEC_BSB_LKO_02,Traction,Contact Wire Sag,0.84,19,79,97,6,45,0,0,Low,16,5,0
+AST_ENG_5109,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.64,10,23,33,23,97,1,1,Medium,28,4,1
+AST_ENG_4392,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.59,13,76,93,3,155,1,0,Medium,21,19,0
+AST_TRA_6027,SEC_BSB_LKO_02,Traction,Cantilever Insulator Flashover,0.55,6,100,100,1,188,1,0,High,73,39,0
+AST_ENG_5911,SEC_HWH_DLI_02,Engineering,Track Gauge Spread,0.86,6,88,89,0,144,0,0,Medium,22,11,0
+AST_S&T_7606,SEC_BSB_LKO_02,S&T,Axle Counter Error,0.78,26,43,51,7,128,0,0,High,60,48,0
+AST_ENG_9177,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.65,3,89,80,0,16,0,0,Low,28,18,0
+AST_TRA_4557,SEC_DDU_YARD_02,Traction,Neutral Section Inspection,0.98,27,37,32,2,185,1,1,High,22,41,1
+AST_ENG_2872,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.84,25,42,37,7,31,2,0,High,48,27,1
+AST_TRA_6065,SEC_HWH_DLI_04,Traction,Neutral Section Inspection,0.58,8,85,71,2,135,1,0,Medium,12,12,0
+AST_ENG_7559,SEC_DDU_YARD_01,Engineering,Track Gauge Spread,0.82,2,84,83,1,154,0,0,Medium,18,7,0
+AST_S&T_4406,SEC_DDU_YARD_01,S&T,Point Machine Detection Fault,0.82,29,42,49,3,123,1,0,Low,23,11,1
+AST_ENG_9278,SEC_BSB_LKO_02,Engineering,Point Machine Mechanical Fault,0.58,22,89,77,4,150,0,0,Medium,25,8,0
+AST_TRA_7636,SEC_DDU_YARD_02,Traction,Contact Wire Sag,0.52,7,82,70,0,62,1,0,High,63,65,0
+AST_ENG_7240,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.99,11,76,84,6,108,0,0,High,52,81,1
+AST_ENG_4007,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.9,9,90,89,2,19,0,0,High,79,63,0
+AST_TRA_4052,SEC_HWH_DLI_01,Traction,Cantilever Insulator Flashover,0.84,12,94,84,0,153,0,0,High,22,69,0
+AST_S&T_9186,SEC_HWH_DLI_02,S&T,Signal Aspect Lamp Fail,0.57,25,45,32,10,73,1,0,Low,28,21,1
+AST_TRA_1604,SEC_DDU_YARD_01,Traction,Cantilever Insulator Flashover,0.77,15,75,82,5,45,0,0,Low,27,10,0
+AST_ENG_5468,SEC_HWH_DLI_02,Engineering,Point Machine Mechanical Fault,0.66,9,68,64,1,81,1,0,Medium,18,3,0
+AST_S&T_7985,SEC_HWH_DLI_03,S&T,Track Circuit Short,0.75,25,65,75,0,79,1,0,High,31,51,0
+AST_S&T_7906,SEC_BSB_LKO_01,S&T,Point Machine Detection Fault,0.97,20,46,40,15,64,0,0,Medium,17,2,1
+AST_S&T_2507,SEC_DDU_YARD_04,S&T,Point Machine Detection Fault,0.95,16,66,63,7,24,1,0,Medium,15,6,0
+AST_S&T_9488,SEC_BSB_LKO_02,S&T,Axle Counter Error,0.67,23,32,29,8,58,1,2,High,45,46,1
+AST_ENG_6231,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.9,4,92,84,0,74,0,0,Medium,17,21,0
+AST_TRA_8633,SEC_BSB_LKO_04,Traction,Neutral Section Inspection,0.67,9,75,69,2,53,0,0,Low,25,18,0
+AST_TRA_1100,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.59,16,55,61,5,11,0,0,High,25,18,0
+AST_ENG_9697,SEC_DDU_YARD_04,Engineering,Ballast Deep Screening,0.96,10,52,70,14,155,0,1,High,24,20,1
+AST_ENG_6560,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.55,7,76,89,1,71,0,0,Medium,24,17,0
+AST_ENG_4936,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.97,5,98,100,0,78,2,0,Low,16,4,0
+AST_ENG_5675,SEC_DDU_YARD_02,Engineering,Broken Rail Weld,0.7,13,71,78,11,56,1,0,Medium,16,11,0
+AST_ENG_2790,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.68,23,64,61,1,161,0,0,Medium,14,13,0
+AST_TRA_8129,SEC_BSB_LKO_02,Traction,Contact Wire Sag,0.58,4,86,80,0,134,0,0,Low,13,20,0
+AST_S&T_7862,SEC_DDU_YARD_03,S&T,Track Circuit Short,0.51,19,72,69,0,199,0,0,High,69,55,1
+AST_S&T_4935,SEC_HWH_DLI_03,S&T,Track Circuit Short,0.6,5,89,83,2,142,0,0,Medium,27,2,0
+AST_ENG_4215,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.84,1,100,95,3,122,2,0,High,26,76,0
+AST_S&T_5869,SEC_HWH_DLI_02,S&T,Axle Counter Error,0.74,12,63,63,4,113,0,0,Medium,25,24,1
+AST_ENG_9417,SEC_DDU_YARD_01,Engineering,Track Gauge Spread,0.85,2,93,92,0,196,0,0,Medium,7,19,0
+AST_ENG_7794,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.64,4,90,100,7,21,0,0,Medium,20,4,0
+AST_S&T_2013,SEC_BSB_LKO_03,S&T,Axle Counter Error,0.52,10,53,50,12,169,0,0,Low,10,20,1
+AST_S&T_2460,SEC_DDU_YARD_01,S&T,Axle Counter Error,0.81,26,29,31,11,74,2,1,High,49,17,1
+AST_TRA_3262,SEC_HWH_DLI_02,Traction,Neutral Section Inspection,0.92,9,61,50,14,168,0,0,Low,15,24,1
+AST_TRA_8169,SEC_BSB_LKO_03,Traction,Contact Wire Sag,0.83,21,73,77,2,157,1,0,Medium,29,4,0
+AST_ENG_8727,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.58,19,66,77,5,112,0,0,High,62,45,1
+AST_TRA_3263,SEC_HWH_DLI_04,Traction,OHE Dropper Broken,0.77,28,33,24,8,48,3,0,Low,27,19,1
+AST_ENG_8492,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.62,9,67,76,7,13,0,0,Medium,22,24,0
+AST_TRA_8956,SEC_DDU_YARD_01,Traction,OHE Dropper Broken,0.96,25,63,45,2,167,1,0,Medium,18,2,0
+AST_ENG_8799,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.74,20,64,61,4,198,0,0,Low,20,4,0
+AST_TRA_9106,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.68,17,54,53,1,162,0,0,Low,7,21,0
+AST_ENG_2221,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.95,15,73,76,0,191,0,0,Medium,14,18,0
+AST_ENG_6822,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.98,25,60,66,1,73,0,0,Medium,25,4,0
+AST_S&T_6085,SEC_HWH_DLI_03,S&T,Track Circuit Short,0.65,12,63,67,4,38,0,0,Low,19,21,0
+AST_S&T_5938,SEC_DDU_YARD_03,S&T,Signal Aspect Lamp Fail,0.73,2,99,100,0,192,0,0,Medium,13,4,0
+AST_TRA_8095,SEC_HWH_DLI_01,Traction,Contact Wire Sag,0.59,7,86,100,1,125,0,0,Medium,8,15,0
+AST_ENG_8111,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.81,17,87,97,9,76,1,0,High,38,21,1
+AST_ENG_6463,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.57,18,72,71,0,177,1,0,Medium,16,13,0
+AST_ENG_8637,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.63,20,33,23,14,33,3,1,Medium,12,8,1
+AST_ENG_4078,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.85,28,37,35,8,62,0,2,Medium,9,4,1
+AST_ENG_7523,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.82,3,80,85,2,43,0,0,High,50,62,0
+AST_ENG_4110,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.59,16,71,63,1,156,0,0,High,42,24,0
+AST_TRA_6578,SEC_DDU_YARD_01,Traction,OHE Dropper Broken,0.94,12,41,36,19,132,2,0,Medium,27,9,1
+AST_ENG_2259,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.77,13,80,87,4,42,0,0,Low,12,11,0
+AST_ENG_2222,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.85,22,43,49,10,192,2,0,Low,7,18,1
+AST_TRA_9539,SEC_DDU_YARD_03,Traction,OHE Dropper Broken,0.68,15,65,47,8,61,1,0,Low,17,22,1
+AST_ENG_5210,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.75,1,82,65,0,122,0,0,High,58,63,0
+AST_ENG_1823,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.58,24,52,57,7,44,0,0,High,77,66,1
+AST_ENG_4641,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.85,27,56,67,0,99,0,0,High,64,50,0
+AST_S&T_4994,SEC_BSB_LKO_02,S&T,Axle Counter Error,0.81,8,86,93,3,32,2,0,High,40,68,0
+AST_TRA_9290,SEC_BSB_LKO_03,Traction,OHE Dropper Broken,0.94,7,97,100,4,46,1,0,High,42,56,0
+AST_TRA_8574,SEC_HWH_DLI_04,Traction,Contact Wire Sag,0.95,29,44,46,5,29,3,0,Medium,8,13,1
+AST_ENG_5009,SEC_DDU_YARD_01,Engineering,Ballast Deep Screening,0.93,25,43,49,6,180,0,0,Medium,29,6,0
+AST_TRA_3803,SEC_DDU_YARD_02,Traction,Neutral Section Inspection,0.85,11,73,72,1,79,0,0,Low,20,23,0
+AST_ENG_3738,SEC_BSB_LKO_04,Engineering,Ballast Deep Screening,0.6,5,86,90,3,40,0,0,Low,21,23,0
+AST_S&T_9101,SEC_HWH_DLI_02,S&T,Signal Aspect Lamp Fail,0.84,17,75,76,1,147,0,0,High,68,76,0
+AST_TRA_9458,SEC_DDU_YARD_02,Traction,Contact Wire Sag,0.82,27,66,71,3,154,0,0,Low,23,4,0
+AST_TRA_5879,SEC_HWH_DLI_02,Traction,Contact Wire Sag,0.74,18,63,65,3,122,0,0,Medium,5,18,0
+AST_ENG_9728,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.57,10,68,67,7,21,0,0,Medium,17,24,0
+AST_S&T_6409,SEC_BSB_LKO_01,S&T,Point Machine Detection Fault,0.89,29,59,64,1,24,0,0,Medium,6,17,0
+AST_S&T_6755,SEC_DDU_YARD_04,S&T,Track Circuit Short,0.91,6,83,87,2,70,0,1,Medium,15,8,0
+AST_TRA_4896,SEC_BSB_LKO_01,Traction,Cantilever Insulator Flashover,0.97,28,40,46,3,19,1,0,Medium,24,4,0
+AST_TRA_1604,SEC_BSB_LKO_01,Traction,Contact Wire Sag,0.64,26,49,44,1,95,0,0,Medium,17,23,0
+AST_ENG_7611,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.72,24,46,42,10,25,0,0,High,12,33,0
+AST_TRA_6781,SEC_DDU_YARD_02,Traction,Neutral Section Inspection,0.7,27,37,30,6,130,1,0,High,57,77,1
+AST_ENG_1400,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.72,21,72,67,4,130,0,0,High,52,37,1
+AST_TRA_5416,SEC_HWH_DLI_02,Traction,OHE Dropper Broken,0.55,22,41,55,5,60,1,0,High,74,74,0
+AST_ENG_4241,SEC_DDU_YARD_03,Engineering,Track Gauge Spread,0.86,7,89,82,2,155,1,0,Medium,13,11,0
+AST_TRA_2079,SEC_DDU_YARD_03,Traction,Contact Wire Sag,0.63,15,67,71,1,66,1,0,Medium,28,3,0
+AST_ENG_3653,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.57,11,86,81,4,157,1,0,High,29,15,1
+AST_ENG_9215,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.91,23,34,39,9,35,0,0,High,60,49,1
+AST_TRA_2308,SEC_HWH_DLI_02,Traction,Cantilever Insulator Flashover,0.77,20,50,60,8,51,1,0,Medium,28,11,1
+AST_TRA_1307,SEC_HWH_DLI_03,Traction,Contact Wire Sag,0.61,22,81,85,3,177,0,0,Medium,22,13,0
+AST_ENG_7382,SEC_BSB_LKO_03,Engineering,Track Gauge Spread,0.61,5,98,100,4,81,0,1,Medium,22,12,0
+AST_ENG_3691,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.85,13,91,92,0,134,1,0,High,66,83,0
+AST_TRA_6190,SEC_HWH_DLI_03,Traction,OHE Dropper Broken,0.59,12,80,89,2,18,0,0,Low,10,6,0
+AST_TRA_5109,SEC_DDU_YARD_02,Traction,OHE Dropper Broken,0.75,21,41,38,10,37,1,0,High,51,43,1
+AST_TRA_7912,SEC_BSB_LKO_02,Traction,Contact Wire Sag,0.74,1,83,70,4,96,2,0,High,63,79,1
+AST_TRA_1539,SEC_BSB_LKO_01,Traction,Contact Wire Sag,0.97,16,92,100,1,108,0,0,High,19,22,0
+AST_ENG_8709,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.53,11,58,57,7,141,0,1,High,43,57,0
+AST_TRA_1349,SEC_BSB_LKO_02,Traction,Cantilever Insulator Flashover,0.6,10,81,89,0,181,2,0,Medium,25,12,0
+AST_S&T_3889,SEC_BSB_LKO_02,S&T,Track Circuit Short,0.87,9,77,84,2,198,0,0,Medium,20,8,0
+AST_TRA_7620,SEC_HWH_DLI_02,Traction,OHE Dropper Broken,0.81,25,32,33,12,31,2,0,High,75,80,1
+AST_S&T_3846,SEC_DDU_YARD_01,S&T,Signal Aspect Lamp Fail,0.8,22,63,48,1,105,0,0,Low,5,10,1
+AST_TRA_8086,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.96,6,90,99,0,84,0,0,High,23,48,0
+AST_ENG_9444,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.6,28,57,63,4,95,0,0,High,71,35,1
+AST_ENG_4758,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.69,20,68,74,2,56,2,0,High,20,87,0
+AST_ENG_9297,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.55,28,57,51,0,86,0,0,Medium,26,14,0
+AST_S&T_8310,SEC_BSB_LKO_04,S&T,Track Circuit Short,0.78,17,59,52,10,56,0,0,Medium,12,21,1
+AST_S&T_6108,SEC_DDU_YARD_03,S&T,Point Machine Detection Fault,0.64,11,94,88,3,103,0,0,Medium,24,11,0
+AST_ENG_1939,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.71,25,62,55,2,159,0,1,High,14,69,1
+AST_S&T_6902,SEC_BSB_LKO_04,S&T,Axle Counter Error,0.67,3,96,100,0,114,0,0,High,74,71,0
+AST_S&T_5366,SEC_BSB_LKO_03,S&T,Signal Aspect Lamp Fail,0.76,5,81,87,0,82,1,0,Medium,25,17,0
+AST_ENG_6328,SEC_BSB_LKO_04,Engineering,Ballast Deep Screening,0.77,1,100,100,1,64,0,0,High,42,38,0
+AST_TRA_5243,SEC_BSB_LKO_04,Traction,Cantilever Insulator Flashover,0.81,13,71,76,2,72,0,0,Medium,13,19,0
+AST_ENG_2232,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.74,8,68,52,8,18,0,0,High,23,15,0
+AST_ENG_3990,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.83,14,49,44,5,81,1,0,Medium,27,5,0
+AST_ENG_9515,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.78,1,82,91,4,169,0,0,Medium,23,14,0
+AST_TRA_8464,SEC_DDU_YARD_02,Traction,Contact Wire Sag,0.99,9,54,57,12,181,0,0,High,56,52,1
+AST_S&T_1973,SEC_HWH_DLI_01,S&T,Point Machine Detection Fault,0.97,10,81,65,1,114,0,0,Medium,9,24,1
+AST_TRA_7475,SEC_BSB_LKO_04,Traction,OHE Dropper Broken,0.89,9,79,81,0,118,0,0,High,67,47,1
+AST_ENG_3922,SEC_BSB_LKO_02,Engineering,Track Gauge Spread,0.87,18,57,60,3,41,0,1,High,18,27,0
+AST_TRA_4873,SEC_BSB_LKO_04,Traction,OHE Dropper Broken,0.96,3,87,94,4,106,0,0,Medium,25,23,0
+AST_TRA_5477,SEC_DDU_YARD_03,Traction,Contact Wire Sag,0.73,20,65,66,1,101,0,0,Medium,25,7,0
+AST_ENG_9978,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.9,26,63,62,0,129,0,0,Medium,8,13,1
+AST_ENG_6086,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.73,2,100,100,2,108,0,0,High,12,82,0
+AST_TRA_6769,SEC_HWH_DLI_02,Traction,Neutral Section Inspection,0.54,17,42,36,13,40,4,0,High,36,89,1
+AST_ENG_4118,SEC_DDU_YARD_03,Engineering,Ballast Deep Screening,0.96,14,79,79,2,101,2,1,Low,11,11,0
+AST_ENG_3933,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.93,26,47,44,7,33,1,0,High,35,79,0
+AST_S&T_5490,SEC_DDU_YARD_03,S&T,Track Circuit Short,0.66,17,58,55,0,79,1,0,High,46,61,1
+AST_ENG_5537,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.97,2,88,100,0,150,1,0,Low,5,6,0
+AST_TRA_1432,SEC_HWH_DLI_04,Traction,OHE Dropper Broken,0.96,1,95,99,2,34,0,0,High,28,74,0
+AST_S&T_4216,SEC_HWH_DLI_04,S&T,Track Circuit Short,0.71,4,84,85,2,187,1,0,Low,18,11,0
+AST_ENG_9983,SEC_BSB_LKO_04,Engineering,Ballast Deep Screening,0.98,22,55,48,4,154,0,0,Medium,23,23,1
+AST_TRA_7957,SEC_DDU_YARD_04,Traction,Contact Wire Sag,0.78,9,97,97,1,128,0,0,Medium,13,7,0
+AST_TRA_8714,SEC_DDU_YARD_03,Traction,Contact Wire Sag,0.74,16,38,33,20,90,1,2,Medium,9,3,1
+AST_ENG_7604,SEC_DDU_YARD_01,Engineering,Broken Rail Weld,0.75,16,65,76,11,180,0,0,Medium,28,4,0
+AST_ENG_4026,SEC_DDU_YARD_01,Engineering,Ballast Deep Screening,0.71,8,76,85,7,40,0,1,Medium,20,15,0
+AST_ENG_6968,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.94,6,90,78,5,21,0,0,Medium,8,5,0
+AST_ENG_3982,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.71,23,42,43,2,61,1,0,Low,14,9,0
+AST_ENG_2074,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.77,15,88,77,0,193,1,0,Medium,16,2,0
+AST_ENG_5284,SEC_DDU_YARD_01,Engineering,Broken Rail Weld,0.95,26,64,56,0,159,1,0,Low,9,12,1
+AST_S&T_7437,SEC_BSB_LKO_03,S&T,Axle Counter Error,0.8,9,85,86,0,183,0,0,High,23,58,0
+AST_ENG_5150,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.91,7,85,93,2,55,1,0,Medium,17,4,1
+AST_ENG_5562,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.74,13,75,74,5,76,3,0,Medium,28,22,1
+AST_S&T_5019,SEC_HWH_DLI_04,S&T,Point Machine Detection Fault,0.75,5,94,85,0,35,1,0,Medium,12,21,0
+AST_ENG_6206,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.74,20,71,76,3,124,1,1,High,33,87,0
+AST_ENG_6778,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.91,22,65,71,3,176,0,0,High,34,16,0
+AST_ENG_2756,SEC_DDU_YARD_02,Engineering,Broken Rail Weld,0.52,28,57,61,1,96,1,0,Medium,9,14,0
+AST_TRA_2663,SEC_HWH_DLI_02,Traction,Neutral Section Inspection,0.9,24,49,59,0,40,3,0,Low,23,21,0
+AST_ENG_7618,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.96,11,69,78,12,158,1,0,Medium,17,9,1
+AST_S&T_5299,SEC_BSB_LKO_01,S&T,Track Circuit Short,0.59,23,66,67,0,145,0,1,Medium,22,19,0
+AST_S&T_7142,SEC_DDU_YARD_01,S&T,Axle Counter Error,0.81,6,59,65,8,121,1,0,Medium,20,13,0
+AST_S&T_7839,SEC_HWH_DLI_04,S&T,Track Circuit Short,0.78,9,87,78,6,193,1,0,High,54,31,0
+AST_S&T_4094,SEC_BSB_LKO_03,S&T,Track Circuit Short,0.95,18,45,40,4,107,1,0,Medium,26,5,1
+AST_TRA_5218,SEC_HWH_DLI_04,Traction,Neutral Section Inspection,0.54,13,59,63,8,126,0,0,Medium,11,24,0
+AST_TRA_7034,SEC_DDU_YARD_01,Traction,OHE Dropper Broken,0.81,2,93,89,9,41,0,0,Medium,28,5,0
+AST_TRA_4148,SEC_HWH_DLI_01,Traction,OHE Dropper Broken,0.63,8,85,89,13,102,0,0,Low,10,9,0
+AST_ENG_5354,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.79,15,89,87,0,173,0,0,Low,18,24,0
+AST_ENG_5782,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.5,19,68,62,0,69,0,0,Low,27,7,0
+AST_ENG_2329,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.7,1,100,100,0,49,0,0,High,60,74,0
+AST_ENG_6977,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.67,6,100,100,4,81,0,0,Low,28,20,0
+AST_TRA_2212,SEC_BSB_LKO_04,Traction,OHE Dropper Broken,0.65,1,100,98,0,47,0,0,Medium,22,7,0
+AST_ENG_2292,SEC_HWH_DLI_04,Engineering,Point Machine Mechanical Fault,0.69,28,38,40,10,159,1,1,High,74,43,1
+AST_ENG_6220,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.89,3,93,97,2,34,0,0,Medium,27,20,0
+AST_TRA_7034,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.63,1,100,100,2,37,1,0,Medium,20,6,0
+AST_ENG_2892,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.99,28,38,30,9,65,1,1,Low,22,18,1
+AST_TRA_3018,SEC_HWH_DLI_01,Traction,Cantilever Insulator Flashover,0.92,3,73,63,1,185,0,0,Medium,10,22,0
+AST_ENG_6520,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.73,9,71,70,4,139,1,0,High,27,21,0
+AST_ENG_4131,SEC_DDU_YARD_01,Engineering,Track Gauge Spread,0.64,11,64,75,0,114,1,0,Low,28,13,0
+AST_ENG_8025,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.67,9,100,100,0,123,0,0,Medium,10,7,0
+AST_ENG_5578,SEC_DDU_YARD_04,Engineering,Point Machine Mechanical Fault,0.55,22,60,58,6,110,0,0,Medium,27,4,0
+AST_ENG_2995,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.63,20,76,70,2,86,0,0,Medium,20,24,0
+AST_ENG_4109,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.86,15,69,71,0,102,0,0,High,41,34,0
+AST_ENG_2690,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.81,8,93,98,0,118,1,0,Low,17,7,0
+AST_ENG_5008,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.58,17,58,66,11,11,1,0,Low,7,7,0
+AST_TRA_1477,SEC_HWH_DLI_03,Traction,Neutral Section Inspection,0.62,7,87,88,4,46,1,0,High,52,21,1
+AST_S&T_3409,SEC_DDU_YARD_01,S&T,Track Circuit Short,0.63,22,71,62,1,17,0,0,Medium,7,23,0
+AST_ENG_1660,SEC_HWH_DLI_02,Engineering,Track Gauge Spread,0.63,2,90,93,4,188,0,1,High,20,31,0
+AST_TRA_1815,SEC_BSB_LKO_04,Traction,Neutral Section Inspection,0.9,2,100,93,5,172,0,0,Medium,10,23,0
+AST_S&T_2666,SEC_HWH_DLI_03,S&T,Axle Counter Error,0.66,10,76,64,2,110,0,0,High,20,77,0
+AST_TRA_3970,SEC_HWH_DLI_02,Traction,Neutral Section Inspection,0.98,17,71,67,3,56,0,0,High,34,71,0
+AST_TRA_6957,SEC_DDU_YARD_04,Traction,OHE Dropper Broken,0.59,5,100,100,3,189,0,0,High,65,80,0
+AST_ENG_5857,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.62,11,88,96,2,96,0,0,High,19,29,0
+AST_S&T_5027,SEC_BSB_LKO_01,S&T,Signal Aspect Lamp Fail,0.6,4,86,65,11,128,1,0,High,15,40,0
+AST_S&T_2660,SEC_DDU_YARD_02,S&T,Point Machine Detection Fault,0.87,1,100,100,1,98,0,0,Medium,23,5,0
+AST_TRA_3575,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.89,10,59,53,5,176,0,0,Medium,20,19,0
+AST_TRA_5419,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.64,13,100,100,1,14,0,0,Low,8,10,0
+AST_ENG_2660,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.84,19,89,92,0,132,1,0,Medium,8,9,0
+AST_ENG_5677,SEC_BSB_LKO_04,Engineering,Ballast Deep Screening,0.7,16,53,26,4,122,0,0,Medium,27,20,1
+AST_S&T_8953,SEC_BSB_LKO_04,S&T,Track Circuit Short,0.6,19,55,62,1,17,0,0,Low,19,24,0
+AST_ENG_2291,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.57,7,75,65,1,40,1,0,Medium,21,23,0
+AST_TRA_4850,SEC_HWH_DLI_04,Traction,OHE Dropper Broken,0.83,27,53,57,2,99,0,0,Low,6,8,1
+AST_ENG_9592,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.68,26,41,32,4,51,2,0,Medium,7,11,0
+AST_TRA_9910,SEC_HWH_DLI_02,Traction,Contact Wire Sag,0.65,7,66,67,7,41,0,1,Low,7,18,1
+AST_TRA_6828,SEC_HWH_DLI_02,Traction,Cantilever Insulator Flashover,0.68,5,95,92,4,177,0,0,Medium,25,13,1
+AST_S&T_3507,SEC_DDU_YARD_02,S&T,Signal Aspect Lamp Fail,0.68,16,48,47,8,102,2,0,Medium,5,3,1
+AST_S&T_8910,SEC_BSB_LKO_03,S&T,Point Machine Detection Fault,0.9,19,50,49,9,22,1,0,High,78,51,0
+AST_S&T_9065,SEC_HWH_DLI_04,S&T,Signal Aspect Lamp Fail,0.6,13,75,66,7,56,0,0,High,28,45,0
+AST_TRA_4897,SEC_BSB_LKO_02,Traction,Contact Wire Sag,0.8,26,27,25,13,67,2,1,Medium,25,20,1
+AST_TRA_1039,SEC_BSB_LKO_04,Traction,OHE Dropper Broken,0.73,6,88,79,2,198,0,1,Medium,29,12,0
+AST_ENG_5825,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.97,16,59,54,8,117,0,1,Medium,21,13,0
+AST_ENG_2477,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.76,25,42,37,8,143,5,0,Medium,29,16,1
+AST_ENG_3274,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.58,19,70,62,3,149,1,0,High,34,65,0
+AST_TRA_2618,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.85,9,67,75,0,161,1,0,High,23,43,1
+AST_ENG_7635,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.69,1,91,96,2,116,1,0,Medium,19,7,0
+AST_ENG_1588,SEC_DDU_YARD_03,Engineering,Ballast Deep Screening,0.65,1,98,84,0,37,0,0,Low,24,16,0
+AST_TRA_8211,SEC_DDU_YARD_01,Traction,OHE Dropper Broken,0.84,14,28,21,20,91,1,1,High,65,29,1
+AST_ENG_8644,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.97,8,81,68,1,164,0,1,Low,20,13,1
+AST_S&T_6397,SEC_DDU_YARD_02,S&T,Signal Aspect Lamp Fail,0.82,21,66,46,0,18,0,0,Low,9,8,0
+AST_ENG_3419,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.89,17,55,56,3,12,0,0,Medium,14,23,1
+AST_TRA_6691,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.95,29,31,39,12,80,1,0,High,29,29,0
+AST_ENG_8636,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.82,7,83,79,3,13,0,0,High,24,49,0
+AST_TRA_5526,SEC_DDU_YARD_02,Traction,OHE Dropper Broken,0.59,14,69,68,10,161,1,0,Medium,8,7,0
+AST_S&T_6340,SEC_DDU_YARD_04,S&T,Signal Aspect Lamp Fail,0.55,15,39,37,16,24,2,2,Low,13,22,1
+AST_TRA_4956,SEC_HWH_DLI_03,Traction,Contact Wire Sag,0.95,5,77,75,1,11,0,1,Medium,16,6,0
+AST_ENG_8496,SEC_BSB_LKO_03,Engineering,Track Gauge Spread,0.55,17,62,58,8,114,0,0,High,12,18,0
+AST_TRA_1330,SEC_DDU_YARD_03,Traction,OHE Dropper Broken,0.76,9,99,98,2,39,0,0,Medium,19,10,0
+AST_ENG_5916,SEC_HWH_DLI_03,Engineering,Broken Rail Weld,0.71,2,100,100,0,61,1,0,Medium,12,20,0
+AST_ENG_6247,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.98,3,77,88,8,152,1,0,Medium,8,14,0
+AST_ENG_2734,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.79,26,55,44,1,117,0,0,Medium,8,21,1
+AST_ENG_2058,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.98,19,100,99,0,19,0,0,Medium,22,15,0
+AST_ENG_2334,SEC_BSB_LKO_04,Engineering,Ballast Deep Screening,0.6,7,100,99,0,90,0,0,Low,17,12,0
+AST_TRA_3514,SEC_BSB_LKO_02,Traction,Cantilever Insulator Flashover,0.65,22,70,89,1,179,0,0,Low,14,23,0
+AST_S&T_1979,SEC_HWH_DLI_04,S&T,Point Machine Detection Fault,0.7,17,43,50,13,194,5,0,Medium,6,17,1
+AST_S&T_1043,SEC_HWH_DLI_03,S&T,Point Machine Detection Fault,0.84,5,75,82,11,139,0,0,High,21,65,0
+AST_ENG_4259,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.71,27,44,30,6,81,1,0,Low,17,22,1
+AST_ENG_9651,SEC_BSB_LKO_02,Engineering,Track Gauge Spread,0.75,20,63,62,7,92,0,0,Medium,18,23,0
+AST_ENG_6423,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.86,21,44,37,8,159,0,0,Medium,13,18,0
+AST_S&T_5799,SEC_HWH_DLI_02,S&T,Signal Aspect Lamp Fail,0.96,21,61,56,2,23,0,0,High,35,67,0
+AST_TRA_2652,SEC_HWH_DLI_03,Traction,Neutral Section Inspection,0.56,21,71,70,0,169,0,0,Medium,20,3,0
+AST_ENG_8399,SEC_BSB_LKO_03,Engineering,Track Gauge Spread,0.67,7,50,53,24,23,1,0,Medium,20,8,0
+AST_ENG_8979,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.54,15,55,62,2,33,1,0,High,41,59,0
+AST_S&T_5791,SEC_BSB_LKO_03,S&T,Track Circuit Short,0.85,18,45,40,14,126,2,0,Medium,29,3,1
+AST_TRA_7929,SEC_DDU_YARD_02,Traction,Contact Wire Sag,0.99,21,64,91,0,154,1,0,Medium,23,15,0
+AST_TRA_5839,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.88,28,50,63,0,12,0,0,Medium,17,13,0
+AST_ENG_5666,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.58,15,60,55,2,122,3,0,Low,10,13,0
+AST_ENG_9609,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.59,24,65,50,3,96,0,0,Low,8,21,0
+AST_TRA_9744,SEC_HWH_DLI_04,Traction,Cantilever Insulator Flashover,0.57,18,65,67,6,137,0,0,Medium,16,18,0
+AST_ENG_3072,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.91,6,74,81,6,149,0,0,Low,10,19,0
+AST_ENG_8904,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.65,15,42,36,16,96,2,1,Medium,20,24,1
+AST_TRA_6289,SEC_BSB_LKO_04,Traction,OHE Dropper Broken,0.78,18,62,66,2,132,0,0,Medium,21,22,0
+AST_ENG_7486,SEC_DDU_YARD_03,Engineering,Track Gauge Spread,0.56,29,33,27,4,42,1,2,High,20,45,1
+AST_TRA_8851,SEC_BSB_LKO_03,Traction,Cantilever Insulator Flashover,0.84,21,52,46,4,141,0,0,Medium,25,14,0
+AST_ENG_2614,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.62,17,55,64,2,29,0,0,High,26,71,0
+AST_S&T_2477,SEC_DDU_YARD_03,S&T,Axle Counter Error,0.55,1,100,90,4,156,1,0,Medium,29,3,0
+AST_ENG_1947,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.85,22,59,55,4,59,0,0,High,19,79,1
+AST_ENG_1171,SEC_BSB_LKO_02,Engineering,Track Gauge Spread,0.83,22,68,68,2,43,1,0,High,49,29,0
+AST_S&T_8741,SEC_HWH_DLI_03,S&T,Axle Counter Error,0.64,3,75,79,12,89,0,0,Medium,17,13,1
+AST_ENG_6594,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.75,11,91,85,3,185,0,0,High,22,59,0
+AST_TRA_1376,SEC_HWH_DLI_01,Traction,Cantilever Insulator Flashover,0.7,5,75,71,8,133,0,0,High,69,71,1
+AST_S&T_5215,SEC_BSB_LKO_02,S&T,Point Machine Detection Fault,0.76,3,90,81,0,161,0,0,Medium,17,24,0
+AST_S&T_5719,SEC_BSB_LKO_03,S&T,Signal Aspect Lamp Fail,0.66,16,84,74,4,64,2,0,High,74,52,0
+AST_ENG_1759,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.96,17,73,86,1,61,0,0,High,64,62,0
+AST_TRA_3809,SEC_DDU_YARD_02,Traction,Neutral Section Inspection,0.79,10,73,85,3,104,0,0,High,51,48,1
+AST_ENG_8849,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.6,25,60,58,5,155,1,0,Medium,14,18,0
+AST_ENG_4718,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.71,24,62,59,0,12,0,0,High,22,62,1
+AST_ENG_1665,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.83,2,89,99,3,189,1,0,High,71,66,1
+AST_TRA_4469,SEC_HWH_DLI_03,Traction,Cantilever Insulator Flashover,0.93,14,53,46,13,135,1,0,Medium,5,14,1
+AST_TRA_7994,SEC_HWH_DLI_02,Traction,Contact Wire Sag,0.62,22,68,61,0,42,0,0,Medium,15,13,0
+AST_ENG_9600,SEC_DDU_YARD_01,Engineering,Ballast Deep Screening,0.73,3,76,79,7,29,0,0,Medium,20,19,0
+AST_TRA_1158,SEC_DDU_YARD_04,Traction,Cantilever Insulator Flashover,0.74,14,89,90,1,69,0,0,Medium,19,20,0
+AST_ENG_3419,SEC_DDU_YARD_01,Engineering,Ballast Deep Screening,0.72,15,63,58,2,154,0,0,Medium,18,19,0
+AST_TRA_1845,SEC_HWH_DLI_03,Traction,Contact Wire Sag,0.85,9,37,43,18,173,0,0,High,71,62,0
+AST_TRA_8422,SEC_BSB_LKO_04,Traction,Cantilever Insulator Flashover,0.61,13,71,62,17,88,0,0,Low,7,17,1
+AST_ENG_3631,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.53,26,52,59,3,77,0,0,High,34,56,0
+AST_ENG_6127,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.82,27,57,76,1,14,0,0,High,79,21,1
+AST_S&T_4626,SEC_BSB_LKO_01,S&T,Signal Aspect Lamp Fail,0.76,25,50,54,2,79,0,0,Medium,29,10,0
+AST_ENG_2152,SEC_DDU_YARD_03,Engineering,Ballast Deep Screening,0.66,22,45,38,9,136,2,0,Medium,26,9,0
+AST_ENG_6783,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.52,28,65,66,3,169,0,0,Medium,14,16,1
+AST_TRA_9075,SEC_DDU_YARD_02,Traction,Contact Wire Sag,0.84,14,62,73,12,80,2,0,Medium,25,6,0
+AST_ENG_3406,SEC_HWH_DLI_02,Engineering,Point Machine Mechanical Fault,0.5,27,54,45,3,179,0,0,Low,14,18,0
+AST_ENG_2878,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.75,25,56,53,6,22,0,0,Medium,17,8,0
+AST_TRA_7412,SEC_BSB_LKO_01,Traction,Contact Wire Sag,0.97,21,14,30,32,29,2,1,Medium,17,23,1
+AST_ENG_1815,SEC_HWH_DLI_02,Engineering,Track Gauge Spread,0.72,6,84,73,0,93,0,0,Medium,22,22,0
+AST_TRA_4285,SEC_HWH_DLI_04,Traction,Neutral Section Inspection,0.57,27,57,52,2,40,1,0,Medium,25,5,0
+AST_ENG_9712,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.85,13,36,37,11,31,1,0,Medium,15,17,1
+AST_ENG_2361,SEC_DDU_YARD_01,Engineering,Broken Rail Weld,0.55,15,63,65,5,120,0,0,Low,12,5,0
+AST_ENG_4291,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.82,5,100,94,4,91,2,1,Low,5,7,0
+AST_ENG_2744,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.81,11,68,74,1,199,0,0,High,73,67,0
+AST_ENG_3049,SEC_DDU_YARD_04,Engineering,Point Machine Mechanical Fault,0.98,25,43,37,6,42,2,0,Medium,23,5,1
+AST_ENG_9379,SEC_BSB_LKO_02,Engineering,Point Machine Mechanical Fault,0.55,23,74,72,2,28,0,1,Medium,6,6,0
+AST_ENG_5228,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.89,26,47,43,8,158,2,0,High,74,73,1
+AST_S&T_7208,SEC_BSB_LKO_02,S&T,Signal Aspect Lamp Fail,0.53,16,64,67,2,39,0,0,Medium,10,4,1
+AST_ENG_5122,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.7,22,46,61,7,15,2,0,Medium,14,12,1
+AST_ENG_3940,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.61,7,85,89,5,60,0,0,High,54,42,0
+AST_S&T_6476,SEC_BSB_LKO_01,S&T,Axle Counter Error,0.84,6,89,95,0,103,0,0,High,12,46,0
+AST_TRA_6095,SEC_BSB_LKO_01,Traction,Cantilever Insulator Flashover,0.58,5,87,84,5,76,2,0,High,26,54,0
+AST_ENG_9566,SEC_BSB_LKO_02,Engineering,Track Gauge Spread,0.88,17,35,19,21,106,0,0,Medium,25,16,0
+AST_ENG_2059,SEC_BSB_LKO_03,Engineering,Track Gauge Spread,0.63,9,94,79,4,102,0,0,Medium,26,22,0
+AST_ENG_6190,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.73,23,29,20,6,184,3,0,High,35,17,0
+AST_TRA_3816,SEC_DDU_YARD_03,Traction,Contact Wire Sag,0.9,1,100,100,1,164,0,0,Low,21,15,0
+AST_TRA_3696,SEC_HWH_DLI_02,Traction,Cantilever Insulator Flashover,0.82,8,84,83,0,60,0,0,High,23,43,0
+AST_TRA_2787,SEC_HWH_DLI_01,Traction,Neutral Section Inspection,0.9,25,53,44,4,84,1,0,High,27,57,1
+AST_ENG_6291,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.75,21,76,81,1,136,0,1,Low,7,13,0
+AST_S&T_5925,SEC_DDU_YARD_02,S&T,Signal Aspect Lamp Fail,0.99,16,74,84,5,152,1,0,High,29,53,1
+AST_TRA_7968,SEC_BSB_LKO_02,Traction,Contact Wire Sag,0.59,24,72,55,7,112,0,0,Low,9,13,1
+AST_ENG_5145,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.88,4,84,82,5,75,0,0,High,69,15,0
+AST_ENG_6965,SEC_BSB_LKO_04,Engineering,Ballast Deep Screening,0.88,24,70,85,0,144,0,1,Low,18,19,0
+AST_TRA_6190,SEC_HWH_DLI_01,Traction,Cantilever Insulator Flashover,0.79,3,98,87,3,102,1,0,Medium,24,20,0
+AST_TRA_8041,SEC_BSB_LKO_01,Traction,Neutral Section Inspection,0.7,7,85,86,6,109,0,0,Medium,26,17,0
+AST_S&T_1500,SEC_DDU_YARD_02,S&T,Point Machine Detection Fault,0.83,28,50,58,2,194,0,0,High,21,85,0
+AST_S&T_1455,SEC_BSB_LKO_02,S&T,Track Circuit Short,0.66,23,66,75,0,15,1,0,Medium,12,8,0
+AST_ENG_4154,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.78,22,73,66,4,167,0,0,Medium,9,17,1
+AST_TRA_9102,SEC_BSB_LKO_04,Traction,Cantilever Insulator Flashover,0.59,23,69,75,1,189,0,0,Medium,13,14,0
+AST_ENG_6707,SEC_BSB_LKO_03,Engineering,Track Gauge Spread,0.77,25,69,83,2,65,0,0,High,39,72,0
+AST_ENG_5090,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.94,16,76,83,1,194,0,0,Medium,19,2,0
+AST_S&T_1870,SEC_BSB_LKO_01,S&T,Point Machine Detection Fault,0.61,23,48,43,15,54,0,0,Medium,16,21,1
+AST_ENG_8235,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.63,28,59,59,3,188,0,0,Low,24,12,0
+AST_TRA_2331,SEC_DDU_YARD_01,Traction,OHE Dropper Broken,0.98,18,93,85,4,175,0,0,Medium,6,15,0
+AST_ENG_3062,SEC_DDU_YARD_03,Engineering,Ballast Deep Screening,0.53,5,51,45,9,40,0,0,Medium,11,23,0
+AST_S&T_2439,SEC_BSB_LKO_03,S&T,Point Machine Detection Fault,0.73,15,75,85,0,103,1,1,Low,29,19,0
+AST_ENG_1863,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.66,5,72,70,12,92,1,0,High,55,73,1
+AST_TRA_9759,SEC_HWH_DLI_02,Traction,Neutral Section Inspection,0.62,21,50,54,16,17,0,0,Low,20,10,1
+AST_TRA_3015,SEC_HWH_DLI_02,Traction,Contact Wire Sag,0.5,17,44,45,18,35,2,0,Low,21,13,1
+AST_ENG_9746,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.8,8,84,82,2,130,1,0,Medium,28,5,0
+AST_ENG_6025,SEC_HWH_DLI_02,Engineering,Point Machine Mechanical Fault,0.95,5,91,87,1,81,1,0,High,29,80,0
+AST_S&T_1309,SEC_HWH_DLI_01,S&T,Track Circuit Short,0.54,4,45,39,20,36,1,1,Medium,28,16,1
+AST_ENG_5369,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.53,17,53,42,5,117,2,0,High,58,37,0
+AST_S&T_4413,SEC_HWH_DLI_02,S&T,Track Circuit Short,0.67,23,50,45,3,90,0,0,Low,29,15,1
+AST_TRA_3324,SEC_HWH_DLI_02,Traction,Neutral Section Inspection,0.87,27,24,35,23,116,0,1,High,37,78,0
+AST_ENG_9035,SEC_HWH_DLI_03,Engineering,Broken Rail Weld,0.56,12,85,78,0,193,0,0,Medium,12,24,0
+AST_ENG_3586,SEC_DDU_YARD_04,Engineering,Point Machine Mechanical Fault,0.92,20,63,66,2,47,0,0,Medium,20,23,0
+AST_S&T_1559,SEC_BSB_LKO_03,S&T,Track Circuit Short,0.75,24,45,37,0,73,2,0,Medium,19,20,1
+AST_TRA_2829,SEC_DDU_YARD_03,Traction,Cantilever Insulator Flashover,0.86,19,51,53,2,127,0,0,High,45,78,1
+AST_ENG_9559,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.75,18,62,68,10,28,0,0,Medium,12,21,0
+AST_ENG_3631,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.89,7,85,57,6,58,0,0,Medium,17,24,0
+AST_TRA_5636,SEC_BSB_LKO_01,Traction,Neutral Section Inspection,0.54,23,68,65,1,17,0,0,High,59,79,0
+AST_TRA_7266,SEC_HWH_DLI_04,Traction,OHE Dropper Broken,0.72,28,43,52,4,74,0,0,Medium,16,12,1
+AST_ENG_8635,SEC_DDU_YARD_01,Engineering,Ballast Deep Screening,0.87,27,26,24,20,139,1,0,Medium,21,5,1
+AST_TRA_8493,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.54,12,59,52,3,199,1,0,High,36,42,0
+AST_TRA_4584,SEC_HWH_DLI_01,Traction,Cantilever Insulator Flashover,0.89,16,78,76,2,162,0,0,Medium,27,21,0
+AST_ENG_8434,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.66,12,83,87,2,154,0,0,High,20,38,0
+AST_ENG_9702,SEC_BSB_LKO_02,Engineering,Track Gauge Spread,0.82,12,47,45,18,116,2,0,Medium,25,18,1
+AST_ENG_4515,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.62,26,49,34,8,155,2,0,Low,19,19,0
+AST_TRA_7457,SEC_HWH_DLI_02,Traction,Contact Wire Sag,0.78,25,49,56,6,97,1,0,Medium,5,24,1
+AST_TRA_8704,SEC_DDU_YARD_04,Traction,OHE Dropper Broken,0.54,6,75,78,5,16,3,0,Medium,29,15,0
+AST_S&T_7752,SEC_DDU_YARD_04,S&T,Track Circuit Short,0.77,15,95,100,0,166,0,0,Low,7,11,0
+AST_S&T_3415,SEC_BSB_LKO_03,S&T,Track Circuit Short,0.56,21,51,54,1,126,0,0,Low,14,20,0
+AST_TRA_7367,SEC_HWH_DLI_04,Traction,Neutral Section Inspection,0.64,6,85,81,1,171,0,0,Medium,15,19,0
+AST_S&T_7764,SEC_BSB_LKO_04,S&T,Signal Aspect Lamp Fail,0.54,4,73,80,13,163,0,0,Medium,11,7,0
+AST_TRA_8933,SEC_DDU_YARD_01,Traction,OHE Dropper Broken,0.91,20,54,62,6,77,0,0,Medium,15,3,0
+AST_TRA_5899,SEC_HWH_DLI_03,Traction,Contact Wire Sag,0.67,16,34,43,13,65,1,0,Medium,13,16,0
+AST_TRA_5204,SEC_BSB_LKO_03,Traction,Contact Wire Sag,0.93,10,52,49,8,166,0,0,Medium,9,15,1
+AST_ENG_6378,SEC_HWH_DLI_02,Engineering,Point Machine Mechanical Fault,0.68,15,97,88,0,55,1,0,Medium,21,23,1
+AST_ENG_1434,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.62,23,48,56,1,51,0,0,Medium,7,16,0
+AST_TRA_5374,SEC_HWH_DLI_04,Traction,Cantilever Insulator Flashover,0.52,17,73,67,1,120,1,0,Medium,20,24,0
+AST_ENG_5942,SEC_DDU_YARD_01,Engineering,Broken Rail Weld,0.82,1,100,100,1,182,1,0,High,73,44,0
+AST_TRA_6413,SEC_DDU_YARD_03,Traction,Neutral Section Inspection,0.92,18,58,73,0,154,0,1,High,21,89,1
+AST_ENG_7457,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.7,21,40,36,10,119,2,0,Medium,18,3,1
+AST_TRA_4495,SEC_BSB_LKO_04,Traction,Cantilever Insulator Flashover,0.97,26,34,34,14,146,1,0,Medium,18,7,1
+AST_ENG_2655,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.82,12,78,87,0,80,1,0,Medium,16,18,0
+AST_ENG_4549,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.88,19,62,80,4,22,1,0,Low,8,9,1
+AST_ENG_6452,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.66,2,100,90,2,184,1,0,Medium,24,5,0
+AST_S&T_9455,SEC_BSB_LKO_04,S&T,Signal Aspect Lamp Fail,0.78,20,47,50,16,127,0,0,Medium,19,6,1
+AST_TRA_9296,SEC_DDU_YARD_04,Traction,Neutral Section Inspection,0.96,9,69,59,7,10,0,1,Low,13,13,0
+AST_S&T_2953,SEC_DDU_YARD_03,S&T,Track Circuit Short,0.68,10,47,56,9,189,0,0,Medium,18,11,0
+AST_TRA_5040,SEC_DDU_YARD_03,Traction,Neutral Section Inspection,0.82,10,77,79,1,82,0,0,Low,15,9,0
+AST_S&T_9102,SEC_DDU_YARD_04,S&T,Point Machine Detection Fault,0.97,6,80,93,3,95,0,0,High,69,74,1
+AST_S&T_1244,SEC_HWH_DLI_03,S&T,Axle Counter Error,0.9,12,76,79,0,13,0,0,Low,11,17,0
+AST_S&T_6858,SEC_BSB_LKO_02,S&T,Axle Counter Error,0.82,8,89,82,5,123,2,0,Low,19,16,0
+AST_TRA_4260,SEC_DDU_YARD_02,Traction,OHE Dropper Broken,0.99,10,58,47,5,49,0,1,Low,6,24,0
+AST_ENG_4722,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.57,17,77,72,1,115,1,0,Low,11,17,0
+AST_ENG_5297,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.77,29,54,39,1,94,1,0,High,54,63,0
+AST_TRA_6761,SEC_HWH_DLI_01,Traction,OHE Dropper Broken,0.79,25,53,57,3,24,0,0,High,51,60,0
+AST_TRA_5554,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.68,22,57,67,0,72,0,0,High,10,79,0
+AST_ENG_4696,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.82,21,41,29,9,175,2,0,Medium,9,23,0
+AST_TRA_8111,SEC_HWH_DLI_01,Traction,Contact Wire Sag,0.85,10,82,76,3,111,0,0,Low,10,22,0
+AST_ENG_3852,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.63,14,65,60,7,143,0,0,High,10,83,1
+AST_S&T_4889,SEC_HWH_DLI_03,S&T,Signal Aspect Lamp Fail,0.83,15,53,53,0,142,0,0,Medium,9,18,0
+AST_TRA_9865,SEC_HWH_DLI_02,Traction,Contact Wire Sag,0.73,12,73,73,0,155,1,0,Low,20,18,0
+AST_TRA_7764,SEC_HWH_DLI_01,Traction,OHE Dropper Broken,0.77,6,57,50,16,189,0,0,Medium,23,20,0
+AST_ENG_9380,SEC_DDU_YARD_02,Engineering,Broken Rail Weld,0.59,2,93,80,8,42,0,0,Low,11,20,0
+AST_TRA_6747,SEC_BSB_LKO_04,Traction,Contact Wire Sag,0.74,4,64,57,2,110,0,0,Medium,12,19,0
+AST_TRA_2787,SEC_HWH_DLI_03,Traction,Cantilever Insulator Flashover,0.8,14,72,69,3,157,0,0,Medium,10,4,0
+AST_S&T_3471,SEC_BSB_LKO_03,S&T,Signal Aspect Lamp Fail,0.88,29,69,78,1,96,0,0,Medium,22,4,0
+AST_S&T_4005,SEC_DDU_YARD_04,S&T,Signal Aspect Lamp Fail,0.88,25,72,69,1,27,0,0,High,71,46,1
+AST_TRA_5425,SEC_DDU_YARD_04,Traction,Contact Wire Sag,0.57,17,54,44,14,105,0,0,High,45,42,0
+AST_ENG_3836,SEC_DDU_YARD_01,Engineering,Track Gauge Spread,0.93,29,58,60,2,40,0,0,Medium,9,20,0
+AST_S&T_6855,SEC_DDU_YARD_01,S&T,Point Machine Detection Fault,0.87,19,65,52,5,66,0,0,Medium,15,16,1
+AST_S&T_3200,SEC_BSB_LKO_03,S&T,Axle Counter Error,0.55,26,56,57,5,19,0,0,Low,8,21,1
+AST_TRA_4907,SEC_BSB_LKO_02,Traction,OHE Dropper Broken,0.57,25,61,76,0,74,0,0,High,31,28,0
+AST_ENG_7106,SEC_DDU_YARD_04,Engineering,Point Machine Mechanical Fault,0.97,10,77,80,5,171,0,0,Medium,26,16,0
+AST_TRA_6892,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.89,26,63,64,2,14,0,0,Medium,10,23,1
+AST_TRA_9244,SEC_DDU_YARD_01,Traction,Cantilever Insulator Flashover,0.66,6,68,73,1,181,0,0,Medium,24,3,0
+AST_ENG_9171,SEC_DDU_YARD_03,Engineering,Track Gauge Spread,0.58,15,88,94,2,45,0,0,Low,27,9,0
+AST_TRA_1782,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.65,20,60,56,4,40,1,0,Medium,14,19,0
+AST_TRA_9163,SEC_BSB_LKO_01,Traction,Cantilever Insulator Flashover,0.97,12,90,91,4,129,1,0,Medium,25,12,0
+AST_S&T_7841,SEC_DDU_YARD_04,S&T,Track Circuit Short,0.75,1,74,64,7,199,1,0,Medium,28,11,0
+AST_ENG_3175,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.54,23,34,30,5,31,2,1,Medium,19,6,0
+AST_ENG_6104,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.54,23,68,73,1,177,0,0,Medium,23,17,0
+AST_ENG_4081,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.78,10,80,80,4,134,0,0,Low,8,22,0
+AST_ENG_3258,SEC_HWH_DLI_04,Engineering,Point Machine Mechanical Fault,0.54,26,71,83,1,117,0,0,Medium,10,16,0
+AST_ENG_5782,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.75,28,68,72,2,183,0,0,Medium,20,23,1
+AST_TRA_1703,SEC_HWH_DLI_03,Traction,Cantilever Insulator Flashover,0.91,27,58,53,0,135,0,0,Medium,27,7,0
+AST_ENG_1402,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.51,23,66,76,2,38,0,0,Medium,15,23,0
+AST_ENG_6768,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.58,19,54,45,5,126,0,0,High,58,89,0
+AST_S&T_7301,SEC_HWH_DLI_03,S&T,Point Machine Detection Fault,0.78,25,55,59,2,124,1,0,Medium,8,24,1
+AST_ENG_4613,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.76,13,70,71,0,164,0,0,Medium,7,8,0
+AST_ENG_2317,SEC_BSB_LKO_04,Engineering,Ballast Deep Screening,0.81,26,55,56,0,61,1,0,Medium,15,19,1
+AST_ENG_3928,SEC_DDU_YARD_01,Engineering,Broken Rail Weld,0.65,22,51,48,1,139,1,0,Medium,21,9,0
+AST_ENG_1868,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.73,10,90,95,0,61,0,0,High,75,45,0
+AST_ENG_6362,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.72,3,90,81,7,141,1,0,Medium,22,17,0
+AST_ENG_1211,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.74,27,28,25,14,63,1,1,Medium,27,16,1
+AST_S&T_1233,SEC_DDU_YARD_02,S&T,Point Machine Detection Fault,0.71,15,76,69,1,126,0,0,Medium,14,11,0
+AST_ENG_2677,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.86,29,41,48,6,196,3,0,Low,8,3,1
+AST_ENG_2046,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.62,15,61,47,6,49,0,0,High,79,41,0
+AST_TRA_9445,SEC_HWH_DLI_03,Traction,OHE Dropper Broken,0.94,9,80,72,2,33,1,0,Medium,13,12,0
+AST_ENG_2824,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.96,20,61,54,5,198,1,0,Low,24,10,0
+AST_ENG_5543,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.74,2,89,83,2,48,0,0,High,76,64,0
+AST_TRA_4684,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.71,14,61,55,0,86,1,0,Medium,13,18,0
+AST_ENG_8599,SEC_HWH_DLI_02,Engineering,Track Gauge Spread,0.7,20,59,63,1,118,2,0,Medium,19,15,1
+AST_TRA_8393,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.67,10,77,78,4,166,0,0,High,19,44,1
+AST_ENG_8040,SEC_HWH_DLI_02,Engineering,Track Gauge Spread,0.99,20,65,48,5,41,0,1,Medium,27,12,1
+AST_S&T_6020,SEC_BSB_LKO_03,S&T,Signal Aspect Lamp Fail,0.86,28,59,63,2,174,1,0,Medium,6,19,0
+AST_TRA_4767,SEC_DDU_YARD_03,Traction,Neutral Section Inspection,0.78,16,76,73,5,13,0,0,High,64,40,0
+AST_ENG_4712,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.65,25,57,62,3,122,0,0,High,23,69,0
+AST_ENG_7995,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.56,15,65,62,2,104,0,0,Medium,7,2,0
+AST_ENG_1990,SEC_DDU_YARD_02,Engineering,Broken Rail Weld,0.72,24,42,47,2,172,0,0,High,78,49,0
+AST_ENG_6543,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.73,13,92,91,1,13,0,0,High,79,69,0
+AST_ENG_3426,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.89,13,64,65,11,40,0,0,High,41,56,1
+AST_S&T_2239,SEC_HWH_DLI_02,S&T,Signal Aspect Lamp Fail,0.96,22,49,52,0,173,3,0,Medium,20,17,0
+AST_S&T_3890,SEC_HWH_DLI_04,S&T,Signal Aspect Lamp Fail,0.84,29,48,54,9,195,3,0,Medium,19,8,1
+AST_ENG_7473,SEC_BSB_LKO_02,Engineering,Point Machine Mechanical Fault,0.69,13,85,86,0,19,0,0,Medium,25,10,0
+AST_ENG_7563,SEC_BSB_LKO_03,Engineering,Track Gauge Spread,0.91,19,56,41,0,196,0,0,Medium,6,3,0
+AST_TRA_6084,SEC_HWH_DLI_01,Traction,Neutral Section Inspection,0.9,6,82,91,0,163,0,0,High,35,34,0
+AST_ENG_6267,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.59,27,59,50,0,159,0,0,Medium,17,5,0
+AST_ENG_8011,SEC_BSB_LKO_02,Engineering,Track Gauge Spread,0.51,28,34,30,5,106,1,1,Low,7,21,1
+AST_TRA_2310,SEC_HWH_DLI_01,Traction,Contact Wire Sag,0.78,1,89,94,0,190,1,0,Medium,24,14,0
+AST_ENG_6952,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.65,20,54,45,8,54,0,0,Medium,13,2,0
+AST_ENG_6185,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.75,13,83,84,0,81,0,0,Medium,19,18,0
+AST_TRA_4956,SEC_BSB_LKO_02,Traction,Cantilever Insulator Flashover,0.92,12,90,98,1,161,1,0,Medium,13,14,0
+AST_TRA_8008,SEC_HWH_DLI_03,Traction,Contact Wire Sag,0.93,15,70,77,0,177,0,2,High,38,49,1
+AST_S&T_8087,SEC_DDU_YARD_04,S&T,Signal Aspect Lamp Fail,0.77,23,45,47,3,185,2,0,High,22,51,1
+AST_ENG_8846,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.6,18,72,75,3,74,1,0,Medium,21,7,0
+AST_TRA_6203,SEC_HWH_DLI_04,Traction,Contact Wire Sag,0.51,6,92,100,1,22,0,0,High,71,75,0
+AST_TRA_7175,SEC_BSB_LKO_01,Traction,Neutral Section Inspection,0.98,27,59,57,0,39,1,0,Medium,16,24,0
+AST_S&T_3995,SEC_BSB_LKO_01,S&T,Signal Aspect Lamp Fail,0.74,12,71,70,0,18,0,0,Medium,26,11,0
+AST_TRA_2176,SEC_BSB_LKO_03,Traction,Contact Wire Sag,0.74,17,58,35,1,16,0,0,High,22,58,0
+AST_S&T_4044,SEC_DDU_YARD_04,S&T,Signal Aspect Lamp Fail,0.55,14,40,43,13,57,1,0,Low,16,24,0
+AST_S&T_9125,SEC_HWH_DLI_01,S&T,Signal Aspect Lamp Fail,0.98,13,44,42,10,44,3,0,High,51,45,0
+AST_S&T_5576,SEC_DDU_YARD_03,S&T,Point Machine Detection Fault,0.63,20,57,53,2,57,0,0,Medium,6,4,0
+AST_TRA_5555,SEC_BSB_LKO_02,Traction,Neutral Section Inspection,0.97,5,100,100,0,97,0,0,Medium,25,11,0
+AST_TRA_4715,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.91,17,64,63,9,166,1,0,Low,12,23,0
+AST_TRA_3954,SEC_BSB_LKO_03,Traction,Cantilever Insulator Flashover,0.58,2,93,98,0,39,0,0,High,76,19,0
+AST_ENG_2505,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.76,19,75,72,0,10,0,0,High,11,28,0
+AST_TRA_4051,SEC_HWH_DLI_01,Traction,Neutral Section Inspection,0.72,3,84,81,5,95,0,0,Medium,5,13,0
+AST_S&T_2003,SEC_DDU_YARD_03,S&T,Point Machine Detection Fault,0.89,23,48,58,1,105,1,0,High,12,88,1
+AST_ENG_8014,SEC_BSB_LKO_03,Engineering,Track Gauge Spread,0.94,20,71,71,6,106,0,0,Medium,26,6,1
+AST_ENG_6488,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.71,12,98,100,2,143,0,0,Low,23,10,0
+AST_S&T_6448,SEC_BSB_LKO_02,S&T,Point Machine Detection Fault,0.83,22,53,54,4,187,0,0,Low,5,22,0
+AST_ENG_3021,SEC_DDU_YARD_01,Engineering,Broken Rail Weld,0.62,21,72,75,1,34,0,0,Low,25,19,0
+AST_S&T_7734,SEC_BSB_LKO_02,S&T,Point Machine Detection Fault,0.92,4,80,79,9,63,1,0,High,54,88,0
+AST_S&T_5682,SEC_DDU_YARD_03,S&T,Axle Counter Error,0.72,1,68,66,18,71,0,0,Medium,6,23,1
+AST_ENG_2002,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.61,28,54,54,4,91,1,0,Low,21,9,1
+AST_ENG_2798,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.54,22,57,51,4,19,0,0,Medium,16,15,0
+AST_TRA_7276,SEC_HWH_DLI_02,Traction,Neutral Section Inspection,0.72,6,95,92,2,129,1,0,Low,27,24,0
+AST_TRA_3674,SEC_HWH_DLI_02,Traction,OHE Dropper Broken,0.8,5,100,100,0,42,1,1,Medium,26,18,0
+AST_S&T_1932,SEC_HWH_DLI_01,S&T,Point Machine Detection Fault,0.64,26,13,13,17,14,1,0,High,11,77,1
+AST_ENG_7658,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.76,24,49,25,5,184,2,0,Medium,5,4,1
+AST_ENG_8975,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.77,9,77,65,4,69,0,0,Medium,6,9,1
+AST_S&T_2896,SEC_DDU_YARD_01,S&T,Point Machine Detection Fault,0.54,24,62,60,0,66,0,0,Medium,5,17,0
+AST_TRA_7582,SEC_HWH_DLI_03,Traction,Neutral Section Inspection,0.9,12,68,55,5,189,0,0,Low,19,3,0
+AST_TRA_2416,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.96,20,74,83,0,129,0,0,High,45,53,0
+AST_TRA_7301,SEC_DDU_YARD_01,Traction,Cantilever Insulator Flashover,0.54,3,92,81,10,105,0,0,High,26,32,0
+AST_S&T_5911,SEC_HWH_DLI_04,S&T,Track Circuit Short,0.65,15,67,70,4,93,0,0,Medium,12,23,0
+AST_ENG_7543,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.61,3,100,99,2,91,0,1,Medium,12,5,0
+AST_TRA_6852,SEC_BSB_LKO_02,Traction,Contact Wire Sag,0.8,20,79,83,0,176,0,1,High,74,47,0
+AST_ENG_4291,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.5,12,89,92,1,191,0,1,Medium,10,11,0
+AST_ENG_3555,SEC_DDU_YARD_03,Engineering,Track Gauge Spread,0.66,9,81,78,4,114,0,0,High,14,49,0
+AST_ENG_7110,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.93,20,67,67,6,48,1,0,Medium,28,18,1
+AST_S&T_6959,SEC_BSB_LKO_04,S&T,Point Machine Detection Fault,0.77,19,51,53,14,198,0,0,Low,18,3,0
+AST_TRA_7458,SEC_BSB_LKO_01,Traction,Contact Wire Sag,0.63,4,95,84,1,156,2,0,Medium,16,19,0
+AST_ENG_9849,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.68,25,52,55,6,68,0,0,Medium,27,12,0
+AST_ENG_7900,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.78,15,61,49,1,199,0,0,Medium,27,14,0
+AST_ENG_9558,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.99,23,75,73,2,175,0,0,Medium,24,5,0
+AST_ENG_4716,SEC_BSB_LKO_03,Engineering,Track Gauge Spread,0.89,22,72,60,7,10,0,0,Medium,29,19,0
+AST_TRA_4194,SEC_DDU_YARD_01,Traction,OHE Dropper Broken,0.68,8,90,92,0,89,0,0,Low,27,3,0
+AST_ENG_1723,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.84,2,100,100,0,197,0,0,Medium,16,17,0
+AST_TRA_2373,SEC_HWH_DLI_03,Traction,Neutral Section Inspection,0.83,29,52,45,1,124,1,0,High,32,64,0
+AST_TRA_3364,SEC_HWH_DLI_02,Traction,OHE Dropper Broken,0.91,19,53,51,11,181,0,0,Medium,27,10,1
+AST_TRA_7351,SEC_DDU_YARD_03,Traction,Cantilever Insulator Flashover,0.7,4,98,100,4,88,0,0,Medium,26,23,0
+AST_ENG_2292,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.8,25,64,43,3,136,0,0,Medium,15,6,0
+AST_S&T_9741,SEC_BSB_LKO_03,S&T,Axle Counter Error,0.62,21,65,73,5,39,1,0,Low,29,18,0
+AST_ENG_5426,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.52,27,49,43,4,189,1,0,Medium,7,14,0
+AST_S&T_2017,SEC_DDU_YARD_02,S&T,Axle Counter Error,0.74,7,96,79,5,69,0,0,Medium,8,5,0
+AST_ENG_4680,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.96,22,36,28,11,147,4,2,High,45,50,1
+AST_ENG_6064,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.54,19,83,85,3,34,1,0,Medium,6,5,0
+AST_S&T_6015,SEC_HWH_DLI_01,S&T,Track Circuit Short,0.54,13,68,74,5,66,0,0,High,27,49,0
+AST_S&T_4379,SEC_DDU_YARD_02,S&T,Signal Aspect Lamp Fail,0.7,3,99,100,4,166,1,0,Low,28,18,0
+AST_TRA_6885,SEC_HWH_DLI_02,Traction,Contact Wire Sag,0.82,3,100,100,1,119,1,0,Medium,19,18,0
+AST_TRA_9491,SEC_DDU_YARD_03,Traction,Cantilever Insulator Flashover,0.79,28,34,38,21,82,1,0,Medium,23,17,1
+AST_TRA_8165,SEC_BSB_LKO_02,Traction,Cantilever Insulator Flashover,0.86,3,61,57,7,79,0,0,Medium,14,23,1
+AST_ENG_6465,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.91,29,61,62,0,99,1,0,Medium,7,24,0
+AST_ENG_6691,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.78,15,70,71,4,97,0,0,High,58,31,0
+AST_TRA_5992,SEC_HWH_DLI_03,Traction,Neutral Section Inspection,0.55,25,72,75,0,61,0,0,Medium,5,5,0
+AST_ENG_2874,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.81,1,100,97,1,26,0,0,Medium,15,19,0
+AST_TRA_9182,SEC_HWH_DLI_03,Traction,Cantilever Insulator Flashover,0.74,26,60,58,0,26,0,1,Medium,10,14,1
+AST_TRA_9032,SEC_HWH_DLI_03,Traction,OHE Dropper Broken,0.6,22,71,69,8,140,0,0,Medium,18,6,0
+AST_ENG_5197,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.55,27,58,45,4,40,0,0,High,14,60,0
+AST_ENG_7005,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.8,16,82,83,0,181,0,0,High,77,77,1
+AST_S&T_8020,SEC_HWH_DLI_02,S&T,Signal Aspect Lamp Fail,0.7,12,80,71,4,164,0,0,High,24,87,0
+AST_TRA_9948,SEC_BSB_LKO_01,Traction,Neutral Section Inspection,0.96,21,55,80,3,16,1,0,Medium,19,8,0
+AST_ENG_8740,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.97,21,69,63,7,30,0,0,High,66,47,1
+AST_S&T_4520,SEC_HWH_DLI_01,S&T,Signal Aspect Lamp Fail,0.94,17,75,68,3,107,2,0,Medium,13,3,0
+AST_TRA_6577,SEC_BSB_LKO_01,Traction,Contact Wire Sag,0.7,28,11,10,19,187,2,0,Low,18,16,1
+AST_S&T_6656,SEC_HWH_DLI_01,S&T,Signal Aspect Lamp Fail,0.78,25,42,51,4,121,2,0,Medium,23,12,1
+AST_TRA_7196,SEC_HWH_DLI_02,Traction,Contact Wire Sag,0.96,23,56,55,4,56,0,0,Medium,27,19,1
+AST_ENG_8044,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.53,10,81,85,3,130,1,0,High,43,22,1
+AST_ENG_3155,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.64,27,63,58,0,160,0,1,Low,9,19,0
+AST_ENG_3989,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.81,15,52,44,14,143,0,0,Low,21,3,1
+AST_ENG_8549,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.67,6,97,91,2,23,0,0,Low,24,2,0
+AST_TRA_7732,SEC_BSB_LKO_04,Traction,Neutral Section Inspection,0.74,9,53,42,18,190,1,0,Medium,18,20,0
+AST_ENG_2054,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.92,11,62,67,4,53,0,0,Low,27,11,0
+AST_ENG_8622,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.83,16,68,81,2,13,0,0,High,17,19,0
+AST_ENG_6289,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.82,21,37,37,13,117,1,1,High,72,50,1
+AST_S&T_5366,SEC_BSB_LKO_02,S&T,Track Circuit Short,0.8,11,61,61,2,129,1,0,High,40,61,0
+AST_TRA_2670,SEC_HWH_DLI_04,Traction,Cantilever Insulator Flashover,0.63,19,49,54,9,134,0,0,High,63,20,1
+AST_ENG_7348,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.92,3,71,67,11,118,0,0,Medium,19,18,0
+AST_TRA_3866,SEC_HWH_DLI_02,Traction,Contact Wire Sag,0.98,13,79,75,0,33,0,0,Medium,18,5,0
+AST_TRA_3985,SEC_HWH_DLI_03,Traction,Contact Wire Sag,0.84,15,71,61,4,32,2,0,Low,9,2,0
+AST_S&T_8551,SEC_BSB_LKO_03,S&T,Track Circuit Short,0.62,8,50,38,15,164,0,0,High,57,82,1
+AST_ENG_4569,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.73,6,100,100,0,16,0,0,High,35,72,0
+AST_TRA_1477,SEC_BSB_LKO_02,Traction,OHE Dropper Broken,0.82,13,72,76,2,193,0,0,Medium,9,13,0
+AST_ENG_9103,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.59,29,51,45,2,47,1,0,Medium,19,13,0
+AST_ENG_7369,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.58,3,93,91,1,175,0,0,Medium,23,21,0
+AST_TRA_8048,SEC_BSB_LKO_04,Traction,Cantilever Insulator Flashover,0.59,12,67,66,0,50,0,0,Medium,25,9,1
+AST_S&T_3455,SEC_DDU_YARD_04,S&T,Track Circuit Short,0.61,4,77,68,4,93,0,0,High,18,56,0
+AST_TRA_2841,SEC_BSB_LKO_04,Traction,OHE Dropper Broken,0.86,17,83,90,1,132,0,0,Low,26,8,0
+AST_ENG_4598,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.55,6,50,47,14,194,0,0,Medium,15,11,0
+AST_S&T_4528,SEC_BSB_LKO_02,S&T,Point Machine Detection Fault,0.57,26,44,49,9,133,3,0,Medium,18,14,0
+AST_S&T_1981,SEC_BSB_LKO_03,S&T,Point Machine Detection Fault,0.72,19,60,54,0,122,0,0,Medium,14,7,0
+AST_S&T_2987,SEC_HWH_DLI_02,S&T,Signal Aspect Lamp Fail,0.77,2,100,100,3,94,0,0,Low,6,10,0
+AST_S&T_1553,SEC_DDU_YARD_01,S&T,Point Machine Detection Fault,0.67,25,23,13,13,175,1,0,High,54,85,1
+AST_ENG_6431,SEC_DDU_YARD_02,Engineering,Broken Rail Weld,0.88,9,92,88,2,177,0,0,Medium,7,14,0
+AST_ENG_7993,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.83,2,98,100,1,168,0,0,Medium,22,12,0
+AST_ENG_8985,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.68,4,84,90,11,185,0,0,Medium,13,19,0
+AST_ENG_3753,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.9,27,40,53,7,181,3,0,High,73,47,0
+AST_TRA_3448,SEC_DDU_YARD_02,Traction,OHE Dropper Broken,0.74,7,61,55,6,37,0,0,Medium,29,3,0
+AST_S&T_1891,SEC_BSB_LKO_03,S&T,Point Machine Detection Fault,0.56,14,55,60,7,46,0,0,High,50,65,1
+AST_ENG_4898,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.84,27,50,53,2,24,1,0,High,17,35,1
+AST_ENG_5007,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.88,9,73,78,2,199,0,0,Medium,18,16,0
+AST_ENG_9219,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.62,11,95,92,0,128,0,0,Medium,12,20,1
+AST_ENG_6527,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.78,2,91,88,2,183,0,1,Medium,5,22,1
+AST_TRA_2607,SEC_BSB_LKO_02,Traction,Cantilever Insulator Flashover,0.52,19,64,62,4,181,0,0,Medium,23,10,0
+AST_ENG_1771,SEC_DDU_YARD_01,Engineering,Ballast Deep Screening,0.68,12,57,63,7,114,0,0,Low,6,3,0
+AST_TRA_9722,SEC_DDU_YARD_04,Traction,Contact Wire Sag,0.6,20,58,53,6,107,3,2,Medium,11,5,1
+AST_S&T_3578,SEC_DDU_YARD_04,S&T,Point Machine Detection Fault,0.54,13,73,80,2,30,1,0,High,75,15,0
+AST_S&T_2071,SEC_HWH_DLI_01,S&T,Point Machine Detection Fault,0.77,19,41,38,11,101,1,0,Medium,17,20,1
+AST_TRA_1461,SEC_DDU_YARD_01,Traction,Neutral Section Inspection,0.79,26,47,40,3,175,1,0,High,25,74,0
+AST_ENG_3811,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.7,20,66,62,0,91,1,0,High,32,52,1
+AST_ENG_3728,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.55,6,81,69,4,90,0,0,High,30,17,0
+AST_ENG_4116,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.87,18,89,88,0,186,0,0,Low,21,11,0
+AST_TRA_2853,SEC_HWH_DLI_03,Traction,Contact Wire Sag,0.74,24,61,69,0,18,0,0,Medium,28,5,0
+AST_TRA_6849,SEC_DDU_YARD_03,Traction,Cantilever Insulator Flashover,0.61,11,99,96,3,43,0,0,Medium,23,3,0
+AST_S&T_4948,SEC_HWH_DLI_01,S&T,Point Machine Detection Fault,0.79,24,17,10,17,57,2,0,Low,14,11,1
+AST_TRA_4912,SEC_HWH_DLI_03,Traction,Cantilever Insulator Flashover,0.94,8,64,66,7,165,1,0,High,43,33,0
+AST_ENG_6020,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.73,8,68,67,7,71,1,0,Medium,21,6,1
+AST_ENG_5804,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.92,11,67,66,3,96,1,1,High,39,23,1
+AST_ENG_3938,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.94,27,75,73,0,57,0,0,Medium,9,17,0
+AST_TRA_9764,SEC_HWH_DLI_04,Traction,OHE Dropper Broken,0.77,3,91,82,1,56,0,0,Medium,27,6,0
+AST_S&T_6811,SEC_DDU_YARD_02,S&T,Signal Aspect Lamp Fail,0.72,13,59,52,6,10,0,0,High,69,15,1
+AST_ENG_3134,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.96,2,58,69,19,49,0,0,Medium,21,5,0
+AST_ENG_6482,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.96,17,64,69,0,44,1,0,Medium,20,8,1
+AST_TRA_5992,SEC_DDU_YARD_03,Traction,OHE Dropper Broken,0.87,17,79,68,1,75,0,0,Low,24,23,0
+AST_S&T_2486,SEC_HWH_DLI_01,S&T,Signal Aspect Lamp Fail,0.79,9,71,65,0,52,0,0,High,75,30,0
+AST_S&T_2539,SEC_HWH_DLI_02,S&T,Signal Aspect Lamp Fail,0.74,13,46,54,15,173,3,0,Low,26,24,1
+AST_S&T_8216,SEC_DDU_YARD_04,S&T,Signal Aspect Lamp Fail,0.71,23,32,42,16,130,0,2,Low,11,6,1
+AST_ENG_9046,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.57,23,80,67,1,50,1,0,Medium,23,12,0
+AST_S&T_8802,SEC_HWH_DLI_04,S&T,Axle Counter Error,0.85,13,73,70,3,113,0,0,High,62,66,0
+AST_ENG_3018,SEC_HWH_DLI_04,Engineering,Point Machine Mechanical Fault,0.74,12,87,92,3,115,1,0,Medium,18,15,0
+AST_S&T_6839,SEC_DDU_YARD_01,S&T,Signal Aspect Lamp Fail,0.84,23,54,42,2,181,0,0,High,76,16,0
+AST_TRA_1064,SEC_BSB_LKO_03,Traction,Cantilever Insulator Flashover,0.92,22,81,82,1,154,2,0,Low,21,16,1
+AST_TRA_4887,SEC_HWH_DLI_01,Traction,Neutral Section Inspection,0.86,12,48,57,8,25,0,0,Medium,6,20,1
+AST_TRA_7732,SEC_DDU_YARD_01,Traction,Neutral Section Inspection,0.57,27,45,34,14,27,1,0,Medium,21,17,0
+AST_TRA_5222,SEC_BSB_LKO_01,Traction,Neutral Section Inspection,0.97,1,66,75,12,98,0,0,Medium,29,9,0
+AST_ENG_6938,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.84,5,88,76,3,171,1,0,Medium,19,2,1
+AST_TRA_1724,SEC_DDU_YARD_02,Traction,Contact Wire Sag,0.63,2,95,98,5,145,0,0,Low,10,20,0
+AST_ENG_8769,SEC_BSB_LKO_04,Engineering,Ballast Deep Screening,0.6,8,74,91,6,131,0,0,High,27,35,0
+AST_TRA_4368,SEC_HWH_DLI_02,Traction,OHE Dropper Broken,0.63,9,84,84,4,35,0,0,Medium,23,20,0
+AST_ENG_8597,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.51,3,60,39,4,92,1,0,High,69,83,0
+AST_TRA_2688,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.71,26,47,45,4,29,3,0,Medium,11,23,0
+AST_ENG_7705,SEC_DDU_YARD_01,Engineering,Track Gauge Spread,0.91,26,10,22,16,177,2,0,Medium,12,22,1
+AST_ENG_2744,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.81,20,83,72,1,39,0,0,High,53,43,0
+AST_ENG_2627,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.9,17,75,88,2,73,1,0,Medium,6,5,1
+AST_ENG_6462,SEC_HWH_DLI_02,Engineering,Point Machine Mechanical Fault,0.78,3,79,71,5,52,0,0,Medium,21,23,0
+AST_ENG_1293,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.52,11,92,68,0,109,1,0,Low,9,14,0
+AST_ENG_2633,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.85,22,66,62,1,143,1,0,Medium,10,17,0
+AST_ENG_8966,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.5,19,72,66,2,82,1,0,Low,24,22,0
+AST_ENG_5530,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.96,25,37,28,10,128,4,0,Medium,25,8,1
+AST_ENG_2253,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.68,10,62,43,4,176,2,0,Medium,8,12,0
+AST_ENG_1749,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.77,24,60,63,3,160,0,0,Medium,18,20,0
+AST_ENG_4816,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.93,14,74,65,3,157,0,0,High,64,49,0
+AST_S&T_5089,SEC_BSB_LKO_03,S&T,Signal Aspect Lamp Fail,0.84,22,70,65,0,164,0,0,High,51,50,0
+AST_TRA_1390,SEC_HWH_DLI_03,Traction,OHE Dropper Broken,0.6,12,79,75,9,67,1,0,Medium,7,13,0
+AST_S&T_4323,SEC_HWH_DLI_02,S&T,Point Machine Detection Fault,0.64,24,76,73,0,148,0,0,Medium,15,8,1
+AST_S&T_6243,SEC_DDU_YARD_02,S&T,Point Machine Detection Fault,0.71,29,51,59,8,151,0,0,High,50,82,0
+AST_ENG_1481,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.86,27,63,66,0,108,0,0,Medium,5,15,1
+AST_ENG_8234,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.75,26,50,48,0,27,0,0,Medium,12,12,1
+AST_ENG_2608,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.82,8,92,93,0,125,1,0,Low,6,5,0
+AST_S&T_3711,SEC_HWH_DLI_04,S&T,Track Circuit Short,0.65,26,53,44,0,15,1,0,Medium,19,15,1
+AST_S&T_9160,SEC_BSB_LKO_03,S&T,Signal Aspect Lamp Fail,0.83,10,72,69,0,153,0,0,Medium,15,20,1
+AST_ENG_3251,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.93,26,64,73,0,137,1,0,High,62,46,0
+AST_TRA_7045,SEC_HWH_DLI_01,Traction,Neutral Section Inspection,0.66,13,50,58,9,111,1,0,Low,28,17,0
+AST_S&T_4285,SEC_DDU_YARD_01,S&T,Track Circuit Short,0.88,20,56,50,8,98,0,0,Medium,24,17,1
+AST_TRA_6765,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.6,11,84,80,0,37,1,0,Low,27,22,0
+AST_TRA_1149,SEC_DDU_YARD_02,Traction,OHE Dropper Broken,0.81,7,79,82,15,183,0,0,Low,23,7,0
+AST_ENG_1422,SEC_BSB_LKO_02,Engineering,Point Machine Mechanical Fault,0.51,19,44,36,4,162,2,0,Medium,26,6,0
+AST_S&T_4346,SEC_HWH_DLI_03,S&T,Point Machine Detection Fault,0.97,17,79,78,0,21,0,0,Low,18,19,0
+AST_S&T_7470,SEC_DDU_YARD_01,S&T,Axle Counter Error,0.92,18,18,10,21,56,1,2,Medium,7,3,1
+AST_S&T_6972,SEC_DDU_YARD_04,S&T,Track Circuit Short,0.54,2,94,91,2,46,0,0,High,46,54,0
+AST_ENG_6473,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.54,9,88,89,1,57,1,0,Low,5,4,0
+AST_TRA_2159,SEC_HWH_DLI_03,Traction,OHE Dropper Broken,0.96,11,78,80,1,199,0,0,Low,5,12,0
+AST_S&T_6781,SEC_HWH_DLI_01,S&T,Point Machine Detection Fault,0.86,28,37,25,10,127,2,2,Low,18,2,1
+AST_TRA_9989,SEC_HWH_DLI_01,Traction,OHE Dropper Broken,0.66,5,80,65,5,143,0,0,Medium,10,9,0
+AST_ENG_3156,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.82,12,79,58,1,185,0,0,Medium,28,11,0
+AST_TRA_9401,SEC_HWH_DLI_04,Traction,Neutral Section Inspection,0.98,7,68,58,1,197,1,0,Medium,12,2,1
+AST_ENG_9125,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.55,7,79,88,2,23,0,0,Low,8,12,0
+AST_S&T_1610,SEC_DDU_YARD_03,S&T,Point Machine Detection Fault,0.82,20,40,38,13,154,4,0,Medium,18,12,1
+AST_TRA_8660,SEC_BSB_LKO_04,Traction,Neutral Section Inspection,0.51,26,56,68,2,166,0,0,Low,23,3,0
+AST_ENG_1295,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.82,9,60,64,10,150,0,0,Medium,27,19,1
+AST_ENG_4513,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.63,19,57,65,4,174,0,0,Medium,9,17,0
+AST_ENG_8975,SEC_DDU_YARD_04,Engineering,Ballast Deep Screening,0.85,14,58,63,5,181,1,0,Medium,10,11,0
+AST_ENG_9965,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.92,2,85,88,3,182,0,0,Medium,11,24,0
+AST_ENG_2737,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.89,7,88,85,1,193,0,0,Low,11,13,0
+AST_ENG_9262,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.56,14,92,100,5,78,0,0,Medium,15,13,1
+AST_ENG_4036,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.81,24,58,49,0,38,0,0,Medium,9,9,0
+AST_TRA_3977,SEC_HWH_DLI_03,Traction,Cantilever Insulator Flashover,0.76,18,43,58,17,119,2,0,Medium,13,14,1
+AST_S&T_8290,SEC_DDU_YARD_04,S&T,Point Machine Detection Fault,0.71,21,30,43,11,65,2,1,Medium,29,6,1
+AST_TRA_9410,SEC_HWH_DLI_02,Traction,OHE Dropper Broken,0.7,5,84,87,19,104,0,0,High,23,87,0
+AST_TRA_3552,SEC_DDU_YARD_01,Traction,Cantilever Insulator Flashover,0.63,17,53,69,3,42,2,0,Medium,13,14,0
+AST_ENG_2526,SEC_DDU_YARD_03,Engineering,Track Gauge Spread,0.91,11,55,53,18,40,3,0,Medium,14,8,0
+AST_TRA_5723,SEC_HWH_DLI_04,Traction,Neutral Section Inspection,0.55,11,82,70,3,176,1,0,Medium,8,13,0
+AST_ENG_2689,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.75,26,42,40,11,107,2,0,Medium,15,4,1
+AST_ENG_3927,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.61,16,78,80,2,25,1,0,High,73,64,0
+AST_S&T_7660,SEC_HWH_DLI_02,S&T,Signal Aspect Lamp Fail,0.75,14,71,74,2,177,0,0,Medium,22,4,1
+AST_TRA_5027,SEC_BSB_LKO_03,Traction,Contact Wire Sag,0.51,17,84,78,2,170,0,0,Medium,14,13,1
+AST_S&T_6891,SEC_HWH_DLI_01,S&T,Track Circuit Short,0.54,15,71,78,2,169,0,0,Medium,18,14,1
+AST_ENG_1925,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.53,10,88,89,2,149,0,0,Low,15,24,0
+AST_S&T_1707,SEC_BSB_LKO_01,S&T,Point Machine Detection Fault,0.64,21,71,57,0,80,1,0,Medium,21,21,0
+AST_TRA_9430,SEC_HWH_DLI_02,Traction,Neutral Section Inspection,0.78,7,66,66,3,103,0,0,Low,29,15,0
+AST_S&T_6714,SEC_BSB_LKO_02,S&T,Signal Aspect Lamp Fail,0.67,4,84,81,3,153,0,1,Medium,11,14,0
+AST_ENG_6140,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.66,21,40,36,10,111,2,0,High,49,55,1
+AST_TRA_3196,SEC_HWH_DLI_01,Traction,Contact Wire Sag,0.62,7,78,74,3,37,0,0,Medium,10,16,0
+AST_ENG_2902,SEC_DDU_YARD_03,Engineering,Track Gauge Spread,0.72,11,78,81,7,138,0,0,Low,5,7,0
+AST_TRA_5661,SEC_DDU_YARD_04,Traction,Cantilever Insulator Flashover,0.69,28,56,52,9,169,0,0,Medium,9,18,1
+AST_ENG_8310,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.92,1,90,98,6,170,1,0,Low,22,19,1
+AST_S&T_5829,SEC_DDU_YARD_02,S&T,Signal Aspect Lamp Fail,0.82,10,85,86,2,108,1,0,Medium,21,8,0
+AST_ENG_9418,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.58,29,50,51,1,75,0,0,Medium,27,5,0
+AST_ENG_8274,SEC_BSB_LKO_03,Engineering,Track Gauge Spread,0.72,7,84,83,1,124,0,0,Low,28,14,0
+AST_ENG_1195,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.75,21,54,54,4,97,1,0,Medium,12,21,1
+AST_ENG_6061,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.72,15,79,69,2,127,0,0,Low,16,6,0
+AST_ENG_7444,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.59,26,46,33,8,73,2,0,High,76,60,1
+AST_S&T_5980,SEC_HWH_DLI_01,S&T,Axle Counter Error,0.66,21,60,55,4,122,0,1,High,41,69,0
+AST_S&T_8750,SEC_HWH_DLI_04,S&T,Axle Counter Error,0.55,21,69,67,2,11,2,0,Medium,28,18,0
+AST_TRA_6668,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.85,15,81,75,5,50,1,0,Medium,26,14,0
+AST_TRA_7700,SEC_BSB_LKO_02,Traction,OHE Dropper Broken,0.65,13,78,75,6,34,1,0,High,72,21,0
+AST_ENG_7382,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.78,24,65,50,0,195,0,0,Medium,22,8,0
+AST_ENG_4997,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.66,15,87,83,1,137,0,0,Low,26,5,1
+AST_ENG_3211,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.7,9,36,25,26,85,3,1,High,40,50,1
+AST_S&T_7664,SEC_DDU_YARD_01,S&T,Point Machine Detection Fault,0.97,24,30,27,17,128,0,2,Low,7,11,0
+AST_TRA_9876,SEC_HWH_DLI_01,Traction,Neutral Section Inspection,0.7,6,90,85,3,99,1,0,Medium,25,24,0
+AST_TRA_1353,SEC_BSB_LKO_02,Traction,Cantilever Insulator Flashover,0.88,27,23,24,13,14,2,1,Low,26,12,1
+AST_ENG_5578,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.97,11,68,49,6,165,0,0,Low,25,3,0
+AST_S&T_1185,SEC_BSB_LKO_01,S&T,Signal Aspect Lamp Fail,0.54,1,99,98,2,193,0,0,Medium,23,11,0
+AST_TRA_3733,SEC_BSB_LKO_04,Traction,OHE Dropper Broken,0.97,15,73,75,2,50,0,0,Low,20,3,0
+AST_ENG_2167,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.59,11,91,83,1,98,0,0,Medium,11,18,0
+AST_ENG_1529,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.98,28,41,40,5,190,2,0,Low,29,16,1
+AST_ENG_5566,SEC_HWH_DLI_02,Engineering,Track Gauge Spread,0.57,10,69,78,6,51,0,0,Low,10,23,0
+AST_S&T_8205,SEC_HWH_DLI_02,S&T,Point Machine Detection Fault,0.79,23,87,96,4,160,0,0,Low,12,4,1
+AST_S&T_4309,SEC_HWH_DLI_01,S&T,Axle Counter Error,0.88,8,100,100,1,88,1,0,Medium,22,4,0
+AST_TRA_1975,SEC_DDU_YARD_04,Traction,OHE Dropper Broken,0.79,6,73,66,5,113,0,0,Medium,25,9,0
+AST_S&T_9265,SEC_DDU_YARD_03,S&T,Track Circuit Short,0.89,13,70,67,3,11,1,1,High,35,25,1
+AST_ENG_1201,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.93,8,84,83,0,15,0,0,Medium,23,18,0
+AST_TRA_3273,SEC_DDU_YARD_04,Traction,Neutral Section Inspection,0.58,12,77,82,0,90,0,0,Low,25,10,0
+AST_ENG_1690,SEC_DDU_YARD_04,Engineering,Ballast Deep Screening,0.84,25,63,76,3,175,0,0,Medium,26,4,0
+AST_ENG_7409,SEC_HWH_DLI_04,Engineering,Point Machine Mechanical Fault,0.74,26,53,41,3,81,0,0,Medium,12,2,0
+AST_S&T_4766,SEC_DDU_YARD_02,S&T,Track Circuit Short,0.68,1,91,100,6,104,0,0,High,79,73,0
+AST_ENG_9113,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.8,25,65,48,1,81,1,0,Medium,16,24,0
+AST_ENG_2772,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.92,17,74,68,1,103,0,0,High,58,37,0
+AST_ENG_8222,SEC_HWH_DLI_04,Engineering,Point Machine Mechanical Fault,0.94,9,89,100,0,184,0,0,Low,12,4,1
+AST_S&T_1411,SEC_BSB_LKO_04,S&T,Track Circuit Short,0.69,15,62,62,3,117,1,0,Medium,20,5,0
+AST_S&T_5182,SEC_HWH_DLI_02,S&T,Point Machine Detection Fault,0.87,29,38,44,14,195,1,0,Low,5,13,1
+AST_ENG_9140,SEC_HWH_DLI_03,Engineering,Broken Rail Weld,0.76,6,75,76,3,162,2,0,High,12,27,1
+AST_TRA_5872,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.52,28,44,48,6,98,3,0,Low,16,3,1
+AST_TRA_1530,SEC_DDU_YARD_01,Traction,OHE Dropper Broken,0.64,12,98,100,1,188,1,0,Medium,28,9,0
+AST_TRA_8163,SEC_DDU_YARD_03,Traction,OHE Dropper Broken,0.78,24,54,57,5,100,2,0,High,59,51,1
+AST_TRA_2381,SEC_BSB_LKO_03,Traction,Cantilever Insulator Flashover,0.55,28,37,28,10,23,1,1,Medium,27,17,1
+AST_ENG_7770,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.9,18,56,43,5,74,0,0,Medium,22,15,1
+AST_ENG_3944,SEC_DDU_YARD_04,Engineering,Point Machine Mechanical Fault,0.68,13,94,99,1,162,1,0,Low,14,8,1
+AST_TRA_6565,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.9,9,89,85,2,161,1,0,High,41,53,0
+AST_S&T_8720,SEC_HWH_DLI_04,S&T,Point Machine Detection Fault,0.8,6,94,100,0,79,0,0,Medium,22,23,0
+AST_ENG_6537,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.54,26,57,45,0,138,1,0,High,61,87,1
+AST_TRA_6847,SEC_HWH_DLI_04,Traction,Neutral Section Inspection,0.93,29,57,65,5,124,1,1,Medium,21,4,1
+AST_ENG_3465,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.68,23,38,38,2,95,0,2,Low,8,16,0
+AST_ENG_3274,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.55,24,82,71,0,145,0,1,Medium,8,12,1
+AST_ENG_7589,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.93,17,72,69,0,20,0,0,Medium,26,24,0
+AST_ENG_2224,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.55,4,86,80,5,147,1,0,Medium,28,17,0
+AST_S&T_1184,SEC_BSB_LKO_02,S&T,Point Machine Detection Fault,0.6,27,54,43,5,11,1,0,Medium,14,10,0
+AST_ENG_6387,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.97,16,51,48,10,27,0,0,High,42,77,0
+AST_S&T_3002,SEC_DDU_YARD_02,S&T,Signal Aspect Lamp Fail,0.6,25,46,57,10,14,4,0,High,74,54,1
+AST_S&T_7864,SEC_DDU_YARD_03,S&T,Signal Aspect Lamp Fail,0.74,13,91,84,6,134,0,0,High,19,79,0
+AST_ENG_2399,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.7,2,93,100,1,53,0,1,Medium,12,17,1
+AST_ENG_4185,SEC_DDU_YARD_04,Engineering,Point Machine Mechanical Fault,0.95,10,72,70,0,63,0,1,Low,13,14,0
+AST_ENG_9826,SEC_HWH_DLI_03,Engineering,Broken Rail Weld,0.64,14,66,76,1,42,1,0,High,14,67,0
+AST_TRA_5983,SEC_DDU_YARD_04,Traction,Cantilever Insulator Flashover,0.69,27,49,41,1,155,1,0,Medium,11,2,1
+AST_S&T_7018,SEC_BSB_LKO_04,S&T,Signal Aspect Lamp Fail,0.51,23,62,66,4,33,0,0,Medium,17,6,0
+AST_S&T_6272,SEC_HWH_DLI_03,S&T,Signal Aspect Lamp Fail,0.68,27,53,52,1,114,0,0,High,37,30,0
+AST_ENG_5549,SEC_BSB_LKO_02,Engineering,Track Gauge Spread,0.62,6,62,60,13,170,0,1,Medium,8,19,0
+AST_S&T_8465,SEC_BSB_LKO_02,S&T,Track Circuit Short,0.59,29,53,36,5,133,0,0,Medium,20,21,0
+AST_ENG_1553,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.92,6,90,84,1,154,0,0,High,58,75,0
+AST_ENG_6013,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.85,29,35,47,3,103,2,1,High,12,63,0
+AST_ENG_1884,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.6,15,72,68,7,92,0,0,High,55,15,0
+AST_S&T_3625,SEC_HWH_DLI_02,S&T,Track Circuit Short,0.84,26,65,75,4,140,0,0,High,48,62,0
+AST_ENG_5677,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.65,7,85,92,0,145,0,0,Medium,27,5,0
+AST_TRA_3560,SEC_BSB_LKO_02,Traction,OHE Dropper Broken,0.53,1,80,79,7,41,0,0,Medium,13,3,1
+AST_ENG_1693,SEC_DDU_YARD_04,Engineering,Ballast Deep Screening,0.66,15,68,69,4,68,0,0,High,45,23,1
+AST_ENG_7212,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.87,5,100,98,0,169,3,0,High,66,41,0
+AST_ENG_8453,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.77,17,66,80,0,119,1,0,Medium,27,4,0
+AST_S&T_7461,SEC_BSB_LKO_04,S&T,Track Circuit Short,0.96,21,67,66,1,66,1,0,Medium,8,9,0
+AST_ENG_8926,SEC_DDU_YARD_02,Engineering,Broken Rail Weld,0.87,19,69,72,1,100,0,0,Medium,28,2,1
+AST_ENG_6826,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.97,8,89,79,0,171,1,0,Medium,8,16,0
+AST_ENG_4433,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.6,14,59,55,5,99,0,0,Medium,26,9,0
+AST_ENG_4429,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.96,9,85,88,4,195,0,0,Medium,16,23,0
+AST_ENG_8649,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.95,15,58,57,8,23,1,1,High,74,60,0
+AST_TRA_9819,SEC_BSB_LKO_02,Traction,Contact Wire Sag,0.99,26,44,37,4,50,1,0,Medium,16,11,0
+AST_ENG_6597,SEC_HWH_DLI_02,Engineering,Point Machine Mechanical Fault,0.97,5,60,51,9,33,0,1,High,12,16,0
+AST_S&T_4621,SEC_BSB_LKO_01,S&T,Point Machine Detection Fault,0.64,6,94,87,1,45,0,0,Medium,19,2,0
+AST_TRA_8182,SEC_HWH_DLI_02,Traction,Cantilever Insulator Flashover,0.83,29,38,49,1,158,0,0,Low,26,8,0
+AST_ENG_5274,SEC_DDU_YARD_01,Engineering,Ballast Deep Screening,0.72,20,45,59,5,44,3,0,High,34,27,1
+AST_TRA_4338,SEC_HWH_DLI_04,Traction,Cantilever Insulator Flashover,0.59,13,75,79,4,78,0,0,High,45,89,1
+AST_ENG_3911,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.91,13,55,51,11,121,0,0,Medium,22,21,1
+AST_ENG_3774,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.72,25,47,42,4,94,0,0,Low,8,2,1
+AST_ENG_9412,SEC_BSB_LKO_02,Engineering,Point Machine Mechanical Fault,0.61,23,65,70,2,18,0,0,High,14,55,0
+AST_ENG_6759,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.69,22,53,66,0,71,1,0,Low,14,2,1
+AST_TRA_6072,SEC_BSB_LKO_03,Traction,OHE Dropper Broken,0.71,12,42,36,12,111,1,0,Medium,18,12,1
+AST_TRA_8202,SEC_HWH_DLI_02,Traction,Cantilever Insulator Flashover,0.53,21,69,67,2,70,0,0,Low,25,10,0
+AST_S&T_8053,SEC_DDU_YARD_02,S&T,Axle Counter Error,0.57,24,32,42,10,15,1,1,Medium,26,21,1
+AST_S&T_6717,SEC_DDU_YARD_02,S&T,Signal Aspect Lamp Fail,0.84,22,73,71,2,168,0,0,Medium,21,7,0
+AST_ENG_9972,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.78,5,97,92,5,136,0,0,High,40,87,0
+AST_ENG_9448,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.79,9,70,79,7,33,0,1,High,46,53,1
+AST_ENG_7299,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.96,28,49,41,2,84,1,0,High,24,57,0
+AST_TRA_1115,SEC_DDU_YARD_02,Traction,Neutral Section Inspection,0.56,19,68,70,0,117,0,0,Medium,16,16,0
+AST_ENG_8366,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.64,24,73,74,0,143,0,0,Low,24,11,0
+AST_TRA_5374,SEC_BSB_LKO_04,Traction,Cantilever Insulator Flashover,0.52,7,66,52,15,179,0,0,Low,18,8,0
+AST_ENG_8796,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.71,13,66,66,11,74,0,0,High,27,61,0
+AST_S&T_3151,SEC_HWH_DLI_02,S&T,Axle Counter Error,0.85,26,60,58,0,141,0,0,Medium,16,17,0
+AST_ENG_9676,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.81,3,100,92,0,53,1,0,Medium,11,11,0
+AST_TRA_5137,SEC_BSB_LKO_04,Traction,Cantilever Insulator Flashover,0.53,5,80,80,1,194,1,0,Low,28,10,1
+AST_TRA_8116,SEC_BSB_LKO_03,Traction,Cantilever Insulator Flashover,0.87,10,100,100,3,12,0,1,High,51,20,0
+AST_ENG_5392,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.58,14,77,91,3,147,0,0,Low,18,5,0
+AST_S&T_1948,SEC_BSB_LKO_01,S&T,Signal Aspect Lamp Fail,0.69,29,19,36,20,44,0,0,Medium,29,22,1
+AST_ENG_6599,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.61,3,100,100,1,86,0,0,High,66,58,1
+AST_TRA_9345,SEC_DDU_YARD_04,Traction,Neutral Section Inspection,0.83,25,51,61,4,85,0,0,Low,28,18,0
+AST_ENG_4393,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.8,15,76,80,0,63,1,0,High,73,36,0
+AST_ENG_4251,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.68,5,91,100,1,30,1,0,Low,13,5,1
+AST_TRA_8929,SEC_BSB_LKO_02,Traction,Cantilever Insulator Flashover,0.8,24,65,56,1,139,1,0,Medium,22,15,0
+AST_TRA_7287,SEC_HWH_DLI_03,Traction,Neutral Section Inspection,0.51,7,56,57,13,27,0,0,Medium,15,21,0
+AST_ENG_8663,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.56,28,64,73,0,130,0,0,Medium,18,5,0
+AST_TRA_2042,SEC_HWH_DLI_02,Traction,OHE Dropper Broken,0.54,22,63,84,2,183,1,0,High,28,82,1
+AST_ENG_2685,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.67,23,65,72,4,14,1,0,Medium,13,21,1
+AST_ENG_7198,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.61,20,76,77,3,27,0,1,Low,26,24,0
+AST_ENG_2036,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.89,21,45,34,8,52,2,0,High,60,46,0
+AST_TRA_7950,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.87,18,74,67,3,187,0,0,High,50,24,0
+AST_S&T_7761,SEC_BSB_LKO_03,S&T,Signal Aspect Lamp Fail,0.7,14,65,48,1,80,0,0,Medium,10,10,0
+AST_S&T_7588,SEC_BSB_LKO_04,S&T,Point Machine Detection Fault,0.72,26,57,64,2,84,0,0,Medium,13,14,0
+AST_ENG_4953,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.96,20,57,63,5,146,0,0,Medium,16,4,0
+AST_ENG_2751,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.56,8,81,84,2,71,2,0,Low,19,10,0
+AST_S&T_3587,SEC_HWH_DLI_01,S&T,Point Machine Detection Fault,0.68,14,74,82,5,167,1,0,Medium,29,3,0
+AST_S&T_8312,SEC_BSB_LKO_01,S&T,Signal Aspect Lamp Fail,0.91,10,94,91,0,167,0,0,Medium,27,8,0
+AST_ENG_2070,SEC_DDU_YARD_04,Engineering,Ballast Deep Screening,0.9,2,83,84,3,67,0,0,High,52,43,0
+AST_TRA_2345,SEC_DDU_YARD_04,Traction,OHE Dropper Broken,0.82,26,64,53,1,85,1,0,Medium,12,16,0
+AST_TRA_7044,SEC_DDU_YARD_04,Traction,OHE Dropper Broken,0.68,11,93,84,2,159,0,0,Low,28,8,0
+AST_ENG_4551,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.6,26,35,30,3,153,0,2,Medium,21,11,1
+AST_TRA_6690,SEC_BSB_LKO_03,Traction,Cantilever Insulator Flashover,0.53,3,86,79,2,95,0,0,Medium,18,12,0
+AST_TRA_1917,SEC_HWH_DLI_03,Traction,OHE Dropper Broken,0.52,2,72,67,14,121,1,1,High,59,26,0
+AST_ENG_4110,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.8,23,55,59,12,112,0,0,Medium,28,23,0
+AST_TRA_7655,SEC_HWH_DLI_01,Traction,Contact Wire Sag,0.55,2,75,66,13,86,0,0,Medium,20,11,1
+AST_ENG_7861,SEC_DDU_YARD_01,Engineering,Track Gauge Spread,0.9,18,76,73,1,54,0,0,Medium,25,18,0
+AST_ENG_4734,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.66,18,78,85,0,170,0,0,High,40,88,0
+AST_S&T_1333,SEC_DDU_YARD_03,S&T,Point Machine Detection Fault,0.89,1,83,84,19,88,0,0,High,36,31,0
+AST_ENG_3912,SEC_HWH_DLI_02,Engineering,Track Gauge Spread,0.66,29,28,31,8,49,2,1,High,27,41,1
+AST_S&T_2017,SEC_DDU_YARD_01,S&T,Axle Counter Error,0.69,22,60,61,1,118,0,1,Low,13,9,1
+AST_ENG_3364,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.73,25,11,11,23,181,2,2,High,55,68,1
+AST_ENG_7717,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.66,29,55,51,6,172,2,0,Low,17,17,0
+AST_TRA_7628,SEC_BSB_LKO_04,Traction,OHE Dropper Broken,0.97,3,48,43,15,130,2,0,Low,21,14,1
+AST_ENG_9763,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.72,16,59,63,12,179,0,0,High,28,75,1
+AST_ENG_9503,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.87,29,55,66,0,171,1,0,Medium,20,6,1
+AST_TRA_5691,SEC_HWH_DLI_01,Traction,OHE Dropper Broken,0.78,9,91,90,1,164,1,0,Low,26,20,0
+AST_S&T_5698,SEC_HWH_DLI_04,S&T,Axle Counter Error,0.66,22,59,63,0,26,0,0,Medium,29,11,1
+AST_TRA_7244,SEC_BSB_LKO_03,Traction,Contact Wire Sag,0.63,27,54,57,2,15,0,0,Medium,23,19,0
+AST_ENG_9773,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.73,22,65,68,0,66,1,0,Low,25,18,0
+AST_ENG_7733,SEC_HWH_DLI_02,Engineering,Track Gauge Spread,0.76,2,74,76,10,155,0,0,Low,11,2,0
+AST_ENG_4328,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.87,15,75,83,0,117,0,0,Low,6,9,0
+AST_ENG_2982,SEC_DDU_YARD_03,Engineering,Ballast Deep Screening,0.76,5,92,94,2,26,1,0,Medium,27,5,0
+AST_S&T_6101,SEC_DDU_YARD_01,S&T,Track Circuit Short,0.61,10,81,72,6,140,1,0,Low,11,23,0
+AST_TRA_7919,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.81,11,65,76,6,101,0,0,High,12,31,0
+AST_S&T_7785,SEC_HWH_DLI_04,S&T,Point Machine Detection Fault,0.62,14,84,90,2,143,0,0,High,63,41,0
+AST_ENG_1001,SEC_HWH_DLI_04,Engineering,Point Machine Mechanical Fault,0.8,18,72,79,1,168,0,0,High,71,64,0
+AST_ENG_7619,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.91,11,89,75,0,16,1,0,Medium,27,19,0
+AST_S&T_6690,SEC_DDU_YARD_02,S&T,Signal Aspect Lamp Fail,0.81,5,100,100,0,143,0,0,Medium,28,11,0
+AST_ENG_9811,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.63,5,99,100,1,78,0,0,Medium,13,13,0
+AST_TRA_1804,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.72,3,78,72,1,137,0,0,Low,14,22,0
+AST_ENG_9706,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.97,2,90,79,0,196,0,0,Medium,6,2,0
+AST_ENG_8131,SEC_BSB_LKO_02,Engineering,Track Gauge Spread,0.63,24,40,40,1,172,3,0,High,77,74,1
+AST_ENG_5752,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.81,24,65,65,1,107,1,0,Medium,7,13,0
+AST_ENG_7106,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.77,12,34,39,12,198,2,0,High,55,69,1
+AST_ENG_6217,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.87,7,31,31,27,116,1,3,Medium,28,19,1
+AST_ENG_7031,SEC_BSB_LKO_02,Engineering,Point Machine Mechanical Fault,0.84,23,66,65,1,198,0,0,High,10,39,0
+AST_ENG_3875,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.75,29,47,41,4,177,2,1,Low,18,17,1
+AST_ENG_6378,SEC_DDU_YARD_04,Engineering,Point Machine Mechanical Fault,0.65,14,71,62,5,152,1,0,Medium,8,17,0
+AST_S&T_7353,SEC_HWH_DLI_02,S&T,Point Machine Detection Fault,0.5,23,69,79,0,32,0,1,Medium,18,8,0
+AST_TRA_4083,SEC_DDU_YARD_04,Traction,Contact Wire Sag,0.58,9,89,95,0,142,0,0,High,14,27,1
+AST_ENG_6203,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.91,15,69,62,7,100,1,0,Medium,21,18,0
+AST_S&T_2494,SEC_HWH_DLI_04,S&T,Track Circuit Short,0.84,19,46,28,14,118,0,0,Low,10,21,0
+AST_ENG_3436,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.68,16,90,84,0,51,0,0,Low,12,23,0
+AST_TRA_2028,SEC_DDU_YARD_02,Traction,OHE Dropper Broken,0.96,19,76,84,6,12,1,2,Low,7,11,0
+AST_ENG_1151,SEC_BSB_LKO_02,Engineering,Track Gauge Spread,0.97,15,63,60,3,152,0,0,Medium,20,8,0
+AST_TRA_6163,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.61,9,89,85,4,45,1,0,Low,22,19,1
+AST_ENG_1830,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.71,13,84,77,5,98,0,0,Medium,26,7,0
+AST_S&T_3431,SEC_BSB_LKO_02,S&T,Point Machine Detection Fault,0.62,6,62,64,14,121,1,0,Medium,20,7,0
+AST_ENG_2809,SEC_HWH_DLI_03,Engineering,Broken Rail Weld,0.72,2,100,99,0,47,0,0,Medium,25,3,0
+AST_ENG_1088,SEC_DDU_YARD_04,Engineering,Point Machine Mechanical Fault,0.78,18,73,73,1,175,1,1,Medium,27,2,1
+AST_S&T_4274,SEC_BSB_LKO_04,S&T,Track Circuit Short,0.75,20,73,74,5,74,1,0,High,79,57,1
+AST_TRA_9689,SEC_HWH_DLI_01,Traction,Contact Wire Sag,0.56,18,44,45,15,177,1,0,High,72,40,0
+AST_S&T_8127,SEC_HWH_DLI_01,S&T,Track Circuit Short,0.93,12,72,63,3,40,0,0,Medium,25,2,0
+AST_ENG_1194,SEC_DDU_YARD_01,Engineering,Ballast Deep Screening,0.76,14,84,78,2,20,0,0,Low,14,19,0
+AST_TRA_1091,SEC_HWH_DLI_01,Traction,Contact Wire Sag,0.92,1,88,100,3,184,0,0,Medium,27,23,0
+AST_TRA_9325,SEC_BSB_LKO_04,Traction,Neutral Section Inspection,0.89,18,58,65,5,191,1,0,Medium,16,6,0
+AST_ENG_2850,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.86,22,66,70,4,173,0,0,Medium,10,5,0
+AST_ENG_6156,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.91,3,90,77,4,97,1,0,High,10,63,0
+AST_ENG_9373,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.86,8,71,63,4,87,0,0,High,63,33,1
+AST_ENG_7625,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.63,10,36,34,17,42,5,0,Low,5,15,1
+AST_ENG_5364,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.82,4,93,88,2,127,2,0,High,49,27,0
+AST_ENG_1056,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.71,15,53,60,1,139,2,0,Medium,13,18,0
+AST_TRA_4157,SEC_DDU_YARD_02,Traction,Neutral Section Inspection,0.9,29,56,56,0,98,0,0,High,28,66,0
+AST_TRA_9681,SEC_BSB_LKO_03,Traction,OHE Dropper Broken,0.7,29,42,41,2,53,2,0,Medium,9,9,1
+AST_S&T_3297,SEC_BSB_LKO_01,S&T,Signal Aspect Lamp Fail,0.76,6,59,67,12,18,0,0,High,42,61,0
+AST_ENG_8347,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.94,19,79,77,0,84,0,0,Medium,29,23,0
+AST_ENG_7741,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.51,13,71,85,1,148,0,0,Low,13,4,0
+AST_TRA_2822,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.65,18,83,80,0,147,1,0,Low,23,2,0
+AST_TRA_1221,SEC_HWH_DLI_04,Traction,Neutral Section Inspection,0.93,17,82,97,2,156,0,0,Medium,5,3,0
+AST_TRA_9136,SEC_BSB_LKO_02,Traction,Neutral Section Inspection,0.87,23,38,32,12,163,1,0,Medium,8,5,0
+AST_S&T_8934,SEC_DDU_YARD_04,S&T,Axle Counter Error,0.55,10,79,80,0,112,0,0,Low,13,2,0
+AST_ENG_4825,SEC_HWH_DLI_04,Engineering,Point Machine Mechanical Fault,0.57,7,77,76,0,162,0,0,High,28,30,0
+AST_TRA_4012,SEC_BSB_LKO_04,Traction,Cantilever Insulator Flashover,0.8,25,64,54,1,21,0,0,Medium,29,24,0
+AST_S&T_1296,SEC_HWH_DLI_02,S&T,Track Circuit Short,0.78,14,73,91,3,102,1,0,Medium,21,21,0
+AST_ENG_6057,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.62,26,37,39,15,176,3,1,Medium,15,21,0
+AST_ENG_5205,SEC_HWH_DLI_04,Engineering,Point Machine Mechanical Fault,0.82,1,88,86,7,199,1,0,High,70,35,0
+AST_S&T_7323,SEC_HWH_DLI_04,S&T,Signal Aspect Lamp Fail,0.83,6,100,100,1,84,0,0,Medium,28,13,0
+AST_ENG_8552,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.98,22,25,36,13,36,1,0,Medium,13,7,1
+AST_ENG_9544,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.62,13,87,84,2,141,0,0,Low,9,20,1
+AST_ENG_2059,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.52,28,42,25,8,10,1,0,Low,23,17,0
+AST_ENG_7630,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.95,6,76,69,8,178,0,1,Medium,11,19,0
+AST_S&T_3542,SEC_HWH_DLI_04,S&T,Axle Counter Error,0.62,21,65,59,0,111,1,0,Medium,28,17,0
+AST_ENG_7028,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.94,24,55,68,1,94,1,0,Medium,5,8,0
+AST_TRA_3183,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.57,25,30,18,12,183,0,2,Medium,19,16,1
+AST_TRA_2915,SEC_BSB_LKO_03,Traction,OHE Dropper Broken,0.72,5,77,82,2,113,0,0,Medium,23,13,0
+AST_ENG_8042,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.99,5,93,89,2,85,0,0,Medium,22,5,1
+AST_TRA_4148,SEC_BSB_LKO_03,Traction,OHE Dropper Broken,0.51,6,93,88,0,188,1,0,Low,17,19,0
+AST_ENG_8132,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.59,22,25,24,20,13,0,0,Medium,13,8,1
+AST_S&T_9337,SEC_HWH_DLI_03,S&T,Axle Counter Error,0.55,23,63,51,0,77,1,0,Medium,26,13,0
+AST_TRA_3455,SEC_HWH_DLI_03,Traction,Cantilever Insulator Flashover,0.54,29,54,41,3,81,0,0,Medium,25,16,0
+AST_TRA_8914,SEC_BSB_LKO_03,Traction,Cantilever Insulator Flashover,0.53,3,91,90,0,48,1,0,Low,6,7,0
+AST_ENG_5586,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.56,17,62,55,4,177,1,0,High,28,55,0
+AST_ENG_3565,SEC_DDU_YARD_03,Engineering,Ballast Deep Screening,0.62,25,56,64,3,77,0,0,High,62,64,1
+AST_S&T_9947,SEC_BSB_LKO_01,S&T,Point Machine Detection Fault,0.82,21,53,48,5,110,0,0,Low,28,16,0
+AST_ENG_3424,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.82,12,70,82,3,26,2,0,Medium,17,17,0
+AST_TRA_9808,SEC_HWH_DLI_04,Traction,Contact Wire Sag,0.51,13,71,68,7,182,0,0,Medium,7,14,0
+AST_ENG_6284,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.74,17,65,60,0,151,1,0,Low,21,5,0
+AST_ENG_4051,SEC_DDU_YARD_01,Engineering,Point Machine Mechanical Fault,0.91,26,45,45,6,175,2,0,Medium,17,20,0
+AST_TRA_8316,SEC_BSB_LKO_01,Traction,Cantilever Insulator Flashover,0.61,16,87,77,0,107,0,0,Medium,20,18,0
+AST_ENG_4951,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.68,27,56,55,4,69,1,0,Low,9,23,1
+AST_ENG_2013,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.8,24,53,51,1,154,0,1,Low,21,22,0
+AST_ENG_5380,SEC_DDU_YARD_01,Engineering,Ballast Deep Screening,0.73,18,47,45,7,107,1,0,Medium,25,14,1
+AST_ENG_4435,SEC_HWH_DLI_02,Engineering,Track Gauge Spread,0.79,23,63,65,0,32,1,0,Medium,24,13,0
+AST_S&T_4567,SEC_HWH_DLI_01,S&T,Signal Aspect Lamp Fail,0.9,18,31,27,17,146,2,0,High,24,52,1
+AST_TRA_4794,SEC_BSB_LKO_01,Traction,Neutral Section Inspection,0.84,13,62,75,10,11,1,0,Low,16,22,0
+AST_TRA_8229,SEC_HWH_DLI_03,Traction,Neutral Section Inspection,0.75,23,82,73,0,37,0,0,Medium,8,8,0
+AST_ENG_2628,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.83,4,97,96,3,52,1,1,Low,17,10,0
+AST_S&T_9794,SEC_BSB_LKO_04,S&T,Axle Counter Error,0.97,25,57,61,8,42,0,0,Low,26,2,0
+AST_ENG_3891,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.9,27,66,71,1,107,0,0,Medium,25,8,0
+AST_ENG_3598,SEC_DDU_YARD_02,Engineering,Broken Rail Weld,0.62,10,56,54,3,106,0,0,High,22,30,0
+AST_ENG_9232,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.9,7,84,93,6,52,0,0,Low,17,16,0
+AST_TRA_7238,SEC_BSB_LKO_03,Traction,OHE Dropper Broken,0.85,18,64,66,1,45,1,0,Medium,15,17,0
+AST_S&T_7958,SEC_HWH_DLI_03,S&T,Signal Aspect Lamp Fail,0.86,12,88,82,0,198,0,0,Medium,18,5,0
+AST_ENG_3870,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.58,15,85,88,4,136,0,0,High,62,62,1
+AST_S&T_2262,SEC_BSB_LKO_02,S&T,Axle Counter Error,0.84,16,77,76,2,12,1,0,Medium,14,24,0
+AST_ENG_8538,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.77,3,100,100,6,49,0,0,Medium,22,5,0
+AST_ENG_4665,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.57,1,87,79,9,12,1,0,High,22,65,0
+AST_ENG_8704,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.56,16,62,64,1,123,1,1,High,15,27,0
+AST_ENG_6952,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.85,19,78,70,1,137,0,0,Medium,17,23,0
+AST_ENG_4199,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.62,17,66,73,2,163,0,0,Medium,13,23,0
+AST_ENG_4767,SEC_DDU_YARD_03,Engineering,Track Gauge Spread,0.97,17,59,59,6,190,3,0,Low,21,7,1
+AST_ENG_8014,SEC_DDU_YARD_01,Engineering,Broken Rail Weld,0.95,27,51,57,4,197,1,0,High,43,50,1
+AST_TRA_4668,SEC_DDU_YARD_04,Traction,Neutral Section Inspection,0.78,3,87,100,2,51,0,0,Medium,24,5,0
+AST_ENG_7172,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.79,22,47,39,4,95,2,0,High,48,68,0
+AST_TRA_6196,SEC_DDU_YARD_03,Traction,Neutral Section Inspection,0.91,27,50,53,7,112,0,0,Low,14,15,0
+AST_ENG_3594,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.57,4,93,99,4,103,0,0,Medium,22,3,0
+AST_ENG_3762,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.71,15,78,85,1,148,0,0,High,11,26,0
+AST_ENG_7632,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.71,22,65,69,1,125,1,0,High,35,63,0
+AST_TRA_5092,SEC_DDU_YARD_04,Traction,Neutral Section Inspection,0.85,29,45,45,10,10,1,0,Medium,15,15,0
+AST_TRA_8228,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.88,12,68,77,11,51,0,0,High,46,33,0
+AST_ENG_3655,SEC_BSB_LKO_04,Engineering,Point Machine Mechanical Fault,0.97,9,68,62,6,97,0,0,Medium,27,3,1
+AST_TRA_7609,SEC_BSB_LKO_04,Traction,Contact Wire Sag,0.65,18,79,80,1,198,0,0,High,59,19,0
+AST_S&T_6193,SEC_HWH_DLI_02,S&T,Axle Counter Error,0.53,6,66,69,3,45,0,0,High,71,60,0
+AST_ENG_7818,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.96,4,73,60,8,31,1,0,Medium,17,8,0
+AST_S&T_8926,SEC_DDU_YARD_02,S&T,Signal Aspect Lamp Fail,0.83,14,74,63,4,187,0,0,Medium,28,14,0
+AST_TRA_9142,SEC_BSB_LKO_01,Traction,Contact Wire Sag,0.85,18,53,44,9,58,1,1,High,75,24,1
+AST_ENG_5373,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.75,1,90,99,2,88,0,0,High,30,51,1
+AST_ENG_6203,SEC_DDU_YARD_04,Engineering,Broken Rail Weld,0.98,8,97,100,1,162,0,0,High,71,32,0
+AST_TRA_7842,SEC_HWH_DLI_03,Traction,Neutral Section Inspection,0.62,4,75,73,5,186,0,0,High,57,43,0
+AST_S&T_8940,SEC_DDU_YARD_04,S&T,Signal Aspect Lamp Fail,0.69,11,94,96,2,182,0,0,Medium,8,14,0
+AST_ENG_3559,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.81,4,84,82,0,137,2,0,High,60,18,0
+AST_ENG_4786,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.72,4,80,66,2,13,1,0,High,38,33,1
+AST_TRA_5976,SEC_HWH_DLI_01,Traction,Contact Wire Sag,0.6,13,35,42,18,91,1,1,Medium,11,13,1
+AST_TRA_1219,SEC_HWH_DLI_04,Traction,OHE Dropper Broken,0.59,11,86,75,3,176,1,0,High,68,24,0
+AST_S&T_1078,SEC_DDU_YARD_04,S&T,Track Circuit Short,0.82,19,61,63,1,123,1,0,Low,21,19,1
+AST_ENG_8587,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.83,19,77,78,0,191,0,1,Medium,18,3,0
+AST_ENG_4366,SEC_BSB_LKO_04,Engineering,Ballast Deep Screening,0.69,8,52,55,8,99,0,0,Medium,26,5,1
+AST_ENG_6310,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.79,1,91,72,0,113,1,0,High,18,33,0
+AST_TRA_3640,SEC_DDU_YARD_01,Traction,Cantilever Insulator Flashover,0.85,1,100,99,2,198,0,1,High,24,77,0
+AST_S&T_2489,SEC_DDU_YARD_03,S&T,Point Machine Detection Fault,0.83,9,70,71,3,145,1,0,Low,22,2,0
+AST_S&T_4723,SEC_HWH_DLI_03,S&T,Axle Counter Error,0.86,27,48,48,2,105,1,0,Medium,18,3,0
+AST_TRA_2940,SEC_BSB_LKO_02,Traction,Contact Wire Sag,0.78,6,100,100,2,23,0,0,Medium,11,11,0
+AST_ENG_3338,SEC_BSB_LKO_02,Engineering,Track Gauge Spread,0.51,23,69,72,0,165,3,1,High,38,77,1
+AST_TRA_5113,SEC_HWH_DLI_01,Traction,Neutral Section Inspection,0.7,25,10,10,24,92,0,2,High,69,16,1
+AST_ENG_8926,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.76,12,72,77,9,58,0,0,Medium,13,15,0
+AST_S&T_8702,SEC_HWH_DLI_01,S&T,Point Machine Detection Fault,0.81,24,56,40,2,111,0,0,Medium,5,10,0
+AST_TRA_1983,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.57,4,81,76,0,28,0,0,Medium,26,16,0
+AST_S&T_1368,SEC_HWH_DLI_04,S&T,Point Machine Detection Fault,0.52,28,54,57,2,105,0,0,Medium,16,16,0
+AST_TRA_7063,SEC_DDU_YARD_01,Traction,Contact Wire Sag,0.68,15,88,87,8,19,0,0,Medium,5,8,0
+AST_TRA_4894,SEC_BSB_LKO_04,Traction,Cantilever Insulator Flashover,0.65,18,63,59,13,66,0,0,High,51,57,1
+AST_S&T_1493,SEC_DDU_YARD_02,S&T,Axle Counter Error,0.69,7,75,81,0,94,0,0,Medium,12,10,0
+AST_TRA_7800,SEC_HWH_DLI_03,Traction,Cantilever Insulator Flashover,0.98,5,86,77,2,40,0,0,Medium,11,22,0
+AST_ENG_8169,SEC_DDU_YARD_03,Engineering,Point Machine Mechanical Fault,0.61,5,100,96,0,133,0,1,Low,6,24,0
+AST_TRA_9323,SEC_BSB_LKO_02,Traction,OHE Dropper Broken,0.67,28,50,55,1,76,1,0,High,59,55,0
+AST_ENG_8671,SEC_HWH_DLI_02,Engineering,Point Machine Mechanical Fault,0.78,15,66,67,11,149,1,0,Medium,8,17,0
+AST_S&T_6383,SEC_DDU_YARD_02,S&T,Signal Aspect Lamp Fail,0.99,12,84,78,0,149,0,0,Medium,17,22,0
+AST_TRA_4522,SEC_BSB_LKO_01,Traction,Cantilever Insulator Flashover,0.76,2,86,86,2,183,0,0,Medium,15,23,0
+AST_ENG_2035,SEC_BSB_LKO_01,Engineering,Ballast Deep Screening,0.76,3,75,66,10,156,0,0,Medium,14,4,0
+AST_ENG_7555,SEC_DDU_YARD_03,Engineering,Ballast Deep Screening,0.88,7,64,59,10,128,0,0,Low,12,15,1
+AST_ENG_5010,SEC_HWH_DLI_04,Engineering,Point Machine Mechanical Fault,0.74,2,83,99,2,174,1,1,Low,20,9,0
+AST_TRA_6496,SEC_BSB_LKO_04,Traction,Contact Wire Sag,0.85,21,48,34,2,96,2,0,Medium,29,9,0
+AST_S&T_1024,SEC_DDU_YARD_03,S&T,Axle Counter Error,0.56,18,10,10,31,118,0,2,Medium,5,9,1
+AST_ENG_9185,SEC_DDU_YARD_02,Engineering,Broken Rail Weld,0.71,3,13,24,35,149,1,0,High,65,77,1
+AST_TRA_6278,SEC_HWH_DLI_02,Traction,Neutral Section Inspection,0.71,2,95,98,5,100,0,1,Low,19,21,0
+AST_ENG_6422,SEC_HWH_DLI_04,Engineering,Point Machine Mechanical Fault,0.87,21,54,59,4,167,1,0,Low,13,8,1
+AST_ENG_5167,SEC_DDU_YARD_04,Engineering,Point Machine Mechanical Fault,0.78,19,56,70,1,85,0,0,Low,11,5,0
+AST_S&T_6605,SEC_DDU_YARD_04,S&T,Track Circuit Short,0.53,11,69,57,15,48,0,0,Medium,6,16,0
+AST_TRA_1055,SEC_HWH_DLI_02,Traction,Cantilever Insulator Flashover,0.92,18,33,42,19,157,1,0,Low,13,13,0
+AST_ENG_5999,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.54,11,71,80,1,24,1,0,Low,28,10,0
+AST_S&T_3241,SEC_HWH_DLI_01,S&T,Axle Counter Error,0.6,11,82,76,1,65,0,0,Medium,15,5,0
+AST_TRA_1924,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.78,6,79,83,2,11,1,0,Low,5,7,0
+AST_S&T_2898,SEC_DDU_YARD_04,S&T,Signal Aspect Lamp Fail,0.59,28,50,53,12,146,1,0,Medium,6,2,0
+AST_ENG_6444,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.93,23,58,67,5,186,1,0,High,38,68,0
+AST_ENG_8996,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.68,16,53,39,18,15,0,0,Low,18,3,0
+AST_TRA_6006,SEC_HWH_DLI_01,Traction,Cantilever Insulator Flashover,0.6,9,85,83,0,61,2,0,High,31,45,0
+AST_S&T_7640,SEC_BSB_LKO_04,S&T,Signal Aspect Lamp Fail,0.52,25,35,34,14,36,1,1,Medium,11,7,0
+AST_ENG_4187,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.79,5,89,80,1,133,0,0,High,32,48,0
+AST_TRA_6957,SEC_DDU_YARD_04,Traction,OHE Dropper Broken,0.7,22,57,60,1,169,0,0,High,26,39,0
+AST_ENG_1804,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.76,28,43,38,4,22,1,0,High,34,47,0
+AST_ENG_9312,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.7,12,65,56,1,94,2,0,Medium,26,24,1
+AST_TRA_9663,SEC_HWH_DLI_03,Traction,Contact Wire Sag,0.66,26,36,39,0,184,3,1,Medium,26,21,1
+AST_TRA_9971,SEC_DDU_YARD_03,Traction,Neutral Section Inspection,0.58,12,77,72,3,140,1,0,Low,25,17,1
+AST_TRA_7260,SEC_DDU_YARD_03,Traction,OHE Dropper Broken,0.88,28,35,35,9,128,0,2,Medium,23,24,1
+AST_S&T_2271,SEC_HWH_DLI_02,S&T,Axle Counter Error,0.81,1,94,99,2,47,1,0,High,16,81,0
+AST_TRA_6156,SEC_DDU_YARD_03,Traction,Neutral Section Inspection,0.61,8,71,68,3,129,1,0,High,45,30,1
+AST_TRA_7812,SEC_BSB_LKO_03,Traction,OHE Dropper Broken,0.65,18,60,57,4,178,0,0,High,51,89,0
+AST_ENG_8484,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.88,8,100,100,2,57,0,0,High,15,25,0
+AST_ENG_4410,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.74,21,60,64,0,103,2,0,Low,18,5,0
+AST_S&T_7438,SEC_DDU_YARD_01,S&T,Point Machine Detection Fault,0.63,29,57,44,3,74,0,0,Low,27,11,0
+AST_ENG_4157,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.76,27,55,53,0,139,0,0,Low,8,21,0
+AST_ENG_4026,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.7,23,39,37,15,135,1,1,Medium,10,13,1
+AST_S&T_5521,SEC_HWH_DLI_02,S&T,Axle Counter Error,0.78,27,65,45,4,189,1,0,Low,11,20,0
+AST_ENG_4256,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.93,24,27,19,21,72,2,0,High,46,22,1
+AST_TRA_5337,SEC_DDU_YARD_04,Traction,Contact Wire Sag,0.92,8,73,75,10,35,0,0,Medium,13,13,0
+AST_ENG_2357,SEC_DDU_YARD_01,Engineering,Track Gauge Spread,0.71,27,68,59,2,150,1,0,High,31,39,1
+AST_ENG_1257,SEC_HWH_DLI_02,Engineering,Point Machine Mechanical Fault,0.59,13,78,70,1,64,1,0,Medium,14,3,1
+AST_ENG_6182,SEC_HWH_DLI_04,Engineering,Ballast Deep Screening,0.94,8,87,89,1,90,1,0,Low,12,11,0
+AST_ENG_8717,SEC_HWH_DLI_02,Engineering,Ballast Deep Screening,0.85,9,94,100,0,71,0,0,Low,28,2,0
+AST_TRA_1305,SEC_BSB_LKO_01,Traction,Cantilever Insulator Flashover,0.65,8,94,94,1,94,1,1,Medium,7,10,0
+AST_TRA_7671,SEC_HWH_DLI_01,Traction,Contact Wire Sag,0.78,18,83,75,1,69,0,0,Low,26,20,0
+AST_TRA_6213,SEC_HWH_DLI_03,Traction,Cantilever Insulator Flashover,0.7,29,53,40,5,110,0,0,Low,12,3,1
+AST_ENG_4630,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.78,12,63,75,6,15,0,0,Low,23,2,1
+AST_S&T_7257,SEC_HWH_DLI_03,S&T,Signal Aspect Lamp Fail,0.74,9,83,91,4,144,2,0,Medium,24,16,1
+AST_TRA_6289,SEC_DDU_YARD_03,Traction,Neutral Section Inspection,0.84,15,66,49,11,186,0,0,Medium,13,11,0
+AST_ENG_1951,SEC_DDU_YARD_01,Engineering,Broken Rail Weld,0.98,5,88,83,7,138,0,0,Medium,20,19,0
+AST_ENG_6601,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.81,16,82,71,0,198,0,1,Medium,14,17,0
+AST_S&T_3260,SEC_BSB_LKO_01,S&T,Signal Aspect Lamp Fail,0.63,2,78,76,2,147,1,0,Low,22,12,1
+AST_S&T_3718,SEC_HWH_DLI_04,S&T,Axle Counter Error,0.94,16,56,58,13,86,0,0,Low,28,14,0
+AST_ENG_1400,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.51,15,79,75,5,187,0,1,Medium,23,7,0
+AST_TRA_5878,SEC_BSB_LKO_03,Traction,Neutral Section Inspection,0.83,19,62,52,1,181,1,0,Medium,24,22,1
+AST_S&T_8014,SEC_HWH_DLI_02,S&T,Axle Counter Error,0.82,12,76,72,5,82,2,0,High,28,40,1
+AST_ENG_6059,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.64,25,67,58,0,105,0,0,Medium,10,22,0
+AST_S&T_5323,SEC_HWH_DLI_02,S&T,Point Machine Detection Fault,0.92,24,58,79,4,155,1,1,Low,18,20,1
+AST_ENG_4710,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.58,10,96,100,0,23,0,0,High,10,41,0
+AST_S&T_5365,SEC_HWH_DLI_01,S&T,Track Circuit Short,0.92,20,56,66,7,93,0,0,High,33,29,0
+AST_ENG_3397,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.82,8,62,80,11,72,0,0,High,27,74,1
+AST_ENG_4518,SEC_HWH_DLI_02,Engineering,Track Gauge Spread,0.56,11,76,54,4,67,1,0,Low,13,15,0
+AST_TRA_6566,SEC_DDU_YARD_03,Traction,Contact Wire Sag,0.83,11,94,89,0,53,0,2,Medium,27,9,1
+AST_TRA_6969,SEC_BSB_LKO_01,Traction,Contact Wire Sag,0.5,10,70,64,8,127,1,0,Medium,17,5,0
+AST_ENG_1778,SEC_DDU_YARD_01,Engineering,Track Gauge Spread,0.56,11,69,74,7,45,0,0,Medium,25,19,0
+AST_TRA_7469,SEC_BSB_LKO_04,Traction,Neutral Section Inspection,0.65,6,72,63,4,61,0,0,Low,11,13,0
+AST_ENG_3563,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.63,20,67,65,1,28,0,0,Medium,21,16,0
+AST_ENG_9940,SEC_BSB_LKO_04,Engineering,Track Gauge Spread,0.56,9,60,56,6,165,0,0,Medium,23,12,1
+AST_ENG_8412,SEC_HWH_DLI_03,Engineering,Track Gauge Spread,0.71,14,74,91,8,113,0,0,Medium,26,17,0
+AST_S&T_2804,SEC_HWH_DLI_01,S&T,Track Circuit Short,0.73,6,79,100,2,13,1,0,Low,12,9,0
+AST_TRA_4949,SEC_HWH_DLI_04,Traction,Neutral Section Inspection,0.93,18,62,71,12,147,1,0,High,75,67,1
+AST_S&T_2519,SEC_DDU_YARD_03,S&T,Point Machine Detection Fault,0.8,5,83,80,0,37,0,0,Medium,21,12,0
+AST_ENG_3372,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.89,28,52,51,9,133,0,0,High,69,58,0
+AST_ENG_9757,SEC_DDU_YARD_03,Engineering,Track Gauge Spread,0.56,12,66,72,0,83,1,0,High,57,30,0
+AST_TRA_8165,SEC_HWH_DLI_02,Traction,OHE Dropper Broken,0.59,13,41,54,25,137,1,0,High,28,25,0
+AST_TRA_3078,SEC_DDU_YARD_03,Traction,Contact Wire Sag,0.98,25,49,45,3,164,2,0,Medium,5,16,1
+AST_ENG_7090,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.64,19,40,37,16,163,1,0,High,23,21,1
+AST_TRA_8224,SEC_HWH_DLI_01,Traction,OHE Dropper Broken,0.55,9,64,60,6,65,1,0,Medium,13,21,0
+AST_ENG_6259,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.76,29,55,63,4,50,0,1,Medium,13,16,0
+AST_TRA_5632,SEC_DDU_YARD_02,Traction,Contact Wire Sag,0.68,1,84,88,3,92,0,0,Low,27,6,0
+AST_ENG_6584,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.81,26,66,59,5,121,0,0,Low,9,6,0
+AST_S&T_5191,SEC_BSB_LKO_02,S&T,Signal Aspect Lamp Fail,0.7,1,79,72,4,40,0,0,High,35,31,0
+AST_S&T_2444,SEC_DDU_YARD_04,S&T,Signal Aspect Lamp Fail,0.84,11,69,76,3,197,1,0,Low,26,10,0
+AST_TRA_7910,SEC_HWH_DLI_03,Traction,Contact Wire Sag,0.5,19,78,75,3,61,1,0,Low,22,18,0
+AST_S&T_9527,SEC_DDU_YARD_04,S&T,Track Circuit Short,0.61,8,90,90,1,98,0,0,Medium,20,15,0
+AST_ENG_1026,SEC_BSB_LKO_04,Engineering,Ballast Deep Screening,0.7,7,77,97,1,21,0,0,Medium,25,5,0
+AST_S&T_9391,SEC_BSB_LKO_04,S&T,Point Machine Detection Fault,0.86,20,37,30,9,175,2,0,High,78,76,1
+AST_ENG_4813,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.94,13,85,62,1,166,0,0,Medium,11,24,1
+AST_TRA_3589,SEC_BSB_LKO_04,Traction,OHE Dropper Broken,0.97,7,78,95,0,38,1,1,Medium,26,21,0
+AST_ENG_6425,SEC_HWH_DLI_03,Engineering,Point Machine Mechanical Fault,0.6,5,74,69,4,19,2,0,High,49,32,1
+AST_TRA_2493,SEC_BSB_LKO_04,Traction,OHE Dropper Broken,0.92,26,47,57,3,63,3,0,Medium,18,13,1
+AST_S&T_5604,SEC_BSB_LKO_01,S&T,Point Machine Detection Fault,0.79,4,80,88,11,70,0,0,High,64,53,0
+AST_TRA_3319,SEC_DDU_YARD_03,Traction,Contact Wire Sag,0.83,6,79,70,13,132,0,0,Low,19,19,0
+AST_ENG_3864,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.67,1,100,85,8,39,0,0,High,13,88,1
+AST_TRA_3147,SEC_DDU_YARD_02,Traction,Contact Wire Sag,0.92,27,51,50,8,57,0,0,High,26,65,0
+AST_ENG_7910,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.66,21,49,49,7,184,5,0,High,13,61,1
+AST_ENG_7611,SEC_BSB_LKO_02,Engineering,Ballast Deep Screening,0.75,25,56,60,2,65,1,0,Low,19,18,1
+AST_TRA_4995,SEC_HWH_DLI_01,Traction,OHE Dropper Broken,0.64,4,84,87,4,169,1,0,Medium,5,21,0
+AST_S&T_1247,SEC_DDU_YARD_01,S&T,Point Machine Detection Fault,0.93,14,73,72,1,117,0,0,Medium,18,8,0
+AST_TRA_1360,SEC_HWH_DLI_03,Traction,Neutral Section Inspection,0.96,25,70,61,4,55,0,0,Low,14,8,0
+AST_TRA_4347,SEC_DDU_YARD_03,Traction,OHE Dropper Broken,0.61,6,100,95,0,80,2,0,Low,28,9,0
+AST_TRA_7977,SEC_BSB_LKO_03,Traction,Cantilever Insulator Flashover,0.9,16,65,61,0,160,2,1,Medium,18,3,0
+AST_ENG_9896,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.9,20,59,77,7,149,0,0,Medium,26,13,1
+AST_ENG_4246,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.75,6,56,62,17,65,0,0,High,13,56,0
+AST_ENG_7044,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.64,5,86,82,2,50,2,0,Medium,6,6,0
+AST_TRA_4052,SEC_HWH_DLI_02,Traction,OHE Dropper Broken,0.72,23,71,57,2,48,1,0,Low,9,12,0
+AST_S&T_5391,SEC_HWH_DLI_03,S&T,Point Machine Detection Fault,0.8,28,59,56,5,23,0,0,Medium,17,7,0
+AST_S&T_5027,SEC_HWH_DLI_02,S&T,Track Circuit Short,0.85,17,71,64,0,80,0,0,Medium,8,6,0
+AST_TRA_2921,SEC_DDU_YARD_04,Traction,Contact Wire Sag,0.75,5,66,63,24,50,0,2,High,46,70,1
+AST_S&T_2818,SEC_HWH_DLI_02,S&T,Axle Counter Error,0.95,6,100,91,4,69,0,0,High,54,37,0
+AST_ENG_3921,SEC_BSB_LKO_04,Engineering,Broken Rail Weld,0.79,29,61,72,2,35,0,0,Low,8,7,1
+AST_ENG_7476,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.71,27,46,50,7,130,1,1,Medium,25,14,1
+AST_ENG_2290,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.95,27,32,35,7,11,2,0,Medium,14,6,1
+AST_TRA_9813,SEC_DDU_YARD_02,Traction,Neutral Section Inspection,0.51,20,64,57,0,158,0,0,Medium,21,19,0
+AST_S&T_8105,SEC_DDU_YARD_03,S&T,Axle Counter Error,0.89,20,74,73,0,108,0,0,High,24,89,0
+AST_S&T_1178,SEC_HWH_DLI_02,S&T,Signal Aspect Lamp Fail,0.59,18,91,100,0,156,0,0,Low,19,24,0
+AST_ENG_8275,SEC_HWH_DLI_01,Engineering,Point Machine Mechanical Fault,0.61,4,79,67,5,64,0,0,Medium,25,3,0
+AST_ENG_7800,SEC_BSB_LKO_02,Engineering,Track Gauge Spread,0.96,2,86,71,0,25,0,0,Medium,8,21,0
+AST_S&T_8137,SEC_DDU_YARD_01,S&T,Signal Aspect Lamp Fail,0.94,11,75,78,3,30,0,0,High,23,87,0
+AST_TRA_2664,SEC_DDU_YARD_03,Traction,Contact Wire Sag,0.92,2,100,96,3,132,0,0,Medium,20,5,0
+AST_ENG_1002,SEC_DDU_YARD_01,Engineering,Ballast Deep Screening,0.97,4,84,77,10,83,1,0,Medium,17,15,1
+AST_TRA_7807,SEC_BSB_LKO_03,Traction,Cantilever Insulator Flashover,0.86,7,68,78,10,38,0,0,Medium,25,15,0
+AST_ENG_3937,SEC_BSB_LKO_03,Engineering,Ballast Deep Screening,0.97,11,68,66,1,77,1,0,Medium,20,11,1
+AST_ENG_1453,SEC_DDU_YARD_01,Engineering,Track Gauge Spread,0.98,14,76,74,13,44,0,0,Low,15,20,0
+AST_TRA_8421,SEC_BSB_LKO_02,Traction,Contact Wire Sag,0.77,19,62,62,4,110,1,0,High,46,43,0
+AST_TRA_7226,SEC_DDU_YARD_01,Traction,Cantilever Insulator Flashover,0.51,15,68,60,2,150,1,0,Medium,7,24,0
+AST_ENG_4120,SEC_HWH_DLI_04,Engineering,Point Machine Mechanical Fault,0.89,11,84,81,0,41,1,0,High,51,86,0
+AST_ENG_2634,SEC_DDU_YARD_01,Engineering,Track Gauge Spread,0.65,21,81,76,4,94,1,1,Medium,20,7,1
+AST_TRA_1017,SEC_DDU_YARD_01,Traction,OHE Dropper Broken,0.53,16,82,98,1,39,0,0,Medium,18,24,1
+AST_TRA_8107,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.83,13,81,97,6,136,1,0,High,12,38,0
+AST_ENG_1915,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.67,6,22,16,32,117,0,0,Medium,9,23,1
+AST_TRA_6414,SEC_BSB_LKO_04,Traction,Cantilever Insulator Flashover,0.55,6,100,100,0,135,1,0,Medium,22,6,1
+AST_S&T_3815,SEC_HWH_DLI_03,S&T,Signal Aspect Lamp Fail,0.81,13,88,86,1,166,1,0,Medium,25,2,0
+AST_TRA_5258,SEC_HWH_DLI_01,Traction,Neutral Section Inspection,0.62,17,76,77,6,166,0,0,Low,10,21,0
+AST_ENG_5174,SEC_HWH_DLI_03,Engineering,Broken Rail Weld,0.93,4,51,48,10,124,1,0,Medium,20,17,1
+AST_TRA_8157,SEC_BSB_LKO_01,Traction,OHE Dropper Broken,0.65,2,77,77,2,103,1,0,High,41,34,1
+AST_ENG_3392,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.87,7,87,95,1,166,0,1,Medium,16,13,0
+AST_ENG_7450,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.98,13,52,52,4,147,0,0,High,30,68,0
+AST_S&T_3297,SEC_BSB_LKO_04,S&T,Track Circuit Short,0.53,9,65,73,15,108,2,0,Medium,25,6,0
+AST_ENG_3768,SEC_BSB_LKO_01,Engineering,Point Machine Mechanical Fault,0.56,24,65,70,1,172,0,0,Low,7,21,1
+AST_S&T_6943,SEC_DDU_YARD_01,S&T,Signal Aspect Lamp Fail,0.57,12,76,71,5,20,0,0,Medium,10,20,0
+AST_TRA_7436,SEC_DDU_YARD_04,Traction,Neutral Section Inspection,0.92,2,92,92,3,116,1,0,Low,8,14,0
+AST_ENG_3086,SEC_DDU_YARD_02,Engineering,Point Machine Mechanical Fault,0.83,17,75,79,2,184,1,0,Low,19,18,0
+AST_ENG_6237,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.8,8,70,75,2,86,1,0,High,48,50,0
+AST_TRA_8768,SEC_HWH_DLI_04,Traction,Neutral Section Inspection,0.81,25,32,41,14,60,3,1,Medium,21,19,1
+AST_S&T_3533,SEC_HWH_DLI_04,S&T,Point Machine Detection Fault,0.88,2,74,85,6,110,0,0,Medium,6,17,0
+AST_ENG_7758,SEC_HWH_DLI_01,Engineering,Broken Rail Weld,0.5,5,68,76,9,141,0,0,Medium,12,12,1
+AST_S&T_8136,SEC_DDU_YARD_04,S&T,Point Machine Detection Fault,0.59,25,56,66,5,38,1,0,Low,29,4,0
+AST_ENG_5121,SEC_HWH_DLI_02,Engineering,Point Machine Mechanical Fault,0.95,17,68,68,3,11,0,0,Medium,8,15,0
+AST_TRA_9478,SEC_BSB_LKO_02,Traction,Neutral Section Inspection,0.87,4,89,72,6,52,0,0,High,69,30,0
+AST_ENG_8203,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.55,4,82,88,3,167,0,0,Low,28,2,0
+AST_S&T_6103,SEC_DDU_YARD_01,S&T,Signal Aspect Lamp Fail,0.96,6,66,51,8,176,1,0,Medium,17,23,1
+AST_S&T_8772,SEC_DDU_YARD_02,S&T,Signal Aspect Lamp Fail,0.52,4,79,83,6,182,0,0,Medium,29,15,0
+AST_ENG_9706,SEC_HWH_DLI_04,Engineering,Broken Rail Weld,0.74,29,30,34,3,145,2,2,Low,18,20,0
+AST_ENG_2067,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.73,20,80,62,0,15,0,0,Medium,6,4,0
+AST_ENG_2650,SEC_HWH_DLI_02,Engineering,Broken Rail Weld,0.67,6,91,89,2,147,1,0,Medium,22,2,0
+AST_ENG_8805,SEC_DDU_YARD_04,Engineering,Track Gauge Spread,0.79,21,64,61,2,114,0,0,Low,27,6,0
+AST_ENG_2635,SEC_DDU_YARD_03,Engineering,Broken Rail Weld,0.77,1,88,93,3,104,0,0,Medium,5,17,0
+AST_TRA_3962,SEC_BSB_LKO_02,Traction,Cantilever Insulator Flashover,0.79,29,42,38,3,56,2,0,Medium,24,12,1
+AST_TRA_4032,SEC_DDU_YARD_04,Traction,Neutral Section Inspection,0.82,29,39,23,7,92,3,0,Medium,6,19,0
+AST_TRA_5209,SEC_DDU_YARD_04,Traction,Contact Wire Sag,0.7,20,47,42,8,69,3,0,Medium,25,5,1
+AST_ENG_7023,SEC_HWH_DLI_04,Engineering,Point Machine Mechanical Fault,0.86,14,61,67,2,199,0,0,Medium,13,8,0
+AST_S&T_4532,SEC_HWH_DLI_01,S&T,Axle Counter Error,0.7,19,60,75,4,12,0,0,Medium,21,15,0
+AST_ENG_9459,SEC_DDU_YARD_03,Engineering,Track Gauge Spread,0.51,27,49,39,4,102,2,0,Low,14,24,0
+AST_ENG_9395,SEC_HWH_DLI_01,Engineering,Ballast Deep Screening,0.52,23,65,74,0,115,1,0,Medium,8,18,0
+AST_TRA_1854,SEC_BSB_LKO_03,Traction,Contact Wire Sag,0.84,11,89,90,3,48,1,0,High,28,81,0
+AST_ENG_6290,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.73,6,80,79,1,38,0,0,Medium,22,21,0
+AST_TRA_3707,SEC_BSB_LKO_04,Traction,Neutral Section Inspection,0.57,6,90,100,4,79,0,0,Medium,14,19,0
+AST_ENG_6337,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.82,20,79,82,1,124,1,0,Low,28,2,0
+AST_ENG_9509,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.81,9,81,70,1,23,0,0,High,74,69,0
+AST_ENG_7494,SEC_BSB_LKO_03,Engineering,Broken Rail Weld,0.94,19,55,49,2,95,0,0,Medium,19,7,0
+AST_S&T_5499,SEC_HWH_DLI_01,S&T,Axle Counter Error,0.91,21,69,71,3,110,2,0,Low,29,22,0
+AST_TRA_9470,SEC_BSB_LKO_01,Traction,Cantilever Insulator Flashover,0.76,24,47,25,6,56,1,0,Medium,13,2,0
+AST_ENG_9762,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.98,17,50,50,6,10,0,0,Medium,23,24,0
+AST_ENG_1423,SEC_DDU_YARD_04,Engineering,Point Machine Mechanical Fault,0.68,11,59,46,11,196,0,0,Medium,14,21,0
+AST_ENG_9571,SEC_HWH_DLI_02,Engineering,Track Gauge Spread,0.69,7,100,97,0,61,1,0,High,11,31,0
+AST_ENG_4918,SEC_BSB_LKO_03,Engineering,Point Machine Mechanical Fault,0.92,9,55,52,15,26,0,0,Medium,15,14,0
+AST_ENG_2071,SEC_HWH_DLI_03,Engineering,Broken Rail Weld,0.71,9,94,92,1,89,0,0,Medium,24,23,0
+AST_ENG_8574,SEC_DDU_YARD_03,Engineering,Ballast Deep Screening,0.65,11,61,80,11,115,0,1,High,43,49,0
+AST_S&T_6584,SEC_HWH_DLI_02,S&T,Axle Counter Error,0.9,2,68,66,7,112,1,0,High,12,37,1
+AST_S&T_8234,SEC_BSB_LKO_03,S&T,Axle Counter Error,0.65,3,98,89,1,120,0,0,Low,15,8,0
+AST_ENG_5433,SEC_BSB_LKO_02,Engineering,Broken Rail Weld,0.72,24,52,58,5,157,1,0,Medium,11,11,0
+AST_ENG_8675,SEC_DDU_YARD_01,Engineering,Ballast Deep Screening,0.56,22,53,50,1,30,0,0,Low,14,2,0
+AST_TRA_3687,SEC_DDU_YARD_02,Traction,Cantilever Insulator Flashover,0.52,1,99,100,1,31,0,0,High,33,30,0
+AST_ENG_1151,SEC_BSB_LKO_02,Engineering,Point Machine Mechanical Fault,0.61,15,66,60,2,192,0,0,Medium,29,4,1
+AST_ENG_3685,SEC_DDU_YARD_02,Engineering,Track Gauge Spread,0.71,28,63,83,1,174,0,0,Medium,27,7,0
+AST_S&T_9545,SEC_HWH_DLI_03,S&T,Track Circuit Short,0.85,5,76,86,1,70,1,0,Low,19,9,0
+AST_ENG_6550,SEC_HWH_DLI_01,Engineering,Track Gauge Spread,0.58,24,46,42,11,160,2,1,Medium,18,12,1
+AST_ENG_2716,SEC_BSB_LKO_01,Engineering,Broken Rail Weld,0.8,25,54,46,4,171,0,0,High,72,58,0
+AST_ENG_6328,SEC_DDU_YARD_02,Engineering,Ballast Deep Screening,0.77,25,53,59,6,150,2,0,High,50,60,1
+AST_TRA_3812,SEC_HWH_DLI_04,Traction,Neutral Section Inspection,0.77,3,97,93,3,126,2,0,Medium,24,5,0
+AST_S&T_8599,SEC_DDU_YARD_02,S&T,Signal Aspect Lamp Fail,0.58,12,59,62,6,121,0,0,Medium,10,13,0
+AST_ENG_5505,SEC_DDU_YARD_03,Engineering,Ballast Deep Screening,0.69,16,85,76,5,81,1,0,Medium,25,14,0
+AST_ENG_6803,SEC_BSB_LKO_01,Engineering,Track Gauge Spread,0.85,28,70,79,4,192,0,0,High,42,27,0
+AST_S&T_7522,SEC_DDU_YARD_04,S&T,Point Machine Detection Fault,0.95,26,43,50,2,107,1,0,Low,7,23,1
+AST_S&T_4504,SEC_DDU_YARD_02,S&T,Track Circuit Short,0.95,17,64,58,4,30,1,0,High,26,39,0
+AST_ENG_5604,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.77,9,74,67,1,87,2,0,High,62,61,0
+AST_ENG_7741,SEC_HWH_DLI_03,Engineering,Ballast Deep Screening,0.82,7,75,78,4,122,0,0,Low,18,4,0
+AST_S&T_5450,SEC_DDU_YARD_02,S&T,Axle Counter Error,0.57,11,84,79,0,12,0,0,Medium,9,22,0
+AST_S&T_9965,SEC_HWH_DLI_03,S&T,Signal Aspect Lamp Fail,0.78,18,78,81,2,72,0,0,Low,6,10,0
+AST_TRA_8249,SEC_DDU_YARD_01,Traction,OHE Dropper Broken,0.9,23,62,46,3,73,0,0,Medium,12,10,1
+AST_S&T_3501,SEC_DDU_YARD_04,S&T,Track Circuit Short,0.8,28,59,53,4,108,0,0,Medium,20,3,0
+AST_ENG_8349,SEC_DDU_YARD_04,Engineering,Ballast Deep Screening,0.92,14,69,71,2,136,0,1,High,24,19,1
+AST_TRA_1345,SEC_BSB_LKO_03,Traction,Contact Wire Sag,0.82,13,79,80,1,122,1,0,High,18,43,0
+AST_ENG_5734,SEC_HWH_DLI_04,Engineering,Track Gauge Spread,0.83,27,50,52,5,80,1,0,High,27,77,0
+AST_S&T_4811,SEC_DDU_YARD_03,S&T,Track Circuit Short,0.56,12,75,71,2,54,1,1,High,27,70,1

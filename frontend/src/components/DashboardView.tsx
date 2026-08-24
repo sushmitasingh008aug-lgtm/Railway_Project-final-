@@ -1,8 +1,5 @@
 import React from 'react';
 import {
-  PieChart,
-  Pie,
-  Cell,
   BarChart,
   Bar,
   XAxis,
@@ -10,24 +7,20 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
   AreaChart,
-  Area
+  Area,
 } from 'recharts';
 import {
-  ClipboardList,
-  AlertTriangle,
-  Calendar,
-  PieChart as PieIcon,
-  Train,
-  ShieldCheck,
-  ExternalLink,
-  ChevronRight,
-  Sparkles,
+  CalendarRange,
   Clock,
   IndianRupee,
-  Bell
+  Bell,
+  ArrowRight,
 } from 'lucide-react';
-import { MetricsResponse, ImpactResponse } from '../api/client';
+import { MetricsResponse, ImpactResponse, ScheduledTask } from '../api/client';
 import { ViewType } from './Sidebar';
 
 interface DashboardViewProps {
@@ -35,468 +28,388 @@ interface DashboardViewProps {
   impact: ImpactResponse | null;
   loading: boolean;
   onNavigate: (view: ViewType) => void;
+  schedule?: ScheduledTask[];
 }
 
-export const DashboardView: React.FC<DashboardViewProps> = ({ metrics, impact, loading, onNavigate }) => {
-  // Department Donut Data
-  const deptData = [
-    { name: 'Engineering', value: 650, pct: '52%', color: '#3b82f6' },
-    { name: 'TRD', value: 349, pct: '28%', color: '#22c55e' },
-    { name: 'S&T', value: 249, pct: '20%', color: '#f97316' },
-  ];
+const DEPT_COLORS: Record<string, string> = {
+  Engineering: '#2563eb',
+  Traction: '#ea580c',
+  'S&T': '#16a34a',
+};
 
-  // Priority Distribution Data
-  const priorityData = [
-    { name: 'Critical', value: 210, fill: '#ef4444' },
-    { name: 'High', value: 420, fill: '#f97316' },
-    { name: 'Medium', value: 380, fill: '#eab308' },
-    { name: 'Low', value: 238, fill: '#22c55e' },
-  ];
+const ASSET_COLORS = ['#2563eb', '#7c3aed', '#16a34a', '#d97706'];
 
-  // Utilization Trend Data
-  const trendData = [
-    { date: '17 May', val: 70 },
-    { date: '18 May', val: 72 },
-    { date: '19 May', val: 74 },
-    { date: '20 May', val: 76 },
-    { date: '21 May', val: 78 },
-    { date: '22 May', val: 78 },
-    { date: '23 May', val: 78 },
-  ];
+type BlockRow = {
+  task_id: string;
+  section_name: string;
+  assigned_start_time: string;
+  assigned_end_time: string;
+  duration_minutes: number;
+  department: string;
+  criticality: string;
+};
 
-  // Asset Type Donut Data
+const FALLBACK_BLOCKS: BlockRow[] = [
+  { task_id: 'FB1', section_name: 'NDLS – ALD', assigned_start_time: '24 May, 01:00', assigned_end_time: '05:00', duration_minutes: 240, department: 'Engineering', criticality: 'High' },
+  { task_id: 'FB2', section_name: 'ALD – CNB', assigned_start_time: '25 May, 23:00', assigned_end_time: '04:00', duration_minutes: 300, department: 'Traction', criticality: 'High' },
+  { task_id: 'FB3', section_name: 'CNB – PRYJ', assigned_start_time: '27 May, 01:30', assigned_end_time: '06:30', duration_minutes: 300, department: 'Engineering', criticality: 'High' },
+  { task_id: 'FB4', section_name: 'PRYJ – MGS', assigned_start_time: '28 May, 22:30', assigned_end_time: '03:30', duration_minutes: 300, department: 'Engineering', criticality: 'Critical' },
+  { task_id: 'FB5', section_name: 'MGS – BSB', assigned_start_time: '30 May, 01:00', assigned_end_time: '06:00', duration_minutes: 300, department: 'Traction', criticality: 'Low' },
+];
+
+const STATIC_TREND = [65, 72, 68, 78, 75, 82, 79];
+const TREND_DATES = ['17 May', '18 May', '19 May', '20 May', '21 May', '22 May', '23 May'];
+
+function getStatus(criticality: string): { label: string; cls: string } {
+  if (criticality === 'Critical') return { label: 'Under Review', cls: 'bg-amber-50 text-amber-700 border border-amber-200' };
+  if (criticality === 'High') return { label: 'Planned', cls: 'bg-green-50 text-green-700 border border-green-200' };
+  if (criticality === 'Medium') return { label: 'Planned', cls: 'bg-green-50 text-green-700 border border-green-200' };
+  return { label: 'Proposed', cls: 'bg-slate-100 text-slate-600 border border-slate-200' };
+}
+
+function deptShort(d: string) {
+  if (d === 'Engineering') return 'ENG';
+  if (d === 'Traction') return 'TRD';
+  return 'S&T';
+}
+
+function deptColor(d: string) {
+  if (d === 'Engineering') return 'bg-blue-600';
+  if (d === 'Traction') return 'bg-orange-500';
+  return 'bg-green-600';
+}
+
+export const DashboardView: React.FC<DashboardViewProps> = ({
+  metrics,
+  impact,
+  loading,
+  onNavigate,
+  schedule = [],
+}) => {
+  if (loading || !metrics) {
+    return (
+      <div className="space-y-4 pb-8">
+        <div className="grid grid-cols-3 gap-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded-xl h-56 animate-pulse" />
+          ))}
+        </div>
+        <div className="grid grid-cols-12 gap-4">
+          {[5, 4, 3].map((span, i) => (
+            <div key={i} className={`bg-white border border-gray-200 rounded-xl h-64 animate-pulse col-span-${span}`} />
+          ))}
+        </div>
+        <div className="grid grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded-xl h-32 animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const hl = metrics.high_level;
+
+  /* ── Dept donut ── */
+  const deptData = metrics.dept_workload.map((d) => ({
+    name: d.department === 'Traction' ? 'TRD' : d.department,
+    fullName: d.department,
+    value: d.count,
+    color: DEPT_COLORS[d.department] || '#6b7280',
+  }));
+  const deptTotal = metrics.dept_workload.reduce((s, d) => s + d.count, 0);
+
+  /* ── Priority bar ── */
+  const priorityData = ['Critical', 'High', 'Medium', 'Low'].map((crit) => ({
+    name: crit,
+    value: metrics.priority_dist.filter((p) => p.criticality === crit).reduce((s, p) => s + p.count, 0),
+    fill: crit === 'Critical' ? '#dc2626' : crit === 'High' ? '#ea580c' : crit === 'Medium' ? '#d97706' : '#16a34a',
+  }));
+
+  /* ── Asset type donut ── */
+  const engCount = metrics.dept_workload.find((d) => d.department === 'Engineering')?.count || 0;
+  const tracCount = metrics.dept_workload.find((d) => d.department === 'Traction')?.count || 0;
+  const sntCount = metrics.dept_workload.find((d) => d.department === 'S&T')?.count || 0;
+  const othersCount = Math.max(0, deptTotal - engCount - tracCount - sntCount);
   const assetData = [
-    { name: 'Track', value: 561, pct: '45%', color: '#3b82f6' },
-    { name: 'OHE', value: 312, pct: '25%', color: '#22c55e' },
-    { name: 'Signals', value: 187, pct: '15%', color: '#f97316' },
-    { name: 'Others', value: 188, pct: '15%', color: '#8b5cf6' },
+    { name: 'Track', value: engCount },
+    { name: 'OHE', value: tracCount },
+    { name: 'Signals', value: sntCount },
+    ...(othersCount > 0 ? [{ name: 'Others', value: othersCount }] : []),
+  ].filter((d) => d.value > 0);
+
+  /* ── Utilization trend ── */
+  const trendData = TREND_DATES.map((date, i) => {
+    const dayStart = i * 1440;
+    const dayEnd = (i + 1) * 1440;
+    const dayTasks = schedule.filter((t) => t.start_minute >= dayStart && t.start_minute < dayEnd);
+    const usedMin = dayTasks.reduce((sum, t) => sum + t.duration_minutes, 0);
+    const utilPct =
+      schedule.length > 0 ? Math.min(100, Math.round((usedMin / 1080) * 100)) : STATIC_TREND[i];
+    return { date, utilization: utilPct };
+  });
+
+  /* ── Upcoming blocks ── */
+  const displayBlocks: BlockRow[] =
+    schedule.length > 0
+      ? schedule.slice(0, 5).map((t) => ({
+          task_id: t.task_id,
+          section_name: t.section_name,
+          assigned_start_time: t.assigned_start_time,
+          assigned_end_time: t.assigned_end_time,
+          duration_minutes: t.duration_minutes,
+          department: t.department,
+          criticality: t.criticality,
+        }))
+      : FALLBACK_BLOCKS;
+
+  const miniCards = displayBlocks.slice(0, 3);
+
+  /* ── Bottom stats ── */
+  const optimalBlocks = hl.combined_blocks_count ?? 18;
+  const maintenanceHrs = impact ? parseInt(impact.impact.delay_avoided_hours) || 32 : 32;
+
+  const recentAlerts = [
+    { text: 'Critical defect in ALD–CNB (Track)', time: '10m ago', color: 'bg-red-500' },
+    { text: 'Block conflict detected on 27 May', time: '25m ago', color: 'bg-amber-500' },
+    { text: 'High maintenance demand in NDLS', time: '1h ago', color: 'bg-amber-400' },
   ];
 
-  // Upcoming Blocks Table Data
-  const upcomingBlocks = [
-    { id: 'B1', section: 'NDLS - ALD', datetime: '24 May, 01:00 - 05:00', duration: '4h', depts: 'ENG, S&T', status: 'Planned', statusColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' },
-    { id: 'B2', section: 'ALD - CNB', datetime: '25 May, 23:00 - 04:00', duration: '5h', depts: 'TRD', status: 'Planned', statusColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' },
-    { id: 'B3', section: 'CNB - PRYJ', datetime: '27 May, 01:30 - 06:30', duration: '5h', depts: 'ENG, TRD, S&T', status: 'Planned', statusColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' },
-    { id: 'B4', section: 'PRYJ - MGS', datetime: '28 May, 22:30 - 03:30', duration: '5h', depts: 'ENG, S&T', status: 'Under Review', statusColor: 'bg-amber-500/10 text-amber-400 border-amber-500/30' },
-    { id: 'B5', section: 'MGS - BSB', datetime: '30 May, 01:00 - 06:00', duration: '5h', depts: 'TRD', status: 'Proposed', statusColor: 'bg-blue-500/10 text-blue-400 border-blue-500/30' },
-  ];
+  const corridorNodes = ['NDLS', 'ALD', 'CNB', 'PRYJ'];
+  const card = 'bg-white border border-gray-200 rounded-xl';
 
   return (
-    <div className="space-y-5 pb-8 select-none">
-      {/* 1. TOP KPI METRICS ROW (6 CARDS) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-        {/* Card 1 */}
-        <button
-          onClick={() => onNavigate('demand')}
-          className="bg-[#101726] border border-[#1d273a] rounded-2xl p-4 flex flex-col justify-between shadow-lg hover:border-purple-500/50 hover:bg-[#141d30] transition text-left group"
-        >
-          <div className="flex items-center justify-between w-full">
-            <span className="text-[11px] font-medium text-slate-400 group-hover:text-slate-200">Total Maintenance Demands</span>
-            <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 group-hover:scale-110 transition">
-              <ClipboardList className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <h3 className="text-2xl font-black text-white tracking-tight">1,248</h3>
-            <p className="text-[11px] font-semibold text-emerald-400 mt-1 flex items-center gap-1">
-              <span>+12%</span> <span className="text-slate-400 font-normal">from last week</span>
-            </p>
-          </div>
-        </button>
+    <div className="space-y-4 pb-8 select-none">
 
-        {/* Card 2 */}
-        <button
-          onClick={() => onNavigate('demand')}
-          className="bg-[#101726] border border-[#1d273a] rounded-2xl p-4 flex flex-col justify-between shadow-lg hover:border-red-500/50 hover:bg-[#141d30] transition text-left group"
-        >
-          <div className="flex items-center justify-between w-full">
-            <span className="text-[11px] font-medium text-slate-400 group-hover:text-slate-200">Critical & Overdue</span>
-            <div className="p-2 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 group-hover:scale-110 transition">
-              <AlertTriangle className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <h3 className="text-2xl font-black text-white tracking-tight">210</h3>
-            <p className="text-[11px] font-semibold text-red-400 mt-1 flex items-center gap-1">
-              <span>+8%</span> <span className="text-slate-400 font-normal">from last week</span>
-            </p>
-          </div>
-        </button>
+      {/* ━━━ Row 1 ━━━ */}
+      <div className="grid grid-cols-3 gap-4">
 
-        {/* Card 3 */}
-        <button
-          onClick={() => onNavigate('planning')}
-          className="bg-[#101726] border border-[#1d273a] rounded-2xl p-4 flex flex-col justify-between shadow-lg hover:border-blue-500/50 hover:bg-[#141d30] transition text-left group"
-        >
-          <div className="flex items-center justify-between w-full">
-            <span className="text-[11px] font-medium text-slate-400 group-hover:text-slate-200">Blocks Planned (This Week)</span>
-            <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 group-hover:scale-110 transition">
-              <Calendar className="w-4 h-4" />
-            </div>
+        {/* Workload Donut */}
+        <div className={`${card} p-5`}>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Workload by Department</h2>
+            <button onClick={() => onNavigate('demand')} className="text-[11px] text-blue-600 hover:underline font-medium">Backlog →</button>
           </div>
-          <div className="mt-3">
-            <h3 className="text-2xl font-black text-white tracking-tight">156</h3>
-            <p className="text-[11px] font-semibold text-emerald-400 mt-1 flex items-center gap-1">
-              <span>+15%</span> <span className="text-slate-400 font-normal">from last week</span>
-            </p>
-          </div>
-        </button>
-
-        {/* Card 4 */}
-        <button
-          onClick={() => onNavigate('reports')}
-          className="bg-[#101726] border border-[#1d273a] rounded-2xl p-4 flex flex-col justify-between shadow-lg hover:border-emerald-500/50 hover:bg-[#141d30] transition text-left group"
-        >
-          <div className="flex items-center justify-between w-full">
-            <span className="text-[11px] font-medium text-slate-400 group-hover:text-slate-200">Block Utilization</span>
-            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 group-hover:scale-110 transition">
-              <PieIcon className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <h3 className="text-2xl font-black text-white tracking-tight">78%</h3>
-            <p className="text-[11px] font-semibold text-emerald-400 mt-1 flex items-center gap-1">
-              <span>+6%</span> <span className="text-slate-400 font-normal">from last week</span>
-            </p>
-          </div>
-        </button>
-
-        {/* Card 5 */}
-        <button
-          onClick={() => onNavigate('traffic')}
-          className="bg-[#101726] border border-[#1d273a] rounded-2xl p-4 flex flex-col justify-between shadow-lg hover:border-amber-500/50 hover:bg-[#141d30] transition text-left group"
-        >
-          <div className="flex items-center justify-between w-full">
-            <span className="text-[11px] font-medium text-slate-400 group-hover:text-slate-200">Train Disruptions Avoided</span>
-            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 group-hover:scale-110 transition">
-              <Train className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <h3 className="text-2xl font-black text-white tracking-tight">
-              {metrics?.high_level?.disruptions_avoided ? metrics.high_level.disruptions_avoided : 24}
-            </h3>
-            <p className="text-[11px] font-semibold text-emerald-400 mt-1 flex items-center gap-1">
-              <span>+20%</span> <span className="text-slate-400 font-normal">from last week</span>
-            </p>
-          </div>
-        </button>
-
-        {/* Card 6 */}
-        <button
-          onClick={() => onNavigate('assets')}
-          className="bg-[#101726] border border-[#1d273a] rounded-2xl p-4 flex flex-col justify-between shadow-lg hover:border-teal-500/50 hover:bg-[#141d30] transition text-left group"
-        >
-          <div className="flex items-center justify-between w-full">
-            <span className="text-[11px] font-medium text-slate-400 group-hover:text-slate-200">Assets Available</span>
-            <div className="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 group-hover:scale-110 transition">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <h3 className="text-2xl font-black text-white tracking-tight">92%</h3>
-            <p className="text-[11px] font-semibold text-emerald-400 mt-1 flex items-center gap-1">
-              <span>+5%</span> <span className="text-slate-400 font-normal">from last week</span>
-            </p>
-          </div>
-        </button>
-      </div>
-
-      {/* 2. MIDDLE ROW GRID (3 CARDS) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Card 1: Maintenance Demand by Department */}
-        <div className="lg:col-span-4 bg-[#101726] border border-[#1d273a] rounded-2xl p-5 shadow-lg flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              Maintenance Demand by Department
-            </h2>
-            <button
-              onClick={() => onNavigate('departments')}
-              className="text-[11px] text-blue-400 hover:text-blue-300 font-semibold"
-            >
-              View Depts →
-            </button>
-          </div>
-          <div className="flex items-center justify-between my-2">
-            <div className="w-36 h-36 relative flex items-center justify-center">
+          <div className="flex items-center gap-4">
+            <div className="w-32 h-32 relative flex items-center justify-center shrink-0">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie
-                    data={deptData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={42}
-                    outerRadius={62}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
-                    {deptData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
+                  <Pie data={deptData} cx="50%" cy="50%" innerRadius={40} outerRadius={58} paddingAngle={2} dataKey="value" stroke="none">
+                    {deptData.map((d, i) => <Cell key={i} fill={d.color} />)}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-base font-extrabold text-white leading-none">1,248</span>
-                <span className="text-[10px] text-slate-400 font-medium">Total</span>
+                <span className="text-base font-bold text-gray-900 leading-none">{deptTotal.toLocaleString()}</span>
+                <span className="text-[10px] text-gray-400">Total</span>
               </div>
             </div>
-
-            <div className="space-y-3 flex-1 pl-4">
+            <div className="space-y-2 flex-1">
               {deptData.map((d) => (
-                <button
-                  key={d.name}
-                  onClick={() => onNavigate('departments')}
-                  className="w-full flex items-center justify-between text-xs hover:bg-[#141d30] p-1 rounded-lg transition"
-                >
+                <div key={d.name} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.color }}></span>
-                    <span className="text-slate-300 font-medium">{d.name}</span>
+                    <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: d.color }} />
+                    <span className="text-gray-700 font-medium">{d.name}</span>
                   </div>
-                  <span className="text-slate-400 font-semibold">{d.pct} ({d.value})</span>
-                </button>
+                  <span className="text-gray-500 font-semibold text-[11px]">
+                    {Math.round((d.value / deptTotal) * 100)}% ({d.value})
+                  </span>
+                </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Card 2: Maintenance Priority Distribution */}
-        <div className="lg:col-span-4 bg-[#101726] border border-[#1d273a] rounded-2xl p-5 shadow-lg flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              Maintenance Priority Distribution
-            </h2>
-            <button
-              onClick={() => onNavigate('demand')}
-              className="text-[11px] text-blue-400 hover:text-blue-300 font-semibold"
-            >
-              View Backlog →
-            </button>
+        {/* Priority Bar */}
+        <div className={`${card} p-5`}>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Priority Distribution</h2>
+            <button onClick={() => onNavigate('demand')} className="text-[11px] text-blue-600 hover:underline font-medium">Details →</button>
           </div>
-          <div className="h-44 w-full cursor-pointer" onClick={() => onNavigate('demand')}>
+          <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={priorityData} margin={{ top: 15, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                <XAxis dataKey="name" stroke="#94a3b8" tick={{ fontSize: 11 }} />
-                <YAxis stroke="#94a3b8" tick={{ fontSize: 10 }} domain={[0, 800]} ticks={[0, 200, 400, 600, 800]} />
+              <BarChart data={priorityData} margin={{ top: 6, right: 6, left: -22, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6b7280' }} axisLine={{ stroke: '#e5e7eb' }} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
+                  cursor={{ fill: '#f9fafb' }}
+                  contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 12, color: '#111827' }}
                 />
-                <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                  {priorityData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
+                <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={44}>
+                  {priorityData.map((e, i) => <Cell key={i} fill={e.fill} />)}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Card 3: AI Recommended Blocks (This Week) */}
-        <div className="lg:col-span-4 bg-[#101726] border border-[#1d273a] rounded-2xl p-5 shadow-lg flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              AI Recommended Blocks (This Week)
-            </h2>
-            <button
-              onClick={() => onNavigate('planning')}
-              className="text-[11px] text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1"
-            >
-              <span>View on Map</span>
-              <ExternalLink className="w-3 h-3" />
-            </button>
+        {/* Corridor Nodes + Mini Block Cards */}
+        <div className={`${card} p-5`}>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Corridor Status</h2>
+            <button onClick={() => onNavigate('networkmap')} className="text-[11px] text-blue-600 hover:underline font-medium">Map →</button>
           </div>
 
-          {/* Corridor Node Diagram */}
-          <div className="my-2.5 px-2">
-            <div className="flex items-center justify-between relative">
-              <div className="absolute left-3 right-3 top-1/2 -translate-y-1/2 h-0.5 bg-blue-500/40 z-0"></div>
-              {['NDLS', 'ALD', 'CNB', 'PRYJ'].map((node) => (
-                <div key={node} className="relative z-10 flex flex-col items-center">
-                  <div className="w-3.5 h-3.5 rounded-full bg-[#101726] border-2 border-blue-400 flex items-center justify-center">
-                    <div className="w-1 h-1 rounded-full bg-blue-400"></div>
+          {/* Node rail */}
+          <div className="flex items-center justify-between mb-4 px-1">
+            {corridorNodes.map((node, i) => (
+              <React.Fragment key={node}>
+                <div className="flex flex-col items-center gap-1">
+                  <div className="w-7 h-7 rounded-full bg-blue-50 border-2 border-blue-500 flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-blue-600" />
                   </div>
-                  <span className="text-[10px] font-bold text-slate-300 mt-1">{node}</span>
+                  <span className="text-[10px] font-bold text-gray-700">{node}</span>
                 </div>
-              ))}
-            </div>
+                {i < corridorNodes.length - 1 && (
+                  <div className="flex-1 h-px bg-blue-200 mx-1 mb-3" />
+                )}
+              </React.Fragment>
+            ))}
           </div>
 
-          {/* Block Cards Carousel */}
-          <div className="grid grid-cols-3 gap-2 mt-2">
-            {/* Block B1 */}
-            <button
-              onClick={() => onNavigate('planning')}
-              className="p-2.5 rounded-xl bg-[#121b2d] border border-emerald-500/40 hover:border-emerald-500 transition text-left group"
-            >
-              <span className="text-[10px] font-extrabold text-emerald-400 block group-hover:underline">Block B1</span>
-              <p className="text-[9px] text-slate-300 font-medium mt-0.5">24 May, 01:00 - 05:00 4h</p>
-              <span className="text-[9px] font-semibold text-slate-400 block mt-1">Engineering + S&T</span>
-            </button>
-
-            {/* Block B2 */}
-            <button
-              onClick={() => onNavigate('planning')}
-              className="p-2.5 rounded-xl bg-[#121b2d] border border-blue-500/40 hover:border-blue-500 transition text-left group"
-            >
-              <span className="text-[10px] font-extrabold text-blue-400 block group-hover:underline">Block B2</span>
-              <p className="text-[9px] text-slate-300 font-medium mt-0.5">25 May, 23:00 - 04:00 5h</p>
-              <span className="text-[9px] font-semibold text-slate-400 block mt-1">TRD</span>
-            </button>
-
-            {/* Block B3 */}
-            <button
-              onClick={() => onNavigate('planning')}
-              className="p-2.5 rounded-xl bg-[#121b2d] border border-purple-500/40 hover:border-purple-500 transition text-left group"
-            >
-              <span className="text-[10px] font-extrabold text-purple-400 block group-hover:underline">Block B3</span>
-              <p className="text-[9px] text-slate-300 font-medium mt-0.5">27 May, 01:30 - 06:30 5h</p>
-              <span className="text-[9px] font-semibold text-slate-400 block mt-1">Engineering + TRD + S&T</span>
-            </button>
+          {/* Mini block cards */}
+          <div className="grid grid-cols-3 gap-2">
+            {miniCards.map((block, i) => {
+              const hours = Math.round(block.duration_minutes / 60);
+              const topColor = deptColor(block.department);
+              return (
+                <div key={block.task_id} className="rounded-lg overflow-hidden border border-gray-200">
+                  <div className={`${topColor} px-2 py-1`}>
+                    <span className="text-white text-[10px] font-bold">Block B{i + 1}</span>
+                  </div>
+                  <div className="px-2 py-1.5 bg-white space-y-0.5">
+                    <p className="text-[9px] text-gray-500 leading-tight truncate">{block.assigned_start_time}</p>
+                    <p className="text-[10px] font-bold text-gray-800">{hours}h</p>
+                    <p className="text-[9px] text-gray-400 truncate">{deptShort(block.department)}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* 3. BOTTOM ROW GRID (3 CARDS) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Card 1: Upcoming Blocks Table */}
-        <div className="lg:col-span-5 bg-[#101726] border border-[#1d273a] rounded-2xl p-5 shadow-lg flex flex-col justify-between">
+      {/* ━━━ Row 2 ━━━ */}
+      <div className="grid grid-cols-12 gap-4">
+
+        {/* Upcoming Blocks Table */}
+        <div className={`${card} p-5 col-span-5`}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              Upcoming Blocks
-            </h2>
-            <button
-              onClick={() => onNavigate('planning')}
-              className="text-[11px] text-blue-400 hover:text-blue-300 font-semibold"
-            >
-              Master Gantt →
-            </button>
+            <h2 className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Upcoming Blocks</h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-[#1e293b] text-[10px] font-bold text-slate-400 uppercase">
-                  <th className="pb-2">Block ID</th>
-                  <th className="pb-2">Route / Section</th>
-                  <th className="pb-2">Date & Time</th>
-                  <th className="pb-2">Duration</th>
-                  <th className="pb-2">Departments</th>
-                  <th className="pb-2">Status</th>
+                <tr className="text-[10px] font-semibold text-gray-400 uppercase border-b border-gray-100">
+                  <th className="pb-2 pr-3 font-semibold">Block ID</th>
+                  <th className="pb-2 pr-3 font-semibold">Route / Section</th>
+                  <th className="pb-2 pr-3 font-semibold">Date &amp; Time</th>
+                  <th className="pb-2 pr-3 font-semibold">Dur.</th>
+                  <th className="pb-2 pr-3 font-semibold">Depts</th>
+                  <th className="pb-2 font-semibold">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1e293b]/60 text-[11px]">
-                {upcomingBlocks.map((b) => (
-                  <tr
-                    key={b.id}
-                    onClick={() => onNavigate('planning')}
-                    className="hover:bg-[#152033] transition cursor-pointer"
-                  >
-                    <td className="py-2.5 font-bold text-slate-200">{b.id}</td>
-                    <td className="py-2.5 text-slate-300 font-medium">{b.section}</td>
-                    <td className="py-2.5 text-slate-400">{b.datetime}</td>
-                    <td className="py-2.5 text-slate-400">{b.duration}</td>
-                    <td className="py-2.5 text-slate-300 font-medium">{b.depts}</td>
-                    <td className="py-2.5">
-                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${b.statusColor}`}>
-                        {b.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+              <tbody className="divide-y divide-gray-50">
+                {displayBlocks.map((block, i) => {
+                  const status = getStatus(block.criticality);
+                  const hours = Math.round(block.duration_minutes / 60);
+                  return (
+                    <tr key={block.task_id} className="hover:bg-gray-50 transition-colors">
+                      <td className="py-2.5 pr-3 text-xs font-bold text-blue-600">B{i + 1}</td>
+                      <td className="py-2.5 pr-3 text-xs text-gray-800 font-medium">{block.section_name}</td>
+                      <td className="py-2.5 pr-3 text-xs text-gray-500">{block.assigned_start_time}</td>
+                      <td className="py-2.5 pr-3 text-xs text-gray-500">{hours}h</td>
+                      <td className="py-2.5 pr-3 text-xs text-gray-500">{deptShort(block.department)}</td>
+                      <td className="py-2.5">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${status.cls}`}>
+                          {status.label}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
-          <div className="mt-3 text-center">
-            <button
-              onClick={() => onNavigate('planning')}
-              className="text-xs text-blue-400 hover:text-blue-300 font-semibold inline-flex items-center gap-1"
-            >
-              <span>View All Blocks</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          <button
+            onClick={() => onNavigate('planning')}
+            className="mt-3 text-[11px] text-blue-600 hover:underline font-medium flex items-center gap-1"
+          >
+            View All Blocks <ArrowRight className="w-3 h-3" />
+          </button>
         </div>
 
-        {/* Card 2: Block Utilization Trend */}
-        <div className="lg:col-span-4 bg-[#101726] border border-[#1d273a] rounded-2xl p-5 shadow-lg flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              Block Utilization Trend
-            </h2>
-            <button
-              onClick={() => onNavigate('reports')}
-              className="text-[11px] text-blue-400 hover:text-blue-300 font-semibold"
-            >
-              Analytics →
-            </button>
+        {/* Block Utilization Trend */}
+        <div className={`${card} p-5 col-span-4`}>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Block Utilization Trend</h2>
           </div>
-          <div className="h-48 w-full cursor-pointer" onClick={() => onNavigate('reports')}>
+          <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={trendData} margin={{ top: 15, right: 10, left: -25, bottom: 0 }}>
+              <AreaChart data={trendData} margin={{ top: 5, right: 5, left: -26, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0} />
+                  <linearGradient id="utilGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                <XAxis dataKey="date" stroke="#94a3b8" tick={{ fontSize: 10 }} />
-                <YAxis stroke="#94a3b8" tick={{ fontSize: 10 }} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(v) => `${v}%`} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', color: '#fff', fontSize: '11px' }}
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+                <XAxis dataKey="date" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                <YAxis
+                  domain={[0, 100]}
+                  tick={{ fontSize: 9, fill: '#9ca3af' }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `${v}%`}
                 />
-                <Area type="monotone" dataKey="val" stroke="#3b82f6" strokeWidth={2.5} fillOpacity={1} fill="url(#trendGrad)" dot={{ r: 3, fill: '#3b82f6' }} />
+                <Tooltip
+                  contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 11, color: '#111827' }}
+                  formatter={(v: any) => [`${v}%`, 'Utilization']}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="utilization"
+                  stroke="#2563eb"
+                  strokeWidth={2}
+                  fill="url(#utilGrad)"
+                  dot={{ fill: '#2563eb', r: 3, strokeWidth: 0 }}
+                  activeDot={{ r: 5, strokeWidth: 0 }}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Card 3: Maintenance by Asset Type */}
-        <div className="lg:col-span-3 bg-[#101726] border border-[#1d273a] rounded-2xl p-5 shadow-lg flex flex-col justify-between">
+        {/* Maintenance by Asset Type */}
+        <div className={`${card} p-5 col-span-3`}>
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              Maintenance by Asset Type
-            </h2>
-            <button
-              onClick={() => onNavigate('assets')}
-              className="text-[11px] text-blue-400 hover:text-blue-300 font-semibold"
-            >
-              Assets →
-            </button>
+            <h2 className="text-xs font-semibold text-gray-700 uppercase tracking-wide">By Asset Type</h2>
           </div>
-          <div className="flex flex-col items-center my-1 cursor-pointer" onClick={() => onNavigate('assets')}>
-            <div className="w-32 h-32 relative flex items-center justify-center">
+          <div className="flex flex-col items-center">
+            <div className="w-28 h-28 relative flex items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie
-                    data={assetData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={38}
-                    outerRadius={56}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
-                    {assetData.map((entry, index) => (
-                      <Cell key={`cell-asset-${index}`} fill={entry.color} />
-                    ))}
+                  <Pie data={assetData} cx="50%" cy="50%" innerRadius={34} outerRadius={52} paddingAngle={2} dataKey="value" stroke="none">
+                    {assetData.map((_, i) => <Cell key={i} fill={ASSET_COLORS[i % ASSET_COLORS.length]} />)}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-sm font-extrabold text-white leading-none">1,248</span>
-                <span className="text-[9px] text-slate-400 font-medium">Total</span>
+                <span className="text-sm font-bold text-gray-900 leading-none">{deptTotal.toLocaleString()}</span>
+                <span className="text-[9px] text-gray-400">Total</span>
               </div>
             </div>
-
-            <div className="w-full space-y-1.5 mt-3">
-              {assetData.map((a) => (
-                <div key={a.name} className="flex items-center justify-between text-[11px]">
+            <div className="mt-3 w-full space-y-1.5">
+              {assetData.map((d, i) => (
+                <div key={d.name} className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: a.color }}></span>
-                    <span className="text-slate-300 font-medium">{a.name}</span>
+                    <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: ASSET_COLORS[i % ASSET_COLORS.length] }} />
+                    <span className="text-[11px] text-gray-500">{d.name}</span>
                   </div>
-                  <span className="text-slate-400 font-semibold">{a.pct} ({a.value})</span>
+                  <span className="text-[11px] text-gray-700 font-semibold">
+                    {Math.round((d.value / deptTotal) * 100)}% ({d.value})
+                  </span>
                 </div>
               ))}
             </div>
@@ -504,106 +417,60 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ metrics, impact, l
         </div>
       </div>
 
-      {/* 4. BOTTOM AI & ALERTS BANNER CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3.5">
-        {/* Card 1: AI Insights */}
-        <div className="bg-gradient-to-br from-[#161c33] to-[#12162a] border border-purple-500/30 rounded-2xl p-4 flex flex-col justify-between shadow-lg relative overflow-hidden">
-          <div className="flex items-center gap-2 text-purple-400">
-            <Sparkles className="w-4 h-4" />
-            <span className="text-xs font-bold">AI Insights</span>
+      {/* ━━━ Row 3: Bottom Stats + Alerts ━━━ */}
+      <div className="grid grid-cols-4 gap-4">
+
+        {/* Optimal Blocks */}
+        <div className={`${card} p-5`}>
+          <div className="p-2 rounded-lg bg-blue-50 w-fit mb-3">
+            <CalendarRange className="w-4 h-4 text-blue-600" />
           </div>
-          <p className="text-[11px] text-slate-300 leading-tight mt-2">
-            There is a high number of critical demands in ALD - CNB section. Consider an additional block in the next 7 days.
-          </p>
-          <button
-            onClick={() => onNavigate('optimization')}
-            className="mt-3 px-3 py-1.5 rounded-xl bg-purple-600/30 text-purple-300 border border-purple-500/40 text-[11px] font-semibold hover:bg-purple-600/40 transition w-fit"
-          >
-            View Details
-          </button>
+          <p className="text-3xl font-extrabold text-gray-900">{optimalBlocks}</p>
+          <p className="text-[11px] font-semibold text-gray-700 mt-1">Optimal Blocks Recommended</p>
+          <p className="text-[10px] text-green-600 mt-0.5">+3 vs current plan</p>
         </div>
 
-        {/* Card 2: Optimal Blocks Recommended */}
-        <button
-          onClick={() => onNavigate('planning')}
-          className="bg-[#101726] border border-[#1d273a] rounded-2xl p-4 flex flex-col justify-between shadow-lg hover:border-blue-500/50 hover:bg-[#141d30] transition text-left group"
-        >
-          <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition">
-            <Calendar className="w-4 h-4" />
+        {/* Maintenance Time */}
+        <div className={`${card} p-5`}>
+          <div className="p-2 rounded-lg bg-green-50 w-fit mb-3">
+            <Clock className="w-4 h-4 text-green-600" />
           </div>
-          <div className="mt-2">
-            <h3 className="text-2xl font-black text-white">18</h3>
-            <p className="text-[11px] font-bold text-slate-300">Optimal Blocks Recommended</p>
-            <p className="text-[10px] font-semibold text-emerald-400 mt-1">+3 vs current plan</p>
-          </div>
-        </button>
+          <p className="text-3xl font-extrabold text-gray-900">{maintenanceHrs}h</p>
+          <p className="text-[11px] font-semibold text-gray-700 mt-1">Maintenance Time Optimized</p>
+          <p className="text-[10px] text-green-600 mt-0.5">+12% improvement</p>
+        </div>
 
-        {/* Card 3: Maintenance Time Optimized */}
-        <button
-          onClick={() => onNavigate('optimization')}
-          className="bg-[#101726] border border-[#1d273a] rounded-2xl p-4 flex flex-col justify-between shadow-lg hover:border-emerald-500/50 hover:bg-[#141d30] transition text-left group"
-        >
-          <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition">
-            <Clock className="w-4 h-4" />
+        {/* Cost Saving */}
+        <div className={`${card} p-5`}>
+          <div className="p-2 rounded-lg bg-amber-50 w-fit mb-3">
+            <IndianRupee className="w-4 h-4 text-amber-600" />
           </div>
-          <div className="mt-2">
-            <h3 className="text-2xl font-black text-white">32h</h3>
-            <p className="text-[11px] font-bold text-slate-300">Maintenance Time Optimized</p>
-            <p className="text-[10px] font-semibold text-emerald-400 mt-1">+12% improvement</p>
-          </div>
-        </button>
+          <p className="text-2xl font-extrabold text-gray-900">₹ 4.2 Cr</p>
+          <p className="text-[11px] font-semibold text-gray-700 mt-1">Cost Saving Potential</p>
+          <p className="text-[10px] text-gray-400 mt-0.5">Estimated impact</p>
+        </div>
 
-        {/* Card 4: Cost Saving Potential */}
-        <button
-          onClick={() => onNavigate('reports')}
-          className="bg-[#101726] border border-[#1d273a] rounded-2xl p-4 flex flex-col justify-between shadow-lg hover:border-amber-500/50 hover:bg-[#141d30] transition text-left group"
-        >
-          <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center group-hover:scale-110 transition">
-            <IndianRupee className="w-4 h-4" />
-          </div>
-          <div className="mt-2">
-            <h3 className="text-2xl font-black text-white">₹ 4.2 Cr</h3>
-            <p className="text-[11px] font-bold text-slate-300">Cost Saving Potential</p>
-            <p className="text-[10px] font-medium text-slate-400 mt-1">Estimated impact</p>
-          </div>
-        </button>
-
-        {/* Card 5: Recent Alerts */}
-        <div className="bg-[#101726] border border-[#1d273a] rounded-2xl p-4 flex flex-col justify-between shadow-lg">
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center gap-1.5 text-red-400">
-              <Bell className="w-3.5 h-3.5" />
-              <span className="text-xs font-bold">Recent Alerts</span>
+        {/* Recent Alerts */}
+        <div className={`${card} p-5`}>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Bell className="w-3.5 h-3.5 text-red-500" />
+              <h2 className="text-xs font-semibold text-gray-700">Recent Alerts</h2>
             </div>
-            <button
-              onClick={() => onNavigate('alerts')}
-              className="text-[10px] font-semibold text-blue-400 hover:text-blue-300"
-            >
+            <button onClick={() => onNavigate('alerts')} className="text-[11px] text-blue-600 hover:underline font-medium">
               View All
             </button>
           </div>
-          <div className="space-y-1.5 my-1 text-[10px]">
-            <button
-              onClick={() => onNavigate('alerts')}
-              className="w-full flex items-center justify-between text-slate-300 hover:text-white hover:bg-[#141d30] p-1 rounded transition text-left"
-            >
-              <span className="truncate pr-1">Critical defect in ALD - CNB (Track)</span>
-              <span className="text-red-400 font-semibold shrink-0">10m ago</span>
-            </button>
-            <button
-              onClick={() => onNavigate('alerts')}
-              className="w-full flex items-center justify-between text-slate-300 hover:text-white hover:bg-[#141d30] p-1 rounded transition text-left"
-            >
-              <span className="truncate pr-1">Block conflict detected on 27 May</span>
-              <span className="text-amber-400 font-semibold shrink-0">25m ago</span>
-            </button>
-            <button
-              onClick={() => onNavigate('alerts')}
-              className="w-full flex items-center justify-between text-slate-300 hover:text-white hover:bg-[#141d30] p-1 rounded transition text-left"
-            >
-              <span className="truncate pr-1">High maintenance demand in NDLS - ALD</span>
-              <span className="text-yellow-400 font-semibold shrink-0">1h ago</span>
-            </button>
+          <div className="space-y-2.5">
+            {recentAlerts.map((a, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <span className={`w-1.5 h-1.5 rounded-full ${a.color} shrink-0 mt-1.5`} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] text-gray-700 leading-tight truncate">{a.text}</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">{a.time}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

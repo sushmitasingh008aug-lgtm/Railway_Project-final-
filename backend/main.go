@@ -49,6 +49,7 @@ type ScheduledTask struct {
 	AssignedStartTime string  `json:"assigned_start_time"`
 	AssignedEndTime   string  `json:"assigned_end_time"`
 	CombinedGroupID   string  `json:"combined_group_id,omitempty"`
+	AffectsLine       string  `json:"affects_line,omitempty"`
 }
 
 func initDB() {
@@ -367,7 +368,11 @@ func handleGetTasks(c *fiber.Ctx) error {
 }
 
 func handleGetSections(c *fiber.Ctx) error {
-	rows, err := db.Query("SELECT section_id, name, corridor_id, length_km FROM sections ORDER BY section_id ASC")
+	rows, err := db.Query(`
+		SELECT section_id, name, corridor_id, length_km,
+		       COALESCE(start_station,''), COALESCE(end_station,''),
+		       start_lat, start_lon, end_lat, end_lon
+		FROM sections ORDER BY section_id ASC`)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to query sections")
 	}
@@ -375,25 +380,39 @@ func handleGetSections(c *fiber.Ctx) error {
 
 	sections := make([]fiber.Map, 0)
 	for rows.Next() {
-		var sid, name, cid string
+		var sid, name, cid, sStation, eStation string
 		var lenKm float64
-		if err := rows.Scan(&sid, &name, &cid, &lenKm); err == nil {
+		var slat, slon, elat, elon sql.NullFloat64
+		if err := rows.Scan(&sid, &name, &cid, &lenKm, &sStation, &eStation, &slat, &slon, &elat, &elon); err == nil {
 			sections = append(sections, fiber.Map{
-				"section_id":  sid,
-				"name":        name,
-				"corridor_id": cid,
-				"length_km":   lenKm,
+				"section_id":    sid,
+				"name":          name,
+				"corridor_id":   cid,
+				"length_km":     lenKm,
+				"start_station": sStation,
+				"end_station":   eStation,
+				"start_lat":     nullToZero(slat),
+				"start_lon":     nullToZero(slon),
+				"end_lat":       nullToZero(elat),
+				"end_lon":       nullToZero(elon),
 			})
 		}
 	}
 	return c.JSON(fiber.Map{"status": "success", "data": sections})
 }
 
+func nullToZero(n sql.NullFloat64) float64 {
+	if n.Valid {
+		return n.Float64
+	}
+	return 0
+}
+
 // handleGetTrains serves train movements as minutes relative to the optimizer
 // base time so frontend bars align exactly with scheduled block positions.
 func handleGetTrains(c *fiber.Ctx) error {
 	rows, err := db.Query(`
-		SELECT movement_id, train_id, section_id, COALESCE(train_type, 'Unknown'), entry_time, exit_time
+		SELECT movement_id, train_id, section_id, COALESCE(train_type, 'Unknown'), COALESCE(direction, 'DOWN'), entry_time, exit_time
 		FROM train_movements
 		ORDER BY entry_time ASC
 	`)
@@ -407,9 +426,9 @@ func handleGetTrains(c *fiber.Ctx) error {
 	movements := make([]fiber.Map, 0)
 	for rows.Next() {
 		var id int
-		var tid, sid, ttype string
+		var tid, sid, ttype, trainDir string
 		var entryT, exitT time.Time
-		if err := rows.Scan(&id, &tid, &sid, &ttype, &entryT, &exitT); err != nil {
+		if err := rows.Scan(&id, &tid, &sid, &ttype, &trainDir, &entryT, &exitT); err != nil {
 			continue
 		}
 		entryMin := int(entryT.Sub(planBaseTime).Minutes())
@@ -428,6 +447,7 @@ func handleGetTrains(c *fiber.Ctx) error {
 			"train_id":    tid,
 			"section_id":  sid,
 			"train_type":  ttype,
+			"direction":   trainDir,
 			"entry_min":   entryMin,
 			"exit_min":    exitMin,
 		})
@@ -491,6 +511,10 @@ func loadScheduleTasks() ([]ScheduledTask, error) {
 		if len(row) > 13 {
 			groupID = row[13]
 		}
+		affectsLine := "BOTH"
+		if len(row) > 14 {
+			affectsLine = row[14]
+		}
 
 		tasks = append(tasks, ScheduledTask{
 			TaskID:            row[0],
@@ -507,6 +531,7 @@ func loadScheduleTasks() ([]ScheduledTask, error) {
 			AssignedStartTime: row[11],
 			AssignedEndTime:   row[12],
 			CombinedGroupID:   groupID,
+			AffectsLine:       affectsLine,
 		})
 	}
 	return tasks, nil
@@ -685,10 +710,18 @@ func handleSubmitTask(c *fiber.Ctx) error {
 	}
 
 	newTaskID := fmt.Sprintf("TSK_%d", time.Now().UnixNano()%1000000)
+	// Line impact: S&T signaling works affect BOTH running lines; physical
+	// track/OHE works are taken on one line at a time.
+	affectsLine := "UP"
+	if req.Department == "S&T" {
+		affectsLine = "BOTH"
+	} else if newTaskID[len(newTaskID)-1] >= '5' {
+		affectsLine = "DOWN"
+	}
 	_, err = db.Exec(`
-		INSERT INTO maintenance_tasks (task_id, asset_id, task_type, criticality, due_date, duration_minutes, priority_score, status)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, 'Pending')
-	`, newTaskID, assetID, req.TaskType, req.Criticality, dueDate.Format("2006-01-02"), req.DurationMinutes, finalPriorityScore)
+		INSERT INTO maintenance_tasks (task_id, asset_id, task_type, criticality, due_date, duration_minutes, priority_score, status, affects_line)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, 'Pending', $8)
+	`, newTaskID, assetID, req.TaskType, req.Criticality, dueDate.Format("2006-01-02"), req.DurationMinutes, finalPriorityScore, affectsLine)
 
 	if err != nil {
 		log.Printf("Failed to insert task: %v", err)

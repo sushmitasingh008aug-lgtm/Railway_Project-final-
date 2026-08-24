@@ -58,22 +58,29 @@ def run_test_suite():
     # -------------------------------------------------------------
     print("\n[TEST 3] Optimizer Physics Validation (Python)")
     df_schedule = pd.read_csv(SCHEDULE_CSV)
-    df_trains = pd.read_sql("SELECT movement_id, train_id, section_id, entry_time, exit_time FROM train_movements", engine)
+    df_trains = pd.read_sql("SELECT movement_id, train_id, section_id, COALESCE(direction, 'DOWN') AS direction, entry_time, exit_time FROM train_movements", engine)
 
     base_time = datetime(2026, 8, 23, 0, 0, 0)
     df_trains['entry_min'] = ((pd.to_datetime(df_trains['entry_time']) - base_time).dt.total_seconds() / 60).astype(int)
     df_trains['exit_min'] = ((pd.to_datetime(df_trains['exit_time']) - base_time).dt.total_seconds() / 60).astype(int)
 
-    # Test 3.1: Train Precedence Collision Check
+    # Test 3.1: Train Precedence Collision Check (double-line aware)
     print("  • Test 3.1 Train Precedence Collision Check (Zero-Overlap Verification)...")
+    if 'affects_line' not in df_schedule.columns:
+        df_schedule['affects_line'] = 'BOTH'
+    df_schedule['affects_line'] = df_schedule['affects_line'].fillna('BOTH')
     total_train_conflicts = 0
     for _, task in df_schedule.iterrows():
         sec_id = task['section_id']
         t_start = task['start_minute']
         t_end = task['end_minute']
-        
+        task_line = str(task['affects_line'])
+
         sec_trains = df_trains[df_trains['section_id'] == sec_id]
         for _, train in sec_trains.iterrows():
+            # A block only conflicts with trains sharing its affected line.
+            if task_line != 'BOTH' and str(train['direction']) != task_line:
+                continue
             tr_start = train['entry_min']
             tr_end = train['exit_min']
             overlap = max(0, min(t_end, tr_end) - max(t_start, tr_start))
@@ -81,7 +88,7 @@ def run_test_suite():
                 total_train_conflicts += 1
 
     assert total_train_conflicts == 0, f"Test 3.1 FAILED: Found {total_train_conflicts} temporal collisions between maintenance blocks and scheduled trains!"
-    results.append({"id": "3.1", "name": "Train Precedence Collision Check", "passed": True, "details": "Zero temporal collisions detected with moving trains across all 200 tasks"})
+    results.append({"id": "3.1", "name": "Train Precedence Collision Check", "passed": True, "details": "Zero line-aware temporal collisions detected with moving trains"})
 
     # Test 3.2: Resource Saturation Check
     print("  • Test 3.2 Multi-Department Resource Saturation Check...")
@@ -115,18 +122,27 @@ def run_test_suite():
 
     grouped = df_schedule[df_schedule['combined_group_id'] != '']
     TOLERANCE_MIN = 15
+    def lines_conflict(a, b):
+        return a == 'BOTH' or b == 'BOTH' or a == b
     if len(grouped):
         violations = 0
         group_summary = []
         for gid, grp in grouped.groupby('combined_group_id'):
             n_depts = grp['department'].nunique()
             same_section = grp['section_id'].nunique() == 1
-            aligned = (grp['start_minute'].max() - grp['start_minute'].min()) <= TOLERANCE_MIN
-            if n_depts < 2 or not same_section or not aligned:
+            # Only works sharing a physical line must be time-aligned.
+            rows = grp.to_dict('records')
+            misaligned = False
+            for i in range(len(rows)):
+                for j in range(i + 1, len(rows)):
+                    li, lj = str(rows[i]['affects_line']), str(rows[j]['affects_line'])
+                    if lines_conflict(li, lj) and abs(rows[i]['start_minute'] - rows[j]['start_minute']) > TOLERANCE_MIN:
+                        misaligned = True
+            if n_depts < 2 or not same_section or misaligned:
                 violations += 1
             group_summary.append(f"{gid}:{n_depts} depts")
         assert violations == 0, f"Test 4.1 FAILED: {violations} malformed combined blocks!"
-        print(f"  • Test 4.1 Combined Block Structure: {grouped['combined_group_id'].nunique()} groups verified (>=2 depts, same section, starts within {TOLERANCE_MIN} min)")
+        print(f"  • Test 4.1 Combined Block Structure: {grouped['combined_group_id'].nunique()} groups verified (>=2 depts, same section, line-aware alignment within {TOLERANCE_MIN} min)")
         results.append({"id": "4.1", "name": "Combined Block Structure", "passed": True,
                         "details": f"{grouped['combined_group_id'].nunique()} multi-department blocks share single corridor windows"})
     else:

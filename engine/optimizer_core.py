@@ -39,6 +39,7 @@ def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
     # 1. Pull Prioritized Tasks
     task_query = """
     SELECT mt.task_id, mt.task_type, mt.criticality, mt.duration_minutes, mt.priority_score,
+           COALESCE(mt.affects_line, 'BOTH') AS affects_line,
            a.asset_id, a.department, a.section_id, s.name as section_name
     FROM maintenance_tasks mt
     JOIN assets a ON mt.asset_id = a.asset_id
@@ -51,7 +52,8 @@ def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
 
     # 2. Pull Train Movements (window derived from horizon, not hardcoded)
     train_query = f"""
-    SELECT movement_id, train_id, section_id, train_type, entry_time, exit_time
+    SELECT movement_id, train_id, section_id, train_type,
+           COALESCE(direction, 'DOWN') AS direction, entry_time, exit_time
     FROM train_movements
     WHERE entry_time >= '{base_time.strftime('%Y-%m-%d %H:%M:%S')}'
       AND exit_time <= '{horizon_end.strftime('%Y-%m-%d %H:%M:%S')}'
@@ -99,6 +101,7 @@ def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
             'section_id': sec_id,
             'department': dept,
             'priority': float(t['priority_score']) if t['priority_score'] is not None else 0.0,
+            'line': str(t['affects_line']) if t['affects_line'] else 'BOTH',
         }
         tasks_by_section.setdefault(sec_id, []).append((tid, interval))
         res_id, _ = resource_map.get(dept, ("GENERIC", 10))
@@ -130,14 +133,22 @@ def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
         model.Add(lb + la + lc <= 1)
         return lc
 
-    def _avoid_train(tid, entry_m, exit_m, tag):
-        """Task-vs-fixed-train: strict temporal separation whenever scheduled."""
+    def _avoid_train(tid, entry_m, exit_m, tag, conflicts=True):
+        """Task-vs-fixed-window: strict temporal separation whenever scheduled.
+        Skipped entirely when the window cannot affect this task (e.g., a DOWN
+        train vs a block on the UP line under double-line working)."""
+        if not conflicts:
+            return
         pi = task_presences[tid]
         lb = model.NewBoolVar(f"{tag}_after_{tid}")
         la = model.NewBoolVar(f"{tag}_before_{tid}")
         model.Add(task_ends[tid] <= entry_m).OnlyEnforceIf([lb, pi])
         model.Add(task_starts[tid] >= exit_m).OnlyEnforceIf([la, pi])
         model.Add(lb + la >= pi)
+
+    def _lines_conflict(line_i, line_j):
+        """Two works conflict when they can affect the same physical line."""
+        return line_i == 'BOTH' or line_j == 'BOTH' or line_i == line_j
 
     combined_vars = {}
     seen_pairs = set()
@@ -158,8 +169,12 @@ def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
         for _, train in sec_trains.iterrows():
             entry_m = int(train['entry_min'])
             exit_m = int(train['exit_min'])
+            train_dir = str(train['direction'])
             for tid, _ in task_list:
-                _avoid_train(tid, entry_m, exit_m, f"trn_{train['movement_id']}")
+                # Double-line working: a block only conflicts with trains on
+                # its affected line ('BOTH' blocks conflict with everyone).
+                conflicts = task_meta[tid]['line'] == 'BOTH' or task_meta[tid]['line'] == train_dir
+                _avoid_train(tid, entry_m, exit_m, f"trn_{train['movement_id']}", conflicts)
 
     # IR Peak Traffic Rule: No maintenance blocks granted between 12:00 and 18:00 (12 PM - 6 PM)
     # unless task criticality is explicitly 'Critical'.
@@ -178,6 +193,9 @@ def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
                 if (tid_i, tid_j) in seen_pairs:
                     continue
                 seen_pairs.add((tid_i, tid_j))
+                # Works on opposite lines never interact — skip entirely.
+                if not _lines_conflict(task_meta[tid_i]['line'], task_meta[tid_j]['line']):
+                    continue
                 can_combine = (
                     task_meta[tid_i]['department'] != task_meta[tid_j]['department']
                     and tid_i in coordination_candidates
@@ -277,6 +295,7 @@ def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
                     'assigned_start_time': start_dt.strftime('%Y-%m-%d %H:%M'),
                     'assigned_end_time': end_dt.strftime('%Y-%m-%d %H:%M'),
                     'combined_group_id': group_ids.get(find(tid), '') if tid in parent else '',
+                    'affects_line': task_meta[tid]['line'],
                 })
 
         df_schedule = pd.DataFrame(scheduled_tasks)

@@ -1,0 +1,184 @@
+{
+  "meta": {
+    "note": "Boundaries derived from OSM rail geometry (regional extract) snapped to a great-circle corridor axis; representative stations.",
+    "generated_for": [
+      "CORR_BSB_LKO",
+      "CORR_HWH_DLI",
+      "CORR_DDU_YARD"
+    ]
+  },
+  "CORR_BSB_LKO": [
+    {
+      "block_index": 1,
+      "start_station": "Varanasi Jn",
+      "end_station": "Chandesar",
+      "start_lat": 25.3176,
+      "start_lon": 82.9739,
+      "end_lat": 25.668557,
+      "end_lon": 82.734107,
+      "length_km": 45.85,
+      "snapped": [
+        true,
+        true
+      ]
+    },
+    {
+      "block_index": 2,
+      "start_station": "Chandesar",
+      "end_station": "Sultanpur Jn",
+      "start_lat": 25.668557,
+      "start_lon": 82.734107,
+      "end_lat": 26.28052,
+      "end_lon": 81.981776,
+      "length_km": 101.42,
+      "snapped": [
+        true,
+        true
+      ]
+    },
+    {
+      "block_index": 3,
+      "start_station": "Sultanpur Jn",
+      "end_station": "Nihalgarh",
+      "start_lat": 26.28052,
+      "start_lon": 81.981776,
+      "end_lat": 26.593639,
+      "end_lon": 81.409582,
+      "length_km": 66.77,
+      "snapped": [
+        true,
+        true
+      ]
+    },
+    {
+      "block_index": 4,
+      "start_station": "Nihalgarh",
+      "end_station": "Lucknow",
+      "start_lat": 26.593639,
+      "start_lon": 81.409582,
+      "end_lat": 26.8467,
+      "end_lon": 80.9475,
+      "length_km": 53.83,
+      "snapped": [
+        true,
+        true
+      ]
+    }
+  ],
+  "CORR_HWH_DLI": [
+    {
+      "block_index": 1,
+      "start_station": "Howrah Jn",
+      "end_station": "Gomoh Jn",
+      "start_lat": 22.5839,
+      "start_lon": 88.3425,
+      "end_lat": 24.171117,
+      "end_lon": 85.67298,
+      "length_km": 324.62,
+      "snapped": [
+        true,
+        false
+      ]
+    },
+    {
+      "block_index": 2,
+      "start_station": "Gomoh Jn",
+      "end_station": "Deen Dayal Upadhyaya Jn",
+      "start_lat": 24.171117,
+      "start_lon": 85.67298,
+      "end_lat": 25.779549,
+      "end_lon": 82.811175,
+      "length_km": 339.39,
+      "snapped": [
+        false,
+        false
+      ]
+    },
+    {
+      "block_index": 3,
+      "start_station": "Deen Dayal Upadhyaya Jn",
+      "end_station": "Tundla Jn",
+      "start_lat": 25.779549,
+      "start_lon": 82.811175,
+      "end_lat": 27.213258,
+      "end_lon": 80.101257,
+      "length_km": 313.26,
+      "snapped": [
+        false,
+        false
+      ]
+    },
+    {
+      "block_index": 4,
+      "start_station": "Tundla Jn",
+      "end_station": "New Delhi",
+      "start_lat": 27.213258,
+      "start_lon": 80.101257,
+      "end_lat": 28.6425,
+      "end_lon": 77.2199,
+      "length_km": 324.62,
+      "snapped": [
+        false,
+        true
+      ]
+    }
+  ],
+  "CORR_DDU_YARD": [
+    {
+      "section_id_hint": "SEC_DDU_YARD_01",
+      "start_station": "DDU Yard Entry Cabin A",
+      "end_station": "Marshalling Line 1",
+      "start_lat": 25.2822,
+      "start_lon": 83.1178,
+      "end_lat": 25.2822,
+      "end_lon": 83.1178,
+      "length_km": 0.0,
+      "snapped": [
+        false,
+        false
+      ]
+    },
+    {
+      "section_id_hint": "SEC_DDU_YARD_02",
+      "start_station": "Marshalling Line 1",
+      "end_station": "Yard Cabin B",
+      "start_lat": 25.2822,
+      "start_lon": 83.1178,
+      "end_lat": 25.2822,
+      "end_lon": 83.1178,
+      "length_km": 0.0,
+      "snapped": [
+        false,
+        false
+      ]
+    },
+    {
+      "section_id_hint": "SEC_DDU_YARD_03",
+      "start_station": "Yard Cabin B",
+      "end_station": "Departure Cabin C",
+      "start_lat": 25.2822,
+      "start_lon": 83.1178,
+      "end_lat": 25.2822,
+      "end_lon": 83.1178,
+      "length_km": 0.0,
+      "snapped": [
+        false,
+        false
+      ]
+    },
+    {
+      "section_id_hint": "SEC_DDU_YARD_04",
+      "start_station": "Departure Cabin C",
+      "end_station": "DDU Yard Exit Cabin",
+      "start_lat": 25.2822,
+      "start_lon": 83.1178,
+      "end_lat": 25.2822,
+      "end_lon": 83.1178,
+      "length_km": 0.0,
+      "snapped": [
+        false,
+        false
+      ]
+    }
+  ]
+}

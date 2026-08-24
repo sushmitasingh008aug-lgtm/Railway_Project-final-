@@ -64,6 +64,7 @@ export interface ScheduledTask {
   assigned_start_time: string;
   assigned_end_time: string;
   combined_group_id?: string;
+  affects_line?: string;
 }
 
 export interface Section {
@@ -71,6 +72,12 @@ export interface Section {
   name: string;
   corridor_id: string;
   length_km: number;
+  start_station: string;
+  end_station: string;
+  start_lat: number;
+  start_lon: number;
+  end_lat: number;
+  end_lon: number;
 }
 
 export interface TrainMovement {
@@ -78,6 +85,7 @@ export interface TrainMovement {
   train_id: string;
   section_id: string;
   train_type: string;
+  direction: string;
   entry_min: number;
   exit_min: number;
 }

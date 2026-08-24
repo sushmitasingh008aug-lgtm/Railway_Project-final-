@@ -67,6 +67,28 @@ def transform_and_seed():
 
     df_sections = pd.DataFrame(sections)
 
+    # Merge geographic boundaries derived from OSM geometry (derive_section_boundaries.py)
+    geo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'section_geography.json')
+    if os.path.exists(geo_path):
+        import json as _json
+        geo = _json.load(open(geo_path))
+        for corr_id, prefix in [('CORR_BSB_LKO', 'SEC_BSB_LKO'), ('CORR_HWH_DLI', 'SEC_HWH_DLI')]:
+            for blk in geo.get(corr_id, []):
+                sid = f"{prefix}_{blk['block_index']:02d}"
+                mask = df_sections['section_id'] == sid
+                df_sections.loc[mask, ['start_station', 'end_station', 'start_lat', 'start_lon',
+                                       'end_lat', 'end_lon', 'length_km']] = [
+                    blk['start_station'], blk['end_station'], blk['start_lat'], blk['start_lon'],
+                    blk['end_lat'], blk['end_lon'], blk['length_km']]
+        for y in geo.get('CORR_DDU_YARD', []):
+            mask = df_sections['section_id'] == y['section_id_hint']
+            if mask.any():
+                df_sections.loc[mask, ['start_station', 'end_station', 'start_lat', 'start_lon',
+                                       'end_lat', 'end_lon']] = [
+                    y['start_station'], y['end_station'], y['start_lat'], y['start_lon'],
+                    y['end_lat'], y['end_lon']]
+        print("  ✓ Merged section geography from section_geography.json")
+
     section_ids_main_1 = [s['section_id'] for s in sections if s['corridor_id'] == 'CORR_BSB_LKO']
     section_ids_main_2 = [s['section_id'] for s in sections if s['corridor_id'] == 'CORR_HWH_DLI']
     section_ids_yard = [s['section_id'] for s in sections if s['corridor_id'] == 'CORR_DDU_YARD']
@@ -134,6 +156,9 @@ def transform_and_seed():
             'priority_score': None,
             'status': 'Pending',
             'source_system': source_systems.get(dept, 'SYNTHETIC'),
+            # S&T signaling works affect BOTH running lines; physical track/OHE
+            # works are taken on one line at a time (double-line working).
+            'affects_line': 'BOTH' if dept == 'S&T' else ('UP' if i % 2 == 0 else 'DOWN'),
         })
     df_tasks = pd.DataFrame(tasks)
 
@@ -163,7 +188,9 @@ def transform_and_seed():
                 'section_id': sec_id,
                 'train_type': random.choice(train_types),
                 'entry_time': entry_time,
-                'exit_time': exit_time
+                'exit_time': exit_time,
+                # IR convention: even train numbers = UP (toward LKO/Delhi), odd = DOWN
+                'direction': 'UP' if train_counter % 2 == 0 else 'DOWN',
             })
             
             # Headway / Gap between trains:

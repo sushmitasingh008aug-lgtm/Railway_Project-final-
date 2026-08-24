@@ -3,28 +3,38 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    background-color: #090d16;
-    color: #f8fafc;
-    font-family: 'Inter', sans-serif;
+  :root {
+    color-scheme: light;
+  }
+
+  html, body {
+    background-color: #f5f6fa;
+    color: #111827;
+    font-family: 'Inter', 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Force all form controls to stay light even in OS dark mode */
+  input, select, textarea, button {
+    color-scheme: light;
   }
 }
 
-/* Custom dark scrollbar */
+/* Light scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #090d16;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1f2937;
+  background: #c3ccd6;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #374151;
+  background: #9aa7b5;
 }

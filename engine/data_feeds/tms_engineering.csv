@@ -1,6 +1,6 @@
 asset_id,raw_type,severity,reported_date
-ENG-1455434121,Point Machine Mechanical Fault,3,2026-08-26
-ENG-1123377758,Broken Rail Weld,2,2026-08-25
-ENG-972384988,Ballast Deep Screening,2,2026-08-26
-ENG-728725148,Point Machine Mechanical Fault,4,2026-09-01
-ENG-875868057,Point Machine Mechanical Fault,4,2026-08-28
+ENG-1455434121,Track Gauge Spread,2,2026-08-26
+ENG-1123377758,Ballast Deep Screening,3,2026-08-30
+ENG-972384988,Ballast Deep Screening,1,2026-08-24
+ENG-728725148,Point Machine Mechanical Fault,2,2026-08-26
+ENG-875868057,Track Gauge Spread,4,2026-09-02

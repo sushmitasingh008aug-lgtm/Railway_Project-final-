@@ -3,7 +3,13 @@ CREATE TABLE IF NOT EXISTS sections (
     section_id VARCHAR(50) PRIMARY KEY,
     name VARCHAR(100),
     corridor_id VARCHAR(50),
-    length_km DECIMAL(8,2)
+    length_km DECIMAL(8,2),
+    start_station VARCHAR(80),
+    end_station VARCHAR(80),
+    start_lat DECIMAL(9,6),
+    start_lon DECIMAL(9,6),
+    end_lat DECIMAL(9,6),
+    end_lon DECIMAL(9,6)
 );
 
 -- 2. Assets (Mapped to Sections)
@@ -26,7 +32,8 @@ CREATE TABLE IF NOT EXISTS maintenance_tasks (
     duration_minutes INT,
     priority_score FLOAT,
     status VARCHAR(20) DEFAULT 'Pending',
-    source_system VARCHAR(10)
+    source_system VARCHAR(10),
+    affects_line VARCHAR(4)
 );
 
 -- 3a. Departmental Feed Staging (BDMS-style ingestion: TMS/TDMS/SMMS drops)
@@ -47,7 +54,8 @@ CREATE TABLE IF NOT EXISTS train_movements (
     section_id VARCHAR(50) REFERENCES sections(section_id),
     train_type VARCHAR(20),
     entry_time TIMESTAMP,
-    exit_time TIMESTAMP
+    exit_time TIMESTAMP,
+    direction VARCHAR(4)
 );
 
 -- 5. Physical Resources

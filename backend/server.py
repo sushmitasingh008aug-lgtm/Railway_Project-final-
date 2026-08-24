@@ -211,7 +211,13 @@ def get_tasks():
 def get_sections():
     engine = get_db_engine()
     try:
-        df = pd.read_sql("SELECT section_id, name, corridor_id, length_km FROM sections ORDER BY section_id ASC", engine)
+        df = pd.read_sql("""
+            SELECT section_id, name, corridor_id, length_km,
+                   COALESCE(start_station,'') AS start_station,
+                   COALESCE(end_station,'') AS end_station,
+                   COALESCE(start_lat,0) AS start_lat, COALESCE(start_lon,0) AS start_lon,
+                   COALESCE(end_lat,0) AS end_lat, COALESCE(end_lon,0) AS end_lon
+            FROM sections ORDER BY section_id ASC""", engine)
         sections = df.to_dict(orient='records')
         return jsonify({"status": "success", "data": sections})
     except Exception as e:
@@ -222,7 +228,8 @@ def get_trains():
     engine = get_db_engine()
     try:
         df = pd.read_sql("""
-            SELECT movement_id, train_id, section_id, COALESCE(train_type, 'Unknown') as train_type, entry_time, exit_time
+            SELECT movement_id, train_id, section_id, COALESCE(train_type, 'Unknown') as train_type,
+                   COALESCE(direction, 'DOWN') as direction, entry_time, exit_time
             FROM train_movements
             ORDER BY entry_time ASC
         """, engine)
@@ -243,6 +250,7 @@ def get_trains():
                 "train_id": str(row['train_id']),
                 "section_id": str(row['section_id']),
                 "train_type": str(row['train_type']),
+                "direction": str(row['direction']) if row.get('direction') else 'DOWN',
                 "entry_min": max(0, entry_min),
                 "exit_min": min(horizon_min, exit_min)
             })

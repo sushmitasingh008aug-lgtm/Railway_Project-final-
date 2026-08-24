@@ -1,21 +1,25 @@
 import React from 'react';
 import {
   LayoutDashboard,
-  ClipboardList,
   CalendarRange,
-  Zap,
-  Calendar,
-  ShieldCheck,
-  TrainTrack,
-  Building2,
+  ClipboardList,
+  TrainFront,
   FileBarChart,
   Bell,
   Settings,
-  Sparkles,
-  Train
+  Train,
+  Map as MapIcon,
 } from 'lucide-react';
 
-export type ViewType = 'dashboard' | 'demand' | 'planning' | 'optimization' | 'calendar' | 'assets' | 'traffic' | 'departments' | 'reports' | 'alerts' | 'settings';
+export type ViewType =
+  | 'dashboard'
+  | 'planning'
+  | 'demand'
+  | 'traffic'
+  | 'networkmap'
+  | 'reports'
+  | 'alerts'
+  | 'settings';
 
 interface SidebarProps {
   activeView: ViewType;
@@ -23,71 +27,82 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView }) => {
-  const menuItems = [
-    { id: 'dashboard' as ViewType, label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'demand' as ViewType, label: 'Maintenance Demand', icon: ClipboardList },
-    { id: 'planning' as ViewType, label: 'Block Planning', icon: CalendarRange },
-    { id: 'optimization' as ViewType, label: 'AI Optimization', icon: Zap },
-    { id: 'calendar' as ViewType, label: 'Calendar View', icon: Calendar },
-    { id: 'assets' as ViewType, label: 'Asset Health', icon: ShieldCheck },
-    { id: 'traffic' as ViewType, label: 'Train Traffic', icon: TrainTrack },
-    { id: 'departments' as ViewType, label: 'Departments', icon: Building2 },
-    { id: 'reports' as ViewType, label: 'Reports', icon: FileBarChart },
-    { id: 'alerts' as ViewType, label: 'Alerts', icon: Bell },
-    { id: 'settings' as ViewType, label: 'Settings', icon: Settings },
+  const navSections = [
+    {
+      heading: 'Operations',
+      items: [
+        { id: 'dashboard' as ViewType, label: 'Dashboard', icon: LayoutDashboard },
+        { id: 'demand' as ViewType, label: 'Maintenance Demand', icon: ClipboardList },
+        { id: 'planning' as ViewType, label: 'Block Planning', icon: CalendarRange },
+        { id: 'traffic' as ViewType, label: 'Train Traffic', icon: TrainFront },
+        { id: 'networkmap' as ViewType, label: 'Network Map', icon: MapIcon },
+      ],
+    },
+    {
+      heading: 'Administration',
+      items: [
+        { id: 'reports' as ViewType, label: 'Reports', icon: FileBarChart },
+        { id: 'alerts' as ViewType, label: 'Alerts', icon: Bell },
+        { id: 'settings' as ViewType, label: 'Settings', icon: Settings },
+      ],
+    },
   ];
 
   return (
-    <aside className="w-64 bg-[#0d1322] border-r border-[#1a2336] flex flex-col justify-between h-screen sticky top-0 shrink-0 select-none">
-      <div>
-        {/* Brand Header */}
-        <div className="p-5 flex items-center gap-3 border-b border-[#1a2336]/60">
-          <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 shadow-inner">
-            <Train className="w-6 h-6" />
-          </div>
-          <div>
-            <h1 className="font-extrabold text-slate-100 text-sm tracking-wide leading-tight">
-              RAILWAY
-            </h1>
-            <p className="text-[11px] font-semibold text-slate-400 tracking-wider">
-              BLOCK PLANNING
-            </p>
-          </div>
+    <aside className="w-56 bg-white border-r border-gray-200 flex flex-col h-screen sticky top-0 shrink-0 select-none">
+      {/* Brand */}
+      <div className="px-4 py-4 flex items-center gap-3 border-b border-gray-100">
+        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shrink-0">
+          <Train className="w-4 h-4" />
         </div>
-
-        {/* Navigation Links */}
-        <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-220px)] scrollbar-thin">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeView === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveView(item.id)}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all duration-150 ${
-                  isActive
-                    ? 'bg-blue-600 text-white font-semibold shadow-md shadow-blue-900/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#162032]'
-                }`}
-              >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </nav>
+        <div>
+          <h1 className="font-bold text-[13px] text-gray-900 leading-tight tracking-wide">RAILWAY</h1>
+          <p className="text-[10px] text-gray-400 font-semibold tracking-widest uppercase">Block Planning</p>
+        </div>
       </div>
 
-      {/* AI Assistant Bottom Box */}
-      <div className="p-3">
-        <div className="p-3.5 rounded-2xl bg-gradient-to-br from-[#161b33] to-[#12162a] border border-purple-500/30 shadow-lg relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/10 rounded-full blur-xl pointer-events-none"></div>
-          <div className="flex items-center gap-2 mb-1 text-purple-400">
-            <Sparkles className="w-4 h-4 animate-pulse" />
-            <span className="text-xs font-bold tracking-wide">AI Assistant</span>
+      {/* Navigation */}
+      <nav className="px-2.5 py-4 flex-1 space-y-5 overflow-y-auto">
+        {navSections.map((group) => (
+          <div key={group.heading}>
+            <p className="px-2.5 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              {group.heading}
+            </p>
+            <div className="space-y-0.5">
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeView === item.id;
+                return (
+                  <button
+                    key={item.label}
+                    onClick={() => setActiveView(item.id)}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12.5px] font-medium transition-all text-left ${
+                      isActive
+                        ? 'bg-blue-50 text-blue-600'
+                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'
+                    }`}
+                  >
+                    <Icon
+                      className={`w-4 h-4 shrink-0 ${
+                        isActive ? 'text-blue-600' : 'text-gray-400'
+                      }`}
+                    />
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <p className="text-[11px] text-slate-300">How can I help you?</p>
-        </div>
+        ))}
+      </nav>
+
+      {/* Footer */}
+      <div className="px-4 py-3 border-t border-gray-100">
+        <p className="text-[10px] text-gray-400 leading-relaxed">
+          Block Planning System
+          <br />
+          v2.1 · Divisional Control Office, BSB
+        </p>
       </div>
     </aside>
   );

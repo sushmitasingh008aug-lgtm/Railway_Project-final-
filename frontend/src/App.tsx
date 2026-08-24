@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar, ViewType } from './components/Sidebar';
+import { MapView } from './components/MapView';
 import { Header } from './components/Header';
 import { DashboardView } from './components/DashboardView';
 import { ReportsView } from './components/ReportsView';
@@ -58,7 +59,7 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 flex flex-row font-sans">
+    <div className="min-h-screen bg-[#f3f5f8] text-[#1a2332] flex flex-row font-sans">
       {/* Left Sidebar */}
       <Sidebar activeView={activeView} setActiveView={setActiveView} />
 
@@ -75,31 +76,25 @@ export function App() {
               impact={impact}
               loading={loading}
               onNavigate={setActiveView}
+              schedule={schedule}
             />
           )}
 
-          {(activeView === 'planning' || activeView === 'calendar' || activeView === 'traffic') && (
+          {(activeView === 'planning' || activeView === 'traffic') && (
             <GanttTab
               schedule={schedule}
               trains={trains}
+              sections={sections}
               onRefreshSchedule={fetchAllData}
             />
           )}
 
-          {(activeView === 'demand' || activeView === 'optimization' || activeView === 'departments') && (
+          {activeView === 'networkmap' && <MapView sections={sections} schedule={schedule} />}
+
+          {activeView === 'demand' && (
             <SubmitTab
               sections={sections}
               onSubmissionSuccess={fetchAllData}
-            />
-          )}
-
-          {activeView === 'assets' && (
-            <TestSuiteTab
-              testStatus={testStatus}
-              onRefreshTests={async () => {
-                const res = await apiClient.get<TestStatusResponse>('/tests/status').catch(() => null);
-                if (res) setTestStatus(res.data);
-              }}
             />
           )}
 
@@ -121,8 +116,8 @@ export function App() {
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-[#1a2336] py-4 px-6 text-center text-xs text-slate-500 bg-[#0b101d]">
-          Smart India Hackathon 2026 • AI-Powered Automatic Block Planning Engine • Clean Architecture
+        <footer className="border-t border-[#e3e8ee] py-3 px-6 text-center text-[11px] text-[#8896a6] bg-white">
+          Automatic Block Planning System · v2.1 · Divisional Control Office, BSB
         </footer>
       </div>
     </div>

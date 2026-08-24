@@ -1,0 +1,58 @@
+{
+  "model_name": "XGBoost (TUNED)",
+  "best_params": {
+    "subsample": 0.7,
+    "n_estimators": 150,
+    "min_child_weight": 3,
+    "max_depth": 4,
+    "learning_rate": 0.02,
+    "gamma": 0.3,
+    "colsample_bytree": 1.0
+  },
+  "metrics": {
+    "Accuracy": 0.94,
+    "Precision": 0.8842105263157894,
+    "Recall": 0.9230769230769231,
+    "F1": 0.9032258064516129,
+    "ROC-AUC": 0.9811767180188233,
+    "PR-AUC": 0.9583004602585555
+  },
+  "feature_columns": [
+    "asset_importance",
+    "asset_age",
+    "condition_score",
+    "inspection_score",
+    "days_overdue",
+    "days_since_last_maintenance",
+    "defects_30d",
+    "failures_90d",
+    "passenger_train_count",
+    "goods_train_count",
+    "department_S&T",
+    "department_Traction",
+    "traffic_density_Low",
+    "traffic_density_Medium"
+  ],
+  "criticality_bands": [
+    {
+      "min_p": 0.8,
+      "class": "Critical",
+      "weight": 100.0
+    },
+    {
+      "min_p": 0.6,
+      "class": "High",
+      "weight": 75.0
+    },
+    {
+      "min_p": 0.3,
+      "class": "Medium",
+      "weight": 50.0
+    },
+    {
+      "min_p": 0.0,
+      "class": "Low",
+      "weight": 25.0
+    }
+  ]
+}

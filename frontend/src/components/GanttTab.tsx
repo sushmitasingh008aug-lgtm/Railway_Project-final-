@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ScheduledTask, Section, TrainMovement, apiClient } from '../api/client';
-import { Play, RefreshCw, CheckCircle2, Clock, Layers } from 'lucide-react';
+import { Play, RefreshCw, CheckCircle2, Clock, Layers, RotateCw } from 'lucide-react';
 
 interface GanttTabProps {
   schedule: ScheduledTask[];
@@ -23,6 +23,7 @@ const fmtClock = (min: number) => {
 
 export const GanttTab: React.FC<GanttTabProps> = ({ schedule, trains, sections, onRefreshSchedule }) => {
   const [optimizing, setOptimizing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [selectedDept, setSelectedDept] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [notification, setNotification] = useState<string | null>(null);
@@ -73,16 +74,23 @@ export const GanttTab: React.FC<GanttTabProps> = ({ schedule, trains, sections, 
       } catch {
         /* transient poll error */
       }
-    }, 3000);
+    }, 2000);
   };
 
   useEffect(() => {
+    onRefreshSchedule();
     apiClient.get('/schedule/status').then((res) => {
       if (res.data?.running) startPolling();
     }).catch(() => {});
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleManualRefresh = async () => {
+    setRefreshing(true);
+    await onRefreshSchedule();
+    setTimeout(() => setRefreshing(false), 500);
+  };
 
   const handleRunOptimizer = async (days: number) => {
     if (optimizing) return;
@@ -126,6 +134,7 @@ export const GanttTab: React.FC<GanttTabProps> = ({ schedule, trains, sections, 
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
+          {/* Horizon Toggle */}
           <div className="flex rounded-lg overflow-hidden border border-gray-200">
             {HORIZON_OPTIONS.map((opt) => (
               <button
@@ -143,6 +152,18 @@ export const GanttTab: React.FC<GanttTabProps> = ({ schedule, trains, sections, 
             ))}
           </div>
 
+          {/* Refresh Button */}
+          <button
+            onClick={handleManualRefresh}
+            disabled={refreshing || optimizing}
+            title="Reload latest schedule from server"
+            className="px-3.5 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all disabled:opacity-50"
+          >
+            <RotateCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
+
+          {/* Regenerate Button */}
           <button
             onClick={() => handleRunOptimizer(horizonDays)}
             disabled={optimizing}
@@ -326,10 +347,10 @@ export const GanttTab: React.FC<GanttTabProps> = ({ schedule, trains, sections, 
 
             <input
               type="text"
-              placeholder="Search task, section..."
+              placeholder="Search task ID (e.g. TSK_464567), section..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-white border border-gray-200 text-xs text-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-400 placeholder-gray-400"
+              className="bg-white border border-gray-200 text-xs text-gray-700 rounded-lg px-3 py-2 w-64 focus:outline-none focus:border-blue-400 placeholder-gray-400"
             />
           </div>
         </div>
@@ -347,41 +368,55 @@ export const GanttTab: React.FC<GanttTabProps> = ({ schedule, trains, sections, 
                 <th className="py-3 px-4">Duration</th>
                 <th className="py-3 px-4">Start</th>
                 <th className="py-3 px-4">End</th>
+                <th className="py-3 px-4">Line</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredTasks.map((t) => (
-                <tr key={t.task_id} className="hover:bg-gray-50 transition-colors">
-                  <td className="py-3 px-4 font-mono font-semibold text-gray-800">{t.task_id}</td>
-                  <td className="py-3 px-4">
-                    <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
-                      t.department === 'Engineering'
-                        ? 'bg-blue-50 text-blue-700'
-                        : t.department === 'Traction'
-                        ? 'bg-amber-50 text-amber-700'
-                        : 'bg-green-50 text-green-700'
-                    }`}>
-                      {t.department}
-                    </span>
+              {filteredTasks.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className="py-8 text-center text-gray-400 text-xs">
+                    No tasks found matching your search. Try adjusting the search term or department filter.
                   </td>
-                  <td className="py-3 px-4">{t.section_name}</td>
-                  <td className="py-3 px-4">{t.task_type}</td>
-                  <td className="py-3 px-4">
-                    <span className={`font-semibold ${
-                      t.criticality === 'Critical' ? 'text-red-600'
-                      : t.criticality === 'High' ? 'text-amber-600'
-                      : t.criticality === 'Medium' ? 'text-amber-500'
-                      : 'text-green-600'
-                    }`}>
-                      {t.criticality}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 font-bold text-gray-800">{t.priority_score.toFixed(1)}</td>
-                  <td className="py-3 px-4">{t.duration_minutes}m</td>
-                  <td className="py-3 px-4 font-mono text-gray-700">{t.assigned_start_time}</td>
-                  <td className="py-3 px-4 font-mono text-gray-700">{t.assigned_end_time}</td>
                 </tr>
-              ))}
+              ) : (
+                filteredTasks.map((t) => (
+                  <tr key={t.task_id} className="hover:bg-blue-50/50 transition-colors">
+                    <td className="py-3 px-4 font-mono font-semibold text-blue-600">{t.task_id}</td>
+                    <td className="py-3 px-4">
+                      <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
+                        t.department === 'Engineering'
+                          ? 'bg-blue-50 text-blue-700'
+                          : t.department === 'Traction'
+                          ? 'bg-amber-50 text-amber-700'
+                          : 'bg-green-50 text-green-700'
+                      }`}>
+                        {t.department}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">{t.section_name}</td>
+                    <td className="py-3 px-4">{t.task_type}</td>
+                    <td className="py-3 px-4">
+                      <span className={`font-semibold ${
+                        t.criticality === 'Critical' ? 'text-red-600'
+                        : t.criticality === 'High' ? 'text-orange-500'
+                        : t.criticality === 'Medium' ? 'text-amber-500'
+                        : 'text-green-600'
+                      }`}>
+                        {t.criticality}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 font-bold text-gray-800">{t.priority_score.toFixed(1)}</td>
+                    <td className="py-3 px-4">{t.duration_minutes}m</td>
+                    <td className="py-3 px-4 font-mono text-gray-700">{t.assigned_start_time}</td>
+                    <td className="py-3 px-4 font-mono text-gray-700">{t.assigned_end_time}</td>
+                    <td className="py-3 px-4">
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600">
+                        {t.affects_line || 'BOTH'}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

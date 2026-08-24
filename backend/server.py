@@ -6,6 +6,7 @@ import subprocess
 import threading
 import pandas as pd
 from datetime import datetime
+from sqlalchemy import text as sql_text
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -58,7 +59,8 @@ def load_schedule_tasks():
                 "end_minute": int(row.get('end_minute', 0)),
                 "assigned_start_time": str(row.get('assigned_start_time', '')),
                 "assigned_end_time": str(row.get('assigned_end_time', '')),
-                "combined_group_id": str(row.get('combined_group_id', ''))
+                "combined_group_id": str(row.get('combined_group_id', '')),
+                "affects_line": str(row.get('affects_line', 'BOTH') or 'BOTH')
             })
         return tasks
     except Exception as e:
@@ -273,7 +275,7 @@ def run_optimizer_bg(horizon_days):
     
     try:
         res = subprocess.run([python_exe, script_path, "--horizon-days", str(horizon_days), "--max-solver-time", "60"],
-                             capture_output=True, text=True, timeout=90)
+                             capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=90)
         out_str = res.stdout + "\n" + res.stderr
         if len(out_str) > 1500:
             out_str = out_str[-1500:]
@@ -361,8 +363,12 @@ def submit_task():
     new_task_id = f"TSK_{int(time.time() * 1000) % 1000000}"
 
     try:
-        # Find asset in target section
-        df_asset = pd.read_sql("SELECT asset_id FROM assets WHERE section_id = %s LIMIT 1" if engine.name != 'sqlite' else f"SELECT asset_id FROM assets WHERE section_id = '{target_section}' LIMIT 1", engine)
+        # Find asset in target section (parameterized — no string interpolation)
+        df_asset = pd.read_sql(
+            sql_text("SELECT asset_id FROM assets WHERE section_id = :sid LIMIT 1"),
+            engine,
+            params={"sid": target_section},
+        )
         asset_id = df_asset.iloc[0]['asset_id'] if len(df_asset) > 0 else "AST_BSB_LKO_01_01"
         
         with engine.begin() as conn:
@@ -397,7 +403,7 @@ def get_tests_status():
     script_path = os.path.join(ENGINE_DIR, 'test_suite.py')
     
     try:
-        res = subprocess.run([python_exe, script_path], capture_output=True, text=True, timeout=30)
+        res = subprocess.run([python_exe, script_path], capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30)
         all_passed = (res.returncode == 0)
         out_str = res.stdout + "\n" + res.stderr
     except Exception as e:

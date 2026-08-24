@@ -187,6 +187,11 @@ def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
                 f_end = d * 1440 + 1080    # 06:00 PM
                 _avoid_train(tid, f_start, f_end, f"ir_peak_d{d}")
 
+    # Task-vs-task sequencing / combining — per section, across ALL sections.
+    # NOTE: this must iterate tasks_by_section itself; it previously sat inside
+    # a per-task loop where `task_list` was stale (only the last section got
+    # mutual-exclusion constraints).
+    for sec_id, task_list in tasks_by_section.items():
         for a in range(len(task_list)):
             for b in range(a + 1, len(task_list)):
                 tid_i, tid_j = task_list[a][0], task_list[b][0]

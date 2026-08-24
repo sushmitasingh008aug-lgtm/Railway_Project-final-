@@ -1,6 +1,6 @@
 asset_id,raw_type,severity,reported_date
-TRC-814161925,Neutral Section Inspection,1,2026-08-23
-TRC-207693998,Contact Wire Sag,4,2026-08-28
-TRC-486804180,OHE Dropper Broken,2,2026-08-24
-TRC-1316767062,Cantilever Insulator Flashover,3,2026-08-29
-TRC-129536664,Neutral Section Inspection,2,2026-08-24
+TRC-814161925,Cantilever Insulator Flashover,3,2026-08-30
+TRC-207693998,Neutral Section Inspection,1,2026-08-24
+TRC-486804180,OHE Dropper Broken,2,2026-08-25
+TRC-1316767062,Contact Wire Sag,4,2026-08-31
+TRC-129536664,Cantilever Insulator Flashover,4,2026-09-01

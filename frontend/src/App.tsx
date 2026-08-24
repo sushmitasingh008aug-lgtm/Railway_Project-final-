@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar, ViewType } from './components/Sidebar';
 import { MapView } from './components/MapView';
 import { Header } from './components/Header';
@@ -29,9 +29,9 @@ export function App() {
   const [trains, setTrains] = useState<TrainMovement[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async (showLoading = true) => {
     try {
-      setLoading(true);
+      if (showLoading) setLoading(true);
       const [mRes, sRes, secRes, tRes, iRes, trRes] = await Promise.all([
         apiClient.get<MetricsResponse>('/metrics').catch(() => null),
         apiClient.get<{ data: ScheduledTask[] }>('/schedule').catch(() => null),
@@ -50,16 +50,22 @@ export function App() {
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchAllData();
   }, []);
 
+  // Initial fetch
+  useEffect(() => {
+    fetchAllData(true);
+  }, [fetchAllData]);
+
+  // Refresh schedule and metrics when switching tabs
+  useEffect(() => {
+    fetchAllData(false);
+  }, [activeView, fetchAllData]);
+
   return (
-    <div className="min-h-screen bg-[#f3f5f8] text-[#1a2332] flex flex-row font-sans">
+    <div className="min-h-screen bg-[#f5f6fa] text-gray-900 flex flex-row font-sans">
       {/* Left Sidebar */}
       <Sidebar activeView={activeView} setActiveView={setActiveView} />
 
@@ -85,7 +91,7 @@ export function App() {
               schedule={schedule}
               trains={trains}
               sections={sections}
-              onRefreshSchedule={fetchAllData}
+              onRefreshSchedule={() => fetchAllData(false)}
             />
           )}
 
@@ -94,7 +100,8 @@ export function App() {
           {activeView === 'demand' && (
             <SubmitTab
               sections={sections}
-              onSubmissionSuccess={fetchAllData}
+              onSubmissionSuccess={() => fetchAllData(false)}
+              onNavigate={setActiveView}
             />
           )}
 
@@ -116,7 +123,7 @@ export function App() {
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-[#e3e8ee] py-3 px-6 text-center text-[11px] text-[#8896a6] bg-white">
+        <footer className="border-t border-gray-200 py-3 px-6 text-center text-[11px] text-gray-400 bg-white">
           Automatic Block Planning System · v2.1 · Divisional Control Office, BSB
         </footer>
       </div>

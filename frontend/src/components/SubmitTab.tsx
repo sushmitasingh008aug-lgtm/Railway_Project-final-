@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { Section, SubmitBlockRequest, SubmitBlockResponse, apiClient } from '../api/client';
-import { Minus, Plus, Lightbulb, CheckCircle2, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Section, SubmitBlockRequest, SubmitBlockResponse, ScheduledTask, apiClient } from '../api/client';
+import { Minus, Plus, CheckCircle2, AlertCircle, RefreshCw, Calendar, ArrowRight, Clock, MapPin, Check } from 'lucide-react';
+import { ViewType } from './Sidebar';
 
 interface SubmitTabProps {
   sections: Section[];
   onSubmissionSuccess?: () => void;
+  onNavigate?: (view: ViewType) => void;
 }
 
-export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSuccess }) => {
+export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSuccess, onNavigate }) => {
   const [department, setDepartment] = useState('Engineering');
   const [targetSection, setTargetSection] = useState(sections[0]?.section_id || 'SEC_BSB_LKO_01');
   const [taskType, setTaskType] = useState('Broken Rail Weld Repair');
@@ -16,8 +18,10 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
   const [dueDate, setDueDate] = useState('2026-08-25');
 
   const [submitting, setSubmitting] = useState(false);
+  const [optimizing, setOptimizing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [result, setResult] = useState<SubmitBlockResponse | null>(null);
+  const [scheduledTask, setScheduledTask] = useState<ScheduledTask | null>(null);
 
   const taskOptions: Record<string, string[]> = {
     Engineering: [
@@ -51,7 +55,10 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setOptimizing(false);
     setErrorMsg(null);
+    setResult(null);
+    setScheduledTask(null);
 
     const payload: SubmitBlockRequest = {
       department,
@@ -64,13 +71,46 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
 
     try {
       const res = await apiClient.post<SubmitBlockResponse>('/tasks/submit', payload);
-      setResult(res.data);
-      apiClient.post('/schedule/generate').catch(() => {});
-      if (onSubmissionSuccess) onSubmissionSuccess();
+      const newResult = res.data;
+      setResult(newResult);
+      setSubmitting(false);
+      setOptimizing(true);
+
+      // Trigger CP-SAT optimizer to place this task into the schedule
+      await apiClient.post('/schedule/generate?horizon_days=7').catch(() => {});
+
+      // Poll until optimizer finishes
+      const pollInterval = setInterval(async () => {
+        try {
+          const statusRes = await apiClient.get('/schedule/status');
+          if (!statusRes.data?.running) {
+            clearInterval(pollInterval);
+            setOptimizing(false);
+            if (onSubmissionSuccess) onSubmissionSuccess();
+
+            // Fetch the updated schedule to find our new task
+            const schedRes = await apiClient.get<{ data: ScheduledTask[] }>('/schedule');
+            const found = (schedRes.data.data || []).find((t) => t.task_id === newResult.task_id);
+            if (found) {
+              setScheduledTask(found);
+            }
+          }
+        } catch {
+          // Ignore transient poll error
+        }
+      }, 1500);
+
+      // Timeout after 30s
+      setTimeout(() => {
+        clearInterval(pollInterval);
+        setOptimizing(false);
+        if (onSubmissionSuccess) onSubmissionSuccess();
+      }, 30000);
+
     } catch (err: any) {
       setErrorMsg(err.response?.data?.message || 'Failed to submit block request. Please check inputs.');
-    } finally {
       setSubmitting(false);
+      setOptimizing(false);
     }
   };
 
@@ -81,7 +121,7 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
   };
 
   const inputCls =
-    'w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-gray-800 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-50 transition-colors';
+    'w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-gray-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-50 transition-colors';
 
   return (
     <div className="space-y-6 pb-12">
@@ -216,10 +256,22 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
           <div className="pt-4">
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || optimizing}
               className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg flex items-center gap-2 transition-all disabled:opacity-50"
             >
-              {submitting ? 'Calculating Priority & Submitting...' : 'Calculate Priority & Request Block Window'}
+              {submitting ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>Submitting Block Request...</span>
+                </>
+              ) : optimizing ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>CP-SAT Optimizer Running...</span>
+                </>
+              ) : (
+                <span>Calculate Priority &amp; Request Block Window</span>
+              )}
             </button>
           </div>
         </form>
@@ -233,11 +285,77 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
 
         {result && (
           <div className="mt-8 space-y-4">
-            <div className="p-4 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm font-semibold flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
-              <span>Block Request Submitted Successfully!</span>
+            {/* Status Header */}
+            <div className={`p-4 rounded-lg border text-sm font-semibold flex items-center justify-between ${
+              optimizing 
+                ? 'bg-blue-50 border-blue-200 text-blue-800' 
+                : 'bg-green-50 border-green-200 text-green-700'
+            }`}>
+              <div className="flex items-center gap-2">
+                {optimizing ? (
+                  <RefreshCw className="w-5 h-5 text-blue-600 animate-spin shrink-0" />
+                ) : (
+                  <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+                )}
+                <span>
+                  {optimizing
+                    ? `Task ${result.task_id} registered! Optimizing master block schedule...`
+                    : `Task ${result.task_id} successfully scheduled in master block plan!`}
+                </span>
+              </div>
+
+              {!optimizing && onNavigate && (
+                <button
+                  onClick={() => onNavigate('planning')}
+                  className="px-3.5 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all"
+                >
+                  <span>View in Block Planning</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
 
+            {/* Scheduled Placement Details (When Optimizer Finishes) */}
+            {scheduledTask && (
+              <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-blue-600" />
+                    <span className="text-xs font-bold text-blue-900">Assigned Maintenance Window</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white">
+                    {scheduledTask.affects_line || 'BOTH'} LINE
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-blue-500" />
+                    <div>
+                      <p className="text-[10px] text-gray-500">Scheduled Time</p>
+                      <p className="text-xs font-bold text-gray-900 font-mono">
+                        {scheduledTask.assigned_start_time} → {scheduledTask.assigned_end_time}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-blue-500" />
+                    <div>
+                      <p className="text-[10px] text-gray-500">Section</p>
+                      <p className="text-xs font-bold text-gray-900">{scheduledTask.section_name}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-blue-500" />
+                    <div>
+                      <p className="text-[10px] text-gray-500">Duration &amp; Safety</p>
+                      <p className="text-xs font-bold text-gray-900">{scheduledTask.duration_minutes}m (Collision-Free)</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Score Breakdown Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
               <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
                 <p className="text-xs text-gray-500 font-medium">Computed Priority Score</p>
@@ -257,14 +375,6 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
                   {result.urgency_contribution.toFixed(1)} pts (40%)
                 </p>
               </div>
-            </div>
-
-            <div className="p-4 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-sm flex items-center gap-3">
-              <Lightbulb className="w-5 h-5 text-blue-500 shrink-0" />
-              <span>
-                {result.message} Background plan regeneration triggered —
-                open <strong>Block Planning</strong> in ~1 minute to see this block scheduled.
-              </span>
             </div>
           </div>
         )}

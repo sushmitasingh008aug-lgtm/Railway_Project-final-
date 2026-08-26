@@ -2,8 +2,13 @@
 .venv/
 __pycache__/
 *.pyc
+*.pyo
 .env
 pgdata/
+engine/block_planning.db
+engine/*.db
+engine/optimized_schedule.csv
+engine/*.log
 
 # Node / React
 frontend/node_modules/
@@ -16,3 +21,6 @@ yarn-error.log*
 # Go
 backend/bin/
 backend/tmp/
+
+# Docker
+.dockerignore

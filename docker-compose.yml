@@ -1,36 +1,62 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
     container_name: block_planning_db
+    command: postgres -c fsync=on -c synchronous_commit=on -c full_page_writes=on -c wal_compression=on -c checkpoint_timeout=15min -c wal_level=replica
     environment:
-      POSTGRES_DB: block_planning
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: ${POSTGRES_DB:-block_planning}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgrespassword}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-block_planning}"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 10s
+    networks:
+      - rl-net
+    restart: unless-stopped
+    stop_grace_period: 30s
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api}
     container_name: block_planning_app
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:${PORT:-3000}"
     environment:
-      POSTGRES_URI: postgresql://postgres:postgrespassword@postgres:5432/block_planning
-      PORT: 3000
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgrespassword@postgres:5432/block_planning?sslmode=disable}
+      POSTGRES_URI: ${POSTGRES_URI:-postgresql://postgres:postgrespassword@postgres:5432/block_planning?sslmode=disable}
+      PORT: ${PORT:-3000}
+      HORIZON_DAYS: ${HORIZON_DAYS:-7}
+      PYTHON_BIN: python3
+      PYTHONUNBUFFERED: 1
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:$${PORT:-3000}/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+    networks:
+      - rl-net
+    restart: unless-stopped
+    stop_grace_period: 30s
 
 volumes:
   pgdata:
+    name: rl_pgdata
+
+networks:
+  rl-net:
+    name: rl-net
+    driver: bridge

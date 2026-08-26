@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"log"
 	"math"
@@ -50,12 +51,30 @@ type ScheduledTask struct {
 	AssignedEndTime   string  `json:"assigned_end_time"`
 	CombinedGroupID   string  `json:"combined_group_id,omitempty"`
 	AffectsLine       string  `json:"affects_line,omitempty"`
+	Lat               float64 `json:"lat,omitempty"`
+	Lon               float64 `json:"lon,omitempty"`
 }
 
 func initDB() {
 	connStr := os.Getenv("DATABASE_URL")
 	if connStr == "" {
-		connStr = "postgres://postgres:postgres@localhost:5432/block_planning?sslmode=disable"
+		connStr = os.Getenv("POSTGRES_URI")
+	}
+	if connStr == "" {
+		// Inside Docker compose host is `postgres`; outside fallback to localhost (both password variants supported)
+		if os.Getenv("DOCKER_ENV") != "" {
+			connStr = "postgres://postgres:postgrespassword@postgres:5432/block_planning?sslmode=disable"
+		} else {
+			connStr = "postgres://postgres:postgrespassword@localhost:5432/block_planning?sslmode=disable"
+		}
+	}
+	// lib/pq requires sslmode=disable when Postgres has SSL off (default 16-alpine)
+	if !strings.Contains(connStr, "sslmode=") {
+		if strings.Contains(connStr, "?") {
+			connStr += "&sslmode=disable"
+		} else {
+			connStr += "?sslmode=disable"
+		}
 	}
 
 	var err error
@@ -73,6 +92,29 @@ func initDB() {
 	} else {
 		log.Println("Successfully connected to PostgreSQL block_planning database.")
 	}
+}
+
+func resolveFrontendDist() string {
+	candidates := []string{
+		"./frontend/dist",
+		"frontend/dist",
+		filepath.Join("..", "frontend", "dist"),
+		"/app/frontend/dist",
+	}
+	for _, p := range candidates {
+		if st, err := os.Stat(filepath.Join(p, "index.html")); err == nil && !st.IsDir() {
+			abs, _ := filepath.Abs(p)
+			return abs
+		}
+	}
+	// fallback: check existence of dist dir itself
+	for _, p := range candidates {
+		if st, err := os.Stat(p); err == nil && st.IsDir() {
+			abs, _ := filepath.Abs(p)
+			return abs
+		}
+	}
+	return ""
 }
 
 func main() {
@@ -142,11 +184,30 @@ func main() {
 	// 8. Operational Impact: delay eliminated vs traffic-blind baseline
 	api.Get("/impact", handleGetImpact)
 
+	// ── Frontend SPA (same-origin :3000, no CORS) ──
+	frontendDist := resolveFrontendDist()
+	if frontendDist != "" {
+		log.Printf("✓ Frontend dist found at %s — serving UI at /", frontendDist)
+		app.Static("/", frontendDist, fiber.Static{
+			Index:         "index.html",
+			CacheDuration: 1 * time.Hour,
+		})
+		// SPA fallback: any non-/api path that didn't match a file → index.html
+		app.Get("/*", func(c *fiber.Ctx) error {
+			if strings.HasPrefix(c.Path(), "/api/") {
+				return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "error", "message": "Not found"})
+			}
+			return c.SendFile(filepath.Join(frontendDist, "index.html"))
+		})
+	} else {
+		log.Printf("⚠ Frontend dist NOT found — API-only mode (build frontend to enable UI at /)")
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "3000"
 	}
-	log.Printf("🚀 Secure Go Fiber API listening on http://localhost:%s", port)
+	log.Printf("🚀 Secure Go Fiber API + SPA listening on http://localhost:%s", port)
 	log.Fatal(app.Listen(":" + port))
 }
 
@@ -371,10 +432,34 @@ func handleGetSections(c *fiber.Ctx) error {
 	rows, err := db.Query(`
 		SELECT section_id, name, corridor_id, length_km,
 		       COALESCE(start_station,''), COALESCE(end_station,''),
-		       start_lat, start_lon, end_lat, end_lon
+		       start_lat, start_lon, end_lat, end_lon, geometry
 		FROM sections ORDER BY section_id ASC`)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Failed to query sections")
+		// fallback for DB without geometry column (pre-migration)
+		rows, err = db.Query(`
+			SELECT section_id, name, corridor_id, length_km,
+			       COALESCE(start_station,''), COALESCE(end_station,''),
+			       start_lat, start_lon, end_lat, end_lon
+			FROM sections ORDER BY section_id ASC`)
+		if err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "Failed to query sections")
+		}
+		defer rows.Close()
+		sections := make([]fiber.Map, 0)
+		for rows.Next() {
+			var sid, name, cid, sStation, eStation string
+			var lenKm float64
+			var slat, slon, elat, elon sql.NullFloat64
+			if err := rows.Scan(&sid, &name, &cid, &lenKm, &sStation, &eStation, &slat, &slon, &elat, &elon); err == nil {
+				sections = append(sections, fiber.Map{
+					"section_id": sid, "name": name, "corridor_id": cid, "length_km": lenKm,
+					"start_station": sStation, "end_station": eStation,
+					"start_lat": nullToZero(slat), "start_lon": nullToZero(slon),
+					"end_lat": nullToZero(elat), "end_lon": nullToZero(elon),
+				})
+			}
+		}
+		return c.JSON(fiber.Map{"status": "success", "data": sections})
 	}
 	defer rows.Close()
 
@@ -383,19 +468,21 @@ func handleGetSections(c *fiber.Ctx) error {
 		var sid, name, cid, sStation, eStation string
 		var lenKm float64
 		var slat, slon, elat, elon sql.NullFloat64
-		if err := rows.Scan(&sid, &name, &cid, &lenKm, &sStation, &eStation, &slat, &slon, &elat, &elon); err == nil {
-			sections = append(sections, fiber.Map{
-				"section_id":    sid,
-				"name":          name,
-				"corridor_id":   cid,
-				"length_km":     lenKm,
-				"start_station": sStation,
-				"end_station":   eStation,
-				"start_lat":     nullToZero(slat),
-				"start_lon":     nullToZero(slon),
-				"end_lat":       nullToZero(elat),
-				"end_lon":       nullToZero(elon),
-			})
+		var geom sql.NullString
+		if err := rows.Scan(&sid, &name, &cid, &lenKm, &sStation, &eStation, &slat, &slon, &elat, &elon, &geom); err == nil {
+			m := fiber.Map{
+				"section_id": sid, "name": name, "corridor_id": cid, "length_km": lenKm,
+				"start_station": sStation, "end_station": eStation,
+				"start_lat": nullToZero(slat), "start_lon": nullToZero(slon),
+				"end_lat": nullToZero(elat), "end_lon": nullToZero(elon),
+			}
+			if geom.Valid && geom.String != "" {
+				var coords [][]float64
+				if err := json.Unmarshal([]byte(geom.String), &coords); err == nil && len(coords) >= 2 {
+					m["geometry"] = coords
+				}
+			}
+			sections = append(sections, m)
 		}
 	}
 	return c.JSON(fiber.Map{"status": "success", "data": sections})
@@ -460,6 +547,28 @@ func handleGetSchedule(c *fiber.Ctx) error {
 	tasks, err := loadScheduleTasks()
 	if err != nil {
 		return fiber.NewError(fiber.StatusNotFound, err.Error())
+	}
+	// Enrich with true asset GPS (govt-grade) — dots on track, not random fraction
+	if db != nil {
+		// Build map asset_id -> lat/lon
+		rows, err := db.Query(`SELECT asset_id, location_lat, location_lon FROM assets`)
+		if err == nil {
+			defer rows.Close()
+			loc := make(map[string][2]float64)
+			for rows.Next() {
+				var aid string
+				var la, lo sql.NullFloat64
+				if err := rows.Scan(&aid, &la, &lo); err == nil && la.Valid && lo.Valid {
+					loc[aid] = [2]float64{la.Float64, lo.Float64}
+				}
+			}
+			for i := range tasks {
+				if p, ok := loc[tasks[i].AssetID]; ok {
+					tasks[i].Lat = p[0]
+					tasks[i].Lon = p[1]
+				}
+			}
+		}
 	}
 	return c.JSON(fiber.Map{"status": "success", "count": len(tasks), "data": tasks})
 }
@@ -548,16 +657,37 @@ var (
 	genOutputTail  string
 )
 
-func handleGenerateSchedule(c *fiber.Ctx) error {
-	pythonPath := filepath.Join("..", ".venv", "bin", "python")
-	scriptPath := filepath.Join("..", "engine", "optimizer_core.py")
-
-	if _, err := os.Stat(pythonPath); os.IsNotExist(err) {
-		pythonPath = filepath.Join(".venv", "bin", "python")
-		scriptPath = filepath.Join("engine", "optimizer_core.py")
+func resolvePython() (string, string) {
+	// Env override wins, then system python3 — portable Windows ↔ Linux ↔ Docker
+	if p := os.Getenv("PYTHON_BIN"); p != "" {
+		if _, err := os.Stat(p); err == nil {
+			return p, "engine/optimizer_core.py"
+		}
 	}
-	if _, err := os.Stat(pythonPath); os.IsNotExist(err) {
-		pythonPath = "python3"
+	// Prefer system python with installed deps (Docker: python3, local venv: .venv/bin/python)
+	candidates := []string{"python3", "python"}
+	for _, cand := range candidates {
+		if p, err := exec.LookPath(cand); err == nil {
+			return p, "engine/optimizer_core.py"
+		}
+	}
+	// Legacy venv fallback (dev without Docker)
+	for _, p := range []string{filepath.Join("..", ".venv", "bin", "python"), filepath.Join(".venv", "bin", "python"), filepath.Join(".venv", "Scripts", "python.exe")} {
+		if _, err := os.Stat(p); err == nil {
+			return p, filepath.Join("..", "engine", "optimizer_core.py")
+		}
+	}
+	return "python3", "engine/optimizer_core.py"
+}
+
+func handleGenerateSchedule(c *fiber.Ctx) error {
+	pythonPath, scriptPath := resolvePython()
+	// Docker WORKDIR /app → engine/optimizer_core.py exists; local dev may need ../engine
+	if _, err := os.Stat(scriptPath); os.IsNotExist(err) {
+		alt := filepath.Join("..", "engine", "optimizer_core.py")
+		if _, err2 := os.Stat(alt); err2 == nil {
+			scriptPath = alt
+		}
 	}
 
 	// PS point 4: weekly (7) or monthly (30) planning horizons.
@@ -740,15 +870,16 @@ func handleSubmitTask(c *fiber.Ctx) error {
 }
 
 func handleGetTestsStatus(c *fiber.Ctx) error {
-	pythonPath := filepath.Join("..", ".venv", "bin", "python")
-	scriptPath := filepath.Join("..", "engine", "test_suite.py")
-
-	if _, err := os.Stat(pythonPath); os.IsNotExist(err) {
-		pythonPath = filepath.Join(".venv", "bin", "python")
-		scriptPath = filepath.Join("engine", "test_suite.py")
-	}
-	if _, err := os.Stat(pythonPath); os.IsNotExist(err) {
-		pythonPath = "python3"
+	pythonPath, scriptPath := resolvePython()
+	// derive test suite from optimizer path
+	scriptPath = filepath.Join(filepath.Dir(scriptPath), "test_suite.py")
+	if _, err := os.Stat(scriptPath); os.IsNotExist(err) {
+		alt := filepath.Join("..", "engine", "test_suite.py")
+		if _, err2 := os.Stat(alt); err2 == nil {
+			scriptPath = alt
+		} else if _, err2 := os.Stat("engine/test_suite.py"); err2 == nil {
+			scriptPath = "engine/test_suite.py"
+		}
 	}
 
 	cmd := exec.Command(pythonPath, scriptPath)

@@ -107,6 +107,68 @@ def snap(lat, lon, vertices, radius_km=SNAP_RADIUS_KM):
     return round(lat, 6), round(lon, 6), False
 
 
+def projection_fraction(v_lat, v_lon, a_lat, a_lon, d_lat, d_lon):
+    """Approx fraction of vert's projection onto great-circle A→D (0..1) via sampling."""
+    best_d, best_f = float('inf'), 0.0
+    for i in range(101):
+        f = i / 100.0
+        glat, glon = gc_point(a_lat, a_lon, d_lat, d_lon, f)
+        d = haversine(v_lon, v_lat, glon, glat)
+        if d < best_d:
+            best_d, best_f = d, f
+    return best_f
+
+
+def nearest_vertex_idx(lat, lon, vertices):
+    best_d, best_i = float('inf'), -1
+    for i, (vlon, vlat) in enumerate(vertices):
+        d = haversine(lon, lat, vlon, vlat)
+        if d < best_d:
+            best_d, best_i = d, i
+    return best_i, best_d
+
+
+def sorted_vertices_by_axis(verts, a_lat, a_lon, d_lat, d_lon):
+    """Return verts sorted along corridor axis A→D by projection fraction."""
+    scored = []
+    for vlon, vlat in verts:
+        f = projection_fraction(vlat, vlon, a_lat, a_lon, d_lat, d_lon)
+        scored.append((f, (vlon, vlat)))
+    scored.sort(key=lambda x: x[0])
+    return [p for _, p in scored]
+
+
+def extract_geometry(verts, a_lat, a_lon, b_lat, b_lon):
+    """Slice true OSM polyline vertices between two snapped boundaries.
+    verts is list of (lon,lat) in file order; returns [[lat,lon],...] along track.
+    If no verts or single-yards, fallback to [A,B]."""
+    if not verts or a_lat == b_lat and a_lon == b_lon:
+        return [[round(a_lat, 6), round(a_lon, 6)], [round(b_lat, 6), round(b_lon, 6)]] if not (a_lat == b_lat and a_lon == b_lon) else [[round(a_lat, 6), round(a_lon, 6)]]
+    ai, _ = nearest_vertex_idx(a_lat, a_lon, verts)
+    bi, _ = nearest_vertex_idx(b_lat, b_lon, verts)
+    if ai < 0 or bi < 0:
+        return [[round(a_lat, 6), round(a_lon, 6)], [round(b_lat, 6), round(b_lon, 6)]]
+    lo, hi = (ai, bi) if ai <= bi else (bi, ai)
+    # Take slice inclusive; if slice too long (>500) or tiny, fallback
+    seg = verts[lo:hi+1]
+    if len(seg) < 2:
+        return [[round(a_lat, 6), round(a_lon, 6)], [round(b_lat, 6), round(b_lon, 6)]]
+    # Convert (lon,lat) -> [lat,lon] and ensure A/B endpoints included if not exact
+    coords = [[round(vlat, 6), round(vlon, 6)] for vlon, vlat in seg]
+    # Prepend A if far from first, append B if far from last (>0.5km)
+    if haversine(coords[0][1], coords[0][0], a_lon, a_lat) > 0.5:
+        coords.insert(0, [round(a_lat, 6), round(a_lon, 6)])
+    if haversine(coords[-1][1], coords[-1][0], b_lon, b_lat) > 0.5:
+        coords.append([round(b_lat, 6), round(b_lon, 6)])
+    # Cap to ~200 points to keep JSON small
+    if len(coords) > 200:
+        step = len(coords) // 200 + 1
+        coords = coords[::step]
+        if coords[-1] != [round(b_lat, 6), round(b_lon, 6)]:
+            coords.append([round(b_lat, 6), round(b_lon, 6)])
+    return coords
+
+
 def main():
     gj = json.load(open(GEOJSON))
     out = {'meta': {
@@ -120,6 +182,8 @@ def main():
         print(f"{corr['corridor_id']}: {len(verts)} OSM vertices for snapping")
         a_name, a_lat, a_lon = corr['anchor']
         d_name, d_lat, d_lon = corr['dest']
+        # Sort vertices along corridor axis so slicing between stations is contiguous
+        verts = sorted_vertices_by_axis(verts, a_lat, a_lon, d_lat, d_lon)
 
         # Boundary points along the corridor axis.
         bounds = []
@@ -136,7 +200,19 @@ def main():
         blocks = []
         for b in range(len(bounds) - 1):
             A, B = bounds[b], bounds[b + 1]
-            length = haversine(A['lon'], A['lat'], B['lon'], B['lat'])
+            geom = extract_geometry(verts, A['lat'], A['lon'], B['lat'], B['lon'])
+            # Length as sum along true geometry if available, with sanity cap
+            straight = haversine(A['lon'], A['lat'], B['lon'], B['lat'])
+            if len(geom) >= 2:
+                true_len = sum(haversine(geom[i][1], geom[i][0], geom[i+1][1], geom[i+1][0]) for i in range(len(geom)-1))
+                # If true geometry is >2.2× straight or >400km for a single block, fallback to straight (likely branch/detour)
+                if true_len > straight * 2.2 or true_len > 400:
+                    geom = [[round(A['lat'], 6), round(A['lon'], 6)], [round(B['lat'], 6), round(B['lon'], 6)]]
+                    length = straight
+                else:
+                    length = true_len
+            else:
+                length = straight
             blocks.append({
                 'block_index': b + 1,
                 'start_station': A['station'], 'end_station': B['station'],
@@ -144,6 +220,7 @@ def main():
                 'end_lat': round(B['lat'], 6), 'end_lon': round(B['lon'], 6),
                 'length_km': round(length, 2),
                 'snapped': [A['snapped'], B['snapped']],
+                'geometry': geom,
             })
         out[corr['corridor_id']] = blocks
 
@@ -155,6 +232,7 @@ def main():
             'start_lat': DDU_POINT[0], 'start_lon': DDU_POINT[1],
             'end_lat': DDU_POINT[0], 'end_lon': DDU_POINT[1],
             'length_km': 0.0, 'snapped': [False, False],
+            'geometry': [[DDU_POINT[0], DDU_POINT[1]]],
         })
 
     json.dump(out, open(OUT, 'w'), indent=2)

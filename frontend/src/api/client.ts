@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000/api';
+// Same-origin in Docker (Flask serves / + /api on 3000); Vite proxy forwards /api -> backend in dev.
+// VITE_API_URL can override at build time (e.g. http://localhost:3000/api for legacy dev).
+const API_BASE_URL =
+  (import.meta.env.VITE_API_URL as string | undefined) || '/api';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -65,6 +68,8 @@ export interface ScheduledTask {
   assigned_end_time: string;
   combined_group_id?: string;
   affects_line?: string;
+  lat?: number;
+  lon?: number;
 }
 
 export interface Section {
@@ -78,6 +83,7 @@ export interface Section {
   start_lon: number;
   end_lat: number;
   end_lon: number;
+  geometry?: [number, number][]; // [lat, lon][] — true curved rail from OSM, if missing fallback to start→end
 }
 
 export interface TrainMovement {

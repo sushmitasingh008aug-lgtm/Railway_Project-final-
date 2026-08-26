@@ -1,6 +1,6 @@
 module blockplanner
 
-go 1.27.0
+go 1.21
 
 require (
 	github.com/gofiber/fiber/v2 v2.52.15

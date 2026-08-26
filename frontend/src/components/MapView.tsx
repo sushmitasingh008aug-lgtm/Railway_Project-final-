@@ -33,27 +33,116 @@ function taskFraction(taskId: string): number {
 
 export const MapView: React.FC<MapViewProps> = ({ sections, schedule }) => {
   const [selectedDay, setSelectedDay] = useState<number | 'all'>('all');
-  const geo = sections.filter((s) => s.start_lat !== 0 && s.end_lat !== 0);
+  const isValidCoord = (lat: number, lon: number) =>
+    Number.isFinite(lat) &&
+    Number.isFinite(lon) &&
+    lat !== 0 &&
+    lon !== 0 &&
+    lat >= 8 &&
+    lat <= 37 &&
+    lon >= 68 &&
+    lon <= 97;
+  const geo = sections.filter((s) => isValidCoord(s.start_lat, s.start_lon) && isValidCoord(s.end_lat, s.end_lon));
+  // Warn on filtered geography (helps catch Go vs Flask NULL→0 drift)
+  if (sections.length && geo.length !== sections.length) {
+    console.warn(`MapView: filtered ${sections.length - geo.length} sections with invalid/null geography`);
+  }
   const secById = new Map(geo.map((s) => [s.section_id, s]));
 
-  // Interpolated dot position per task.
+  // Helpers for true curved geometry
+  const haversineKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.asin(Math.sqrt(a));
+  };
+  const getGeometry = (sec: Section): [number, number][] => {
+    if (sec.geometry && sec.geometry.length >= 2) return sec.geometry as [number, number][];
+    return [
+      [sec.start_lat, sec.start_lon],
+      [sec.end_lat, sec.end_lon],
+    ];
+  };
+  const pointAlongGeometry = (geom: [number, number][], frac: number) => {
+    if (geom.length === 1) return { lat: geom[0][0], lon: geom[0][1], segLat: 0, segLon: 0 };
+    // cumulative distance
+    let total = 0;
+    const segs: number[] = [0];
+    for (let i = 0; i < geom.length - 1; i++) {
+      total += haversineKm(geom[i][0], geom[i][1], geom[i + 1][0], geom[i + 1][1]);
+      segs.push(total);
+    }
+    if (total === 0) return { lat: geom[0][0], lon: geom[0][1], segLat: 0, segLon: 0 };
+    const target = total * Math.max(0, Math.min(1, frac));
+    for (let i = 0; i < geom.length - 1; i++) {
+      if (target >= segs[i] && target <= segs[i + 1]) {
+        const segLen = segs[i + 1] - segs[i];
+        const r = segLen === 0 ? 0 : (target - segs[i]) / segLen;
+        const lat = geom[i][0] + (geom[i + 1][0] - geom[i][0]) * r;
+        const lon = geom[i][1] + (geom[i + 1][1] - geom[i][1]) * r;
+        return { lat, lon, segLat: geom[i + 1][0] - geom[i][0], segLon: geom[i + 1][1] - geom[i][1] };
+      }
+    }
+    const last = geom[geom.length - 1];
+    return { lat: last[0], lon: last[1], segLat: 0, segLon: 0 };
+  };
+
+  // Govt-grade dot position: true asset GPS when available, else along true curved geometry
   const dots = schedule
     .map((t) => {
       const sec = secById.get(t.section_id);
       if (!sec) return null;
-      const frac = taskFraction(t.task_id);
-      let lat = sec.start_lat + (sec.end_lat - sec.start_lat) * frac;
-      let lon = sec.start_lon + (sec.end_lon - sec.start_lon) * frac;
+      let lat: number, lon: number, segLat: number, segLon: number;
+      // Prefer true asset location (most accurate for govt audit)
+      if (t.lat && t.lon && Number.isFinite(t.lat) && Number.isFinite(t.lon)) {
+        lat = t.lat;
+        lon = t.lon;
+        const geom = getGeometry(sec);
+        // Find nearest segment for UP/DOWN offset azimuth
+        let bestD = Infinity;
+        segLat = 0;
+        segLon = 0;
+        for (let i = 0; i < geom.length - 1; i++) {
+          const midLat = (geom[i][0] + geom[i + 1][0]) / 2;
+          const midLon = (geom[i][1] + geom[i + 1][1]) / 2;
+          const d = haversineKm(lat, lon, midLat, midLon);
+          if (d < bestD) {
+            bestD = d;
+            segLat = geom[i + 1][0] - geom[i][0];
+            segLon = geom[i + 1][1] - geom[i][1];
+          }
+        }
+        if (bestD === Infinity) {
+          segLat = sec.end_lat - sec.start_lat;
+          segLon = sec.end_lon - sec.start_lon;
+        }
+      } else {
+        const frac = taskFraction(t.task_id);
+        const geom = getGeometry(sec);
+        const pt = pointAlongGeometry(geom, frac);
+        lat = pt.lat;
+        lon = pt.lon;
+        segLat = pt.segLat;
+        segLon = pt.segLon;
+      }
 
-      // Perpendicular offset so UP/DOWN works sit on their physical line.
+      // Perpendicular offset so UP/DOWN works sit on their physical line — use local segment azimuth
       const line = t.affects_line || 'BOTH';
       if (line !== 'BOTH') {
-        const dLat = sec.end_lat - sec.start_lat;
-        const dLon = sec.end_lon - sec.start_lon;
+        const dLat = segLat || sec.end_lat - sec.start_lat;
+        const dLon = segLon || sec.end_lon - sec.start_lon;
         const len = Math.hypot(dLat, dLon) || 1;
         const offKm = line === 'UP' ? 1.6 : -1.6; // ~1.6 km beside the axis
-        lat += (-dLon / len) * offKm * (111 / 111);
-        lon += (dLat / len) * offKm * (111 / 111) * Math.cos((lat * Math.PI) / 180);
+        const KM_PER_DEG_LAT = 111.0;
+        const latRad = lat * (Math.PI / 180);
+        const kmPerDegLon = KM_PER_DEG_LAT * Math.cos(latRad) || 1;
+        lat += (-dLon / len) * (offKm / KM_PER_DEG_LAT);
+        lon += (dLat / len) * (offKm / kmPerDegLon);
       }
 
       const day = Math.floor(t.start_minute / 1440) + 1;
@@ -136,12 +225,15 @@ export const MapView: React.FC<MapViewProps> = ({ sections, schedule }) => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          {/* Corridor section lines — white casing underneath for contrast */}
+          {/* Corridor section lines — true curved geometry from OSM, white casing underneath */}
           {geo.map((s) => {
-            const positions: [number, number][] = [
-              [s.start_lat, s.start_lon],
-              [s.end_lat, s.end_lon],
-            ];
+            const positions: [number, number][] = (() => {
+              if (s.geometry && s.geometry.length >= 2) return s.geometry as [number, number][];
+              return [
+                [s.start_lat, s.start_lon],
+                [s.end_lat, s.end_lon],
+              ];
+            })();
             const color = CORRIDOR_COLORS[s.corridor_id] || '#334155';
             return (
               <React.Fragment key={s.section_id}>
@@ -213,8 +305,7 @@ export const MapView: React.FC<MapViewProps> = ({ sections, schedule }) => {
         <div className="px-4 py-2.5 bg-[#f8fafc] border-t border-[#eef1f5] flex items-start gap-2">
           <Info className="w-3.5 h-3.5 text-[#8896a6] mt-0.5 shrink-0" />
           <p className="text-[11px] text-[#8896a6] leading-relaxed">
-            Dot placement interpolates each block's position along its section between boundary stations (stable per task).
-            Lateral offsets are illustrative of double-line working, not exact GPS chainage.
+            Govt-grade: Dots at true asset GPS from OSM (first LineString vertex), plotted on true curved rail geometry from export.geojson. Purple line follows actual track curvature; `UP`/`DOWN` 1.6km offsets use local segment azimuth, not straight chord.
           </p>
         </div>
       </div>

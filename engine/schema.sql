@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS sections (
     start_lat DECIMAL(9,6),
     start_lon DECIMAL(9,6),
     end_lat DECIMAL(9,6),
-    end_lon DECIMAL(9,6)
+    end_lon DECIMAL(9,6),
+    geometry TEXT
 );
 
 -- 2. Assets (Mapped to Sections)

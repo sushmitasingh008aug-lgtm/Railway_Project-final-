@@ -7,7 +7,7 @@ import threading
 import pandas as pd
 from datetime import datetime
 from sqlalchemy import text as sql_text
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 if hasattr(sys.stdout, 'reconfigure'):
@@ -20,8 +20,14 @@ if ENGINE_DIR not in sys.path:
 
 from db_helper import get_db_engine
 
+# frontend/dist is at /app/frontend/dist inside container, or ../frontend/dist from backend/
+FRONTEND_DIST = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend', 'dist'))
+if not os.path.isdir(FRONTEND_DIST):
+    # Fallback when running from repo root: frontend/dist relative to cwd
+    FRONTEND_DIST = os.path.abspath(os.path.join(os.getcwd(), 'frontend', 'dist'))
+
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 PLAN_BASE_TIME = datetime(2026, 8, 23, 0, 0, 0)
 SCHEDULE_CSV = os.path.join(ENGINE_DIR, 'optimized_schedule.csv')
@@ -520,7 +526,29 @@ def get_impact():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+# Serve React SPA: static assets + SPA fallback (must be after /api routes)
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_frontend(path):
+    # Never hijack /api routes
+    if path.startswith('api/'):
+        return jsonify({"status": "error", "message": "Not found"}), 404
+    if os.path.isdir(FRONTEND_DIST):
+        full = os.path.join(FRONTEND_DIST, path)
+        if path and os.path.isfile(full):
+            return send_from_directory(FRONTEND_DIST, path)
+        index = os.path.join(FRONTEND_DIST, 'index.html')
+        if os.path.isfile(index):
+            return send_from_directory(FRONTEND_DIST, 'index.html')
+    return jsonify({"status": "error", "message": "Frontend not built. Run `npm run build` in frontend/ or use Docker."}), 404
+
+
 if __name__ == '__main__':
     port = int(os.getenv("PORT", 3000))
+    # Quick sanity on startup: show where static is served from
+    if os.path.isdir(FRONTEND_DIST):
+        print(f"✓ Frontend dist found at {FRONTEND_DIST}")
+    else:
+        print(f"⚠ Frontend dist NOT found at {FRONTEND_DIST} — API-only mode (build frontend to enable UI at /)")
     print(f"🚀 Starting Automatic Block Planning Backend on http://localhost:{port}")
     app.run(host='0.0.0.0', port=port, debug=False)

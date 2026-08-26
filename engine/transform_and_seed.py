@@ -76,38 +76,67 @@ def transform_and_seed():
             for blk in geo.get(corr_id, []):
                 sid = f"{prefix}_{blk['block_index']:02d}"
                 mask = df_sections['section_id'] == sid
+                # geometry as JSON string
+                geom_str = _json.dumps(blk.get('geometry', [[blk['start_lat'], blk['start_lon']],[blk['end_lat'], blk['end_lon']]]))
                 df_sections.loc[mask, ['start_station', 'end_station', 'start_lat', 'start_lon',
-                                       'end_lat', 'end_lon', 'length_km']] = [
+                                       'end_lat', 'end_lon', 'length_km', 'geometry']] = [
                     blk['start_station'], blk['end_station'], blk['start_lat'], blk['start_lon'],
-                    blk['end_lat'], blk['end_lon'], blk['length_km']]
+                    blk['end_lat'], blk['end_lon'], blk['length_km'], geom_str]
         for y in geo.get('CORR_DDU_YARD', []):
             mask = df_sections['section_id'] == y['section_id_hint']
             if mask.any():
+                geom_str = _json.dumps(y.get('geometry', [[y['start_lat'], y['start_lon']]]))
                 df_sections.loc[mask, ['start_station', 'end_station', 'start_lat', 'start_lon',
-                                       'end_lat', 'end_lon']] = [
+                                       'end_lat', 'end_lon', 'geometry']] = [
                     y['start_station'], y['end_station'], y['start_lat'], y['start_lon'],
-                    y['end_lat'], y['end_lon']]
+                    y['end_lat'], y['end_lon'], geom_str]
         print("  ✓ Merged section geography from section_geography.json")
 
-    section_ids_main_1 = [s['section_id'] for s in sections if s['corridor_id'] == 'CORR_BSB_LKO']
-    section_ids_main_2 = [s['section_id'] for s in sections if s['corridor_id'] == 'CORR_HWH_DLI']
-    section_ids_yard = [s['section_id'] for s in sections if s['corridor_id'] == 'CORR_DDU_YARD']
+    # Govt-grade spatial assignment: nearest section by haversine to true asset GPS
+    import math as _math
+    import json as _json2
+
+    def _haversine(lon1, lat1, lon2, lat2):
+        lon1, lat1, lon2, lat2 = map(_math.radians, [lon1, lat1, lon2, lat2])
+        a = _math.sin((lat2 - lat1) / 2) ** 2 + _math.cos(lat1) * _math.cos(lat2) * _math.sin((lon2 - lon1) / 2) ** 2
+        return 6371 * 2 * _math.asin(_math.sqrt(a))
+
+    # Build section centers from true geometry (or fallback to start/end midpoint)
+    section_centers = []
+    for _, s in df_sections.iterrows():
+        try:
+            g = s.get('geometry')
+            if g and not (isinstance(g, float) and _math.isnan(g)):
+                geom = _json2.loads(g) if isinstance(g, str) else g
+                if geom and len(geom) >= 2:
+                    clat = sum(p[0] for p in geom) / len(geom)
+                    clon = sum(p[1] for p in geom) / len(geom)
+                else:
+                    clat = (float(s['start_lat']) + float(s['end_lat'])) / 2
+                    clon = (float(s['start_lon']) + float(s['end_lon'])) / 2
+            else:
+                clat = (float(s['start_lat']) + float(s['end_lat'])) / 2
+                clon = (float(s['start_lon']) + float(s['end_lon'])) / 2
+        except Exception:
+            clat = (float(s['start_lat']) + float(s['end_lat'])) / 2 if pd.notna(s['start_lat']) else 25.0
+            clon = (float(s['start_lon']) + float(s['end_lon'])) / 2 if pd.notna(s['start_lon']) else 82.9
+        section_centers.append((s['section_id'], clat, clon))
 
     assigned_sections = []
-    for idx, row in df_assets.iterrows():
-        name = str(row.get('name', ''))
-        importance = str(row.get('importance', ''))
-        if 'Varanasi' in name or 'Sultanpur' in name:
-            assigned_sections.append(section_ids_main_1[idx % len(section_ids_main_1)])
-        elif 'Howrah' in name or 'Delhi' in name:
-            assigned_sections.append(section_ids_main_2[idx % len(section_ids_main_2)])
-        elif importance in ['yard', 'siding', 'spur']:
-            assigned_sections.append(section_ids_yard[idx % len(section_ids_yard)])
-        else:
-            all_sections = [s['section_id'] for s in sections]
-            assigned_sections.append(all_sections[idx % len(all_sections)])
+    for _, row in df_assets.iterrows():
+        alat = float(row['location_lat'])
+        alon = float(row['location_lon'])
+        best_sid = section_centers[0][0]
+        best_d = float('inf')
+        for sid, clat, clon in section_centers:
+            d = _haversine(alon, alat, clon, clat)
+            if d < best_d:
+                best_d = d
+                best_sid = sid
+        assigned_sections.append(best_sid)
 
     df_assets['section_id'] = assigned_sections
+    print(f"  ✓ Spatially assigned {len(df_assets)} assets to nearest sections (govt-grade haversine)")
 
     print("Step 3: Generating 200 Synthetic Maintenance Tasks...")
     sampled_assets = df_assets.sample(n=200, random_state=42).reset_index(drop=True)
@@ -215,7 +244,19 @@ def transform_and_seed():
     df_resources = pd.DataFrame(resources)
 
     print("Step 6: Writing to Database...")
+    # Postgres-only: no data loss on reseed — only TRUNCATE when DB is empty or FORCE_SEED=1
+    force = os.getenv("FORCE_SEED", "0") == "1"
     with engine.begin() as conn:
+        try:
+            cnt = conn.execute(text("SELECT COUNT(*) FROM sections")).scalar() or 0
+        except Exception:
+            cnt = 0
+        if cnt and cnt > 0 and not force:
+            print(f"  DB already has {cnt} sections — skipping TRUNCATE (set FORCE_SEED=1 to overwrite).")
+            print("  → Transform will append/skip; use entrypoint's idempotent check for fresh deploys.")
+            # Do not truncate; delete only synthetic staging to avoid duplicating sections? Instead abort seeding
+            # For safety, clear only if force
+            raise SystemExit(f"Aborted seeding: DB already seeded ({cnt} sections). Set FORCE_SEED=1 to force reset.")
         if engine.name == 'sqlite':
             for tbl in ['department_feeds', 'train_movements', 'maintenance_tasks', 'assets', 'sections', 'resources']:
                 conn.execute(text(f"DELETE FROM {tbl};"))

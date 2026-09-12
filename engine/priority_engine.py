@@ -1,149 +1,228 @@
+"""Expected-Loss Priority Engine v2 (Blueprint v2 Section 14.6, 21 & 27).
+
+Calculates mathematically grounded Expected-Loss Priority:
+    Priority_i = 100 * R_i * I_i * U_i
+where:
+    R_i: ML 30-day failure probability in [0, 1] (from risk_service.py)
+    I_i: Operational consequence / impact in [0, 1] (from impact_engine.py)
+    U_i: Bounded logistic urgency in (0, 1] (from urgency_engine.py)
+
+Non-Negotiable Safety Override (Indian Railways Permanent-Way / OHE / Signalling Rules):
+    - Severe defects (Broken Rail Weld, Track Circuit Short, OHE Dropper Break, Point Failure)
+      MUST NEVER be deprioritized by statistical minimization.
+    - Automatically assigned to the EMERGENCY / CRITICAL band (Score >= 92.5).
+"""
 import os
 import sys
 import json
 import zlib
-import pandas as pd
 import numpy as np
+import pandas as pd
 import sqlalchemy
 from sqlalchemy import text
 from datetime import datetime
-from db_helper import get_db_engine
 
 if hasattr(sys.stdout, 'reconfigure'):
-    sys.stdout.reconfigure(encoding='utf-8')
-
-ENGINE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(ENGINE_DIR, 'ml_risk_model.pkl')
-META_PATH = os.path.join(ENGINE_DIR, 'ml_model_meta.json')
-
-CRIT_WEIGHTS = {'Critical': 100.0, 'High': 75.0, 'Medium': 50.0, 'Low': 25.0}
-
-
-def load_champion():
-    """Load the benchmark champion model + metadata produced by
-    ml_model_comparison.ipynb (highest-accuracy model, XGBoost tuned)."""
-    if not (os.path.exists(MODEL_PATH) and os.path.exists(META_PATH)):
-        return None, None
     try:
-        import joblib
-        model = joblib.load(MODEL_PATH)
-        with open(META_PATH, encoding='utf-8') as f:
-            meta = json.load(f)
-        return model, meta
-    except Exception as e:
-        print(f"  ! Could not load champion model ({e}); falling back to rule-based mode.")
-        return None, None
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
-def risk_to_criticality(p, bands):
-    """Map predicted failure probability to a criticality class using the
-    calibrated bands stored alongside the champion (default >=0.80 Critical ...)."""
-    for band in sorted(bands, key=lambda b: -b['min_p']):
-        if p >= band['min_p']:
-            return band['class'], float(band['weight'])
-    return 'Low', 25.0
+from db_helper import get_db_engine
+from criticality_engine import compute_criticality_score
+from urgency_engine import compute_urgency_from_due_date
+from impact_engine import compute_impact_score
+from risk_service import predict_task_risk
+from baseline_priority import compute_baseline_priority
+from explainability import get_explainer
 
+SAFETY_CRITICAL_TYPES = {
+    'Broken Rail Weld',
+    'Track Circuit Short',
+    'OHE Dropper Broken',
+    'Signal Aspect Lamp Fail',
+    'Point Machine Detection Fault',
+    'Point Machine Mechanical Fault'
+}
 
-def enrich_ml_features(df):
-    """Build the 12 training-space features for every pending task.
+def calculate_task_priority(task_row: dict, plan_time: datetime = None) -> dict:
+    """Calculates all component scores and final expected-loss priority for a single task."""
+    if plan_time is None:
+        plan_time = datetime(2026, 8, 23)
+        
+    t_dict = dict(task_row)
+    
+    # 1. ML Failure Probability R_i in [0, 1]
+    risk_res = predict_task_risk(t_dict)
+    r_i = risk_res['risk_probability']
+    
+    # 2. Engineering Criticality C_i in [0, 1]
+    c_i, c_breakdown = compute_criticality_score(t_dict)
+    
+    # 3. Urgency U_i in (0, 1] via bounded logistic curve
+    due_str = t_dict.get('due_date', '2026-08-25')
+    u_i, days_rem = compute_urgency_from_due_date(due_str, plan_time=plan_time)
+    
+    # 4. Operational Impact I_i in [0, 1]
+    dur = int(t_dict.get('duration_minutes', 60))
+    cid = t_dict.get('corridor_id', 'CORR_BSB_LKO')
+    aff = t_dict.get('affects_line', 'BOTH')
+    i_i, i_breakdown = compute_impact_score(c_i, dur, cid, aff)
+    
+    # 5. Expected-Loss Priority Formula: 100 * R_i * I_i * U_i
+    raw_priority = round(100.0 * r_i * i_i * u_i, 2)
+    
+    # 6. Safety Override Check
+    ttype = str(t_dict.get('task_type', ''))
+    raw_crit = str(t_dict.get('criticality', 'Medium'))
+    raw_safety = str(t_dict.get('safety_impact', 'Medium'))
+    is_safety_critical = (
+        (raw_safety == 'Critical') or
+        (ttype in SAFETY_CRITICAL_TYPES) or
+        (raw_crit == 'Critical')
+    )
+    
+    final_score = raw_priority
+    override_active = False
+    override_reason = ""
+    
+    if is_safety_critical:
+        # Mandatory minimum score 92.5 for life/derailment safety risks
+        if final_score < 92.5:
+            final_score = round(max(final_score, 92.5 + (0.05 * float(t_dict.get('condition_score', 50)))), 2)
+            override_active = True
+            override_reason = f"MANDATORY_SAFETY_OVERRIDE: {ttype} requires zero-delay track possession."
+        band = 'Critical'
+    else:
+        # Final Priority Band
+        if final_score >= 88.0:
+            band = 'Critical'
+        elif final_score >= 70.0:
+            band = 'High'
+        elif final_score >= 45.0:
+            band = 'Medium'
+        else:
+            band = 'Low'
+        
+    return {
+        'task_id': t_dict.get('task_id'),
+        'risk_probability': r_i,
+        'criticality_score': c_i,
+        'urgency_score': u_i,
+        'impact_score': i_i,
+        'raw_priority': raw_priority,
+        'priority_score': final_score,
+        'priority_band': band,
+        'days_remaining': days_rem,
+        'safety_override': 1 if override_active else 0,
+        'override_reason': override_reason,
+        'model_version': risk_res.get('model_version'),
+        'breakdowns': {
+            'criticality': c_breakdown,
+            'impact': i_breakdown,
+            'risk': risk_res
+        }
+    }
 
-    Real telemetry (asset_age / condition / inspection sensors) is not yet wired
-    into the TMS/TDMS/SMMS feeds, so per-asset characteristics are simulated with
-    a deterministic generator keyed on asset_id+task_id (stable across runs),
-    while days_overdue comes from the REAL due date in the database.
-    """
-    today = pd.to_datetime('2026-08-23')
-    rows = []
-    for _, t in df.iterrows():
-        days_left = (pd.to_datetime(t['due_date']) - today).days
-        days_overdue = int(max(0, -days_left))
-        rng = np.random.default_rng(zlib.crc32(f"{t['asset_id']}|{t['task_id']}".encode()))
-
-        asset_age = int(rng.integers(1, 30))
-        condition = int(np.clip(100 - asset_age * 1.5 - days_overdue * 2 + rng.normal(0, 10), 10, 100))
-        inspection = int(np.clip(condition + rng.normal(0, 8), 10, 100))
-        days_since_maint = int(rng.integers(10, 200))
-        defects = int(rng.poisson(1.5 if condition < 50 else 0.4))
-        failures = int(rng.poisson(0.8 if condition < 40 else 0.1))
-        traffic = str(rng.choice(['Low', 'Medium', 'High'], p=[0.2, 0.5, 0.3]))
-
-        rows.append({
-            'department': t['department'],
-            'traffic_density': traffic,
-            'asset_importance': round(float(rng.uniform(0.5, 0.99)), 2),
-            'asset_age': asset_age,
-            'condition_score': condition,
-            'inspection_score': inspection,
-            'days_overdue': days_overdue,
-            'days_since_last_maintenance': days_since_maint,
-            'defects_30d': defects,
-            'failures_90d': failures,
-            'passenger_train_count': int(rng.integers(10, 80)) if traffic == 'High' else int(rng.integers(5, 30)),
-            'goods_train_count': int(rng.integers(15, 90)) if traffic == 'High' else int(rng.integers(2, 25)),
-        })
-    return pd.DataFrame(rows)
-
-
-def calculate_priorities(db_url=None, use_ml=True):
+def calculate_priorities(db_url=None, use_ml=True, plan_time: datetime = None):
+    """Executes Priority Engine v2 across all pending maintenance tasks in the database."""
     engine = get_db_engine() if db_url is None else sqlalchemy.create_engine(db_url)
-
-    model, meta = (load_champion() if use_ml else (None, None))
-    mode = f"ML Champion ({meta['model_name']}, acc={meta['metrics']['Accuracy']:.4f})" if model else "Static Rules (60/40)"
-    print("Executing Phase 2: Explainable Priority Engine...")
-    print(f"  Scoring mode: {mode}")
+    if plan_time is None:
+        plan_time = datetime(2026, 8, 23)
+        
+    print("=" * 75)
+    print("🚀 EXECUTING MATHEMATICAL DECISION ENGINE v2: EXPECTED-LOSS PRIORITY")
+    print("=" * 75)
 
     query = """
-    SELECT mt.task_id, mt.asset_id, mt.criticality, mt.due_date, mt.duration_minutes,
-           a.department, a.asset_type, s.section_id, s.name as section_name
+    SELECT mt.task_id, mt.task_type, mt.criticality, mt.due_date, mt.duration_minutes,
+           mt.safety_impact, mt.urgency, COALESCE(mt.affects_line, 'BOTH') AS affects_line,
+           a.asset_id, a.department, a.asset_type, a.condition_score, a.health_index,
+           a.asset_age_years, a.asset_importance, a.section_id, s.name as section_name, s.corridor_id,
+           a.location_lat, a.location_lon
     FROM maintenance_tasks mt
     JOIN assets a ON mt.asset_id = a.asset_id
     JOIN sections s ON a.section_id = s.section_id
     WHERE mt.status = 'Pending'
     """
     df = pd.read_sql(query, engine)
-    print(f"  Pulled {len(df)} pending maintenance tasks.")
+    print(f"  Ingested {len(df)} pending maintenance tasks from database.")
 
-    today = pd.to_datetime('2026-08-23')
-    df['days_left'] = (pd.to_datetime(df['due_date']) - today).dt.days
-    df['score_urgency'] = np.where(
-        df['days_left'] < 0,
-        100.0,
-        np.maximum(10.0, 100.0 - (df['days_left'].clip(lower=0, upper=10) * 9.0))
-    )
-
-    if model:
-        X_raw = enrich_ml_features(df)
-        feature_cols = meta['feature_columns']
-        X_ml = pd.get_dummies(X_raw, drop_first=True).reindex(columns=feature_cols, fill_value=0)
-        proba = model.predict_proba(X_ml)[:, 1]
-        bands = meta['criticality_bands']
-
-        cls_w = [risk_to_criticality(float(p), bands) for p in proba]
-        df['ml_failure_probability'] = np.round(proba, 4)
-        df['criticality'] = [c for c, _ in cls_w]
-        df['score_crit'] = [w for _, w in cls_w]
-        df['priority_score'] = ((df['score_crit'] * 0.6) + (df['score_urgency'] * 0.4)).round(2)
-
-        dist = df['criticality'].value_counts().reindex(['Critical', 'High', 'Medium', 'Low']).fillna(0).astype(int)
-        print(f"  ML-determined criticality distribution: {dist.to_dict()}")
-        print(f"  Risk range: P(failure) in [{proba.min():.3f}, {proba.max():.3f}] | mean={proba.mean():.3f}")
-        update_sql = text("UPDATE maintenance_tasks SET priority_score = :score, criticality = :crit WHERE task_id = :tid")
-    else:
-        df['score_crit'] = df['criticality'].map(CRIT_WEIGHTS).fillna(25.0)
-        df['priority_score'] = ((df['score_crit'] * 0.6) + (df['score_urgency'] * 0.4)).round(2)
-        update_sql = text("UPDATE maintenance_tasks SET priority_score = :score WHERE task_id = :tid")
-
+    # Calculate baseline rule scores for comparative auditing
+    df_baseline = compute_baseline_priority(df, plan_time=plan_time)
+    
+    explainer = get_explainer()
+    results = []
+    
     with engine.begin() as conn:
-        for _, row in df.iterrows():
-            params = {"score": float(row['priority_score']), "tid": row['task_id']}
-            if model:
-                params["crit"] = row['criticality']
-            conn.execute(update_sql, params)
-
-    print(f"  Updated {len(df)} tasks (priority_score{' + criticality' if model else ''}).")
-    print(f"  Min Score: {df['priority_score'].min():.2f} | Max Score: {df['priority_score'].max():.2f} | Mean Score: {df['priority_score'].mean():.2f}")
-    return df
-
+        for idx, row in df.iterrows():
+            row_dict = row.to_dict()
+            res = calculate_task_priority(row_dict, plan_time=plan_time)
+            
+            # Baseline score for comparison
+            base_score = float(df_baseline.loc[idx, 'baseline_priority_score'])
+            res['baseline_score'] = base_score
+            
+            # TreeSHAP feature explanation
+            exp_data = None
+            if explainer is not None:
+                exp_data = explainer.explain_task(row_dict)
+                
+            # Update maintenance_tasks table
+            conn.execute(text("""
+                UPDATE maintenance_tasks
+                SET priority_score = :pscore,
+                    criticality = :crit,
+                    risk_probability = :rprob,
+                    urgency = :urg,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE task_id = :tid
+            """), {
+                'pscore': res['priority_score'],
+                'crit': res['priority_band'],
+                'rprob': res['risk_probability'],
+                'urg': res['priority_band'],
+                'tid': res['task_id']
+            })
+            
+            # Update or insert ml_predictions table
+            shap_json = json.dumps(exp_data.get('shap_values', {})) if exp_data else "{}"
+            conn.execute(text("""
+                INSERT INTO ml_predictions (
+                    prediction_id, task_id, model_version, prediction_timestamp,
+                    risk_probability, priority_score, safety_override, shap_values_json
+                ) VALUES (
+                    :pid, :tid, :mver, CURRENT_TIMESTAMP,
+                    :rprob, :pscore, :sover, :shap
+                )
+                ON CONFLICT (prediction_id) DO UPDATE SET
+                    risk_probability = EXCLUDED.risk_probability,
+                    priority_score = EXCLUDED.priority_score,
+                    safety_override = EXCLUDED.safety_override,
+                    shap_values_json = EXCLUDED.shap_values_json,
+                    prediction_timestamp = CURRENT_TIMESTAMP
+            """), {
+                'pid': f"PRED_{res['task_id']}",
+                'tid': res['task_id'],
+                'mver': res['model_version'] or 'v2.1-champion',
+                'rprob': res['risk_probability'],
+                'pscore': res['priority_score'],
+                'sover': res['safety_override'],
+                'shap': shap_json
+            })
+            results.append(res)
+            
+    print(f"  ✓ Processed and enriched {len(results)} tasks with calibrated Priority, Risk, and Criticality.")
+    overrides_count = sum(1 for r in results if r['safety_override'] == 1)
+    print(f"  ✓ Enforced {overrides_count} Non-Negotiable Safety Overrides for critical defects.")
+    return pd.DataFrame(results)
 
 if __name__ == '__main__':
-    calculate_priorities()
+    res_df = calculate_priorities()
+    print("\nTop 5 Tasks by Priority v2:")
+    cols = ['task_id', 'risk_probability', 'criticality_score', 'urgency_score', 'impact_score', 'priority_score', 'priority_band', 'safety_override']
+    print(res_df.sort_values(by='priority_score', ascending=False)[cols].head(5).to_string(index=False))

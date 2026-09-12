@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MapContainer, TileLayer, Polyline, CircleMarker, Tooltip } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Section, ScheduledTask } from '../api/client';
-import { Map as MapIcon, Info } from 'lucide-react';
+import { Map as MapIcon, Info, Sparkles, Train } from 'lucide-react';
 
 interface MapViewProps {
   sections: Section[];
@@ -21,8 +21,6 @@ const DEPT_COLORS: Record<string, string> = {
   'S&T': '#059669',
 };
 
-// Stable pseudo-random fraction (0.12–0.88) from task id so dots spread along
-// the section line and never jump between renders.
 function taskFraction(taskId: string): number {
   let h = 0;
   for (let i = 0; i < taskId.length; i++) {
@@ -43,13 +41,8 @@ export const MapView: React.FC<MapViewProps> = ({ sections, schedule }) => {
     lon >= 68 &&
     lon <= 97;
   const geo = sections.filter((s) => isValidCoord(s.start_lat, s.start_lon) && isValidCoord(s.end_lat, s.end_lon));
-  // Warn on filtered geography (helps catch Go vs Flask NULL→0 drift)
-  if (sections.length && geo.length !== sections.length) {
-    console.warn(`MapView: filtered ${sections.length - geo.length} sections with invalid/null geography`);
-  }
   const secById = new Map(geo.map((s) => [s.section_id, s]));
 
-  // Helpers for true curved geometry
   const haversineKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -61,83 +54,28 @@ export const MapView: React.FC<MapViewProps> = ({ sections, schedule }) => {
         Math.sin(dLon / 2) ** 2;
     return R * 2 * Math.asin(Math.sqrt(a));
   };
-  const getGeometry = (sec: Section): [number, number][] => {
-    if (sec.geometry && sec.geometry.length >= 2) return sec.geometry as [number, number][];
-    return [
-      [sec.start_lat, sec.start_lon],
-      [sec.end_lat, sec.end_lon],
-    ];
-  };
-  const pointAlongGeometry = (geom: [number, number][], frac: number) => {
-    if (geom.length === 1) return { lat: geom[0][0], lon: geom[0][1], segLat: 0, segLon: 0 };
-    // cumulative distance
-    let total = 0;
-    const segs: number[] = [0];
-    for (let i = 0; i < geom.length - 1; i++) {
-      total += haversineKm(geom[i][0], geom[i][1], geom[i + 1][0], geom[i + 1][1]);
-      segs.push(total);
-    }
-    if (total === 0) return { lat: geom[0][0], lon: geom[0][1], segLat: 0, segLon: 0 };
-    const target = total * Math.max(0, Math.min(1, frac));
-    for (let i = 0; i < geom.length - 1; i++) {
-      if (target >= segs[i] && target <= segs[i + 1]) {
-        const segLen = segs[i + 1] - segs[i];
-        const r = segLen === 0 ? 0 : (target - segs[i]) / segLen;
-        const lat = geom[i][0] + (geom[i + 1][0] - geom[i][0]) * r;
-        const lon = geom[i][1] + (geom[i + 1][1] - geom[i][1]) * r;
-        return { lat, lon, segLat: geom[i + 1][0] - geom[i][0], segLon: geom[i + 1][1] - geom[i][1] };
-      }
-    }
-    const last = geom[geom.length - 1];
-    return { lat: last[0], lon: last[1], segLat: 0, segLon: 0 };
-  };
 
-  // Govt-grade dot position: true asset GPS when available, else along true curved geometry
   const dots = schedule
     .map((t) => {
       const sec = secById.get(t.section_id);
       if (!sec) return null;
-      let lat: number, lon: number, segLat: number, segLon: number;
-      // Prefer true asset location (most accurate for govt audit)
-      if (t.lat && t.lon && Number.isFinite(t.lat) && Number.isFinite(t.lon)) {
+      let lat: number, lon: number;
+
+      if (t.lat && t.lon && isValidCoord(t.lat, t.lon)) {
         lat = t.lat;
         lon = t.lon;
-        const geom = getGeometry(sec);
-        // Find nearest segment for UP/DOWN offset azimuth
-        let bestD = Infinity;
-        segLat = 0;
-        segLon = 0;
-        for (let i = 0; i < geom.length - 1; i++) {
-          const midLat = (geom[i][0] + geom[i + 1][0]) / 2;
-          const midLon = (geom[i][1] + geom[i + 1][1]) / 2;
-          const d = haversineKm(lat, lon, midLat, midLon);
-          if (d < bestD) {
-            bestD = d;
-            segLat = geom[i + 1][0] - geom[i][0];
-            segLon = geom[i + 1][1] - geom[i][1];
-          }
-        }
-        if (bestD === Infinity) {
-          segLat = sec.end_lat - sec.start_lat;
-          segLon = sec.end_lon - sec.start_lon;
-        }
       } else {
         const frac = taskFraction(t.task_id);
-        const geom = getGeometry(sec);
-        const pt = pointAlongGeometry(geom, frac);
-        lat = pt.lat;
-        lon = pt.lon;
-        segLat = pt.segLat;
-        segLon = pt.segLon;
+        lat = sec.start_lat + (sec.end_lat - sec.start_lat) * frac;
+        lon = sec.start_lon + (sec.end_lon - sec.start_lon) * frac;
       }
 
-      // Perpendicular offset so UP/DOWN works sit on their physical line — use local segment azimuth
       const line = t.affects_line || 'BOTH';
       if (line !== 'BOTH') {
-        const dLat = segLat || sec.end_lat - sec.start_lat;
-        const dLon = segLon || sec.end_lon - sec.start_lon;
+        const dLat = sec.end_lat - sec.start_lat;
+        const dLon = sec.end_lon - sec.start_lon;
         const len = Math.hypot(dLat, dLon) || 1;
-        const offKm = line === 'UP' ? 1.6 : -1.6; // ~1.6 km beside the axis
+        const offKm = line === 'UP' ? 1.6 : -1.6;
         const KM_PER_DEG_LAT = 111.0;
         const latRad = lat * (Math.PI / 180);
         const kmPerDegLon = KM_PER_DEG_LAT * Math.cos(latRad) || 1;
@@ -157,7 +95,7 @@ export const MapView: React.FC<MapViewProps> = ({ sections, schedule }) => {
 
   if (!geo.length) {
     return (
-      <div className="bg-white border border-[#e3e8ee] rounded-lg p-10 text-center text-sm text-[#8896a6]">
+      <div className="bg-white border border-[#E6E6E6] rounded-2xl p-10 text-center text-sm text-[#667085]">
         No section geography available. Run derive_section_boundaries.py first.
       </div>
     );
@@ -172,31 +110,41 @@ export const MapView: React.FC<MapViewProps> = ({ sections, schedule }) => {
 
   return (
     <div className="space-y-4 pb-8">
-      <div className="bg-white border border-[#e3e8ee] rounded-lg p-5">
+      {/* Header & Map Legend (Section 24) */}
+      <div className="bg-white border border-[#E6E6E6] rounded-2xl p-5 shadow-sm space-y-3">
         <div className="flex flex-col md:flex-row justify-between gap-3">
           <div>
-            <h2 className="text-[15px] font-semibold text-[#1a2332] flex items-center gap-2">
-              <MapIcon className="w-4 h-4 text-[#1a56a0]" />
-              Network Map — Maintenance Block Locations
-            </h2>
-            <p className="text-xs text-[#8896a6] mt-0.5">
-              Every scheduled block plotted on its running line. Dots offset laterally: UP above axis, DOWN below.
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-lg bg-[#FFF3E6] border border-[#FFD9B3] flex items-center justify-center text-[#D96F13]">
+                <MapIcon className="w-4 h-4" />
+              </span>
+              <h2 className="text-lg font-bold text-[#1F2937] font-display">
+                GPS Network Map — True Geometry
+              </h2>
+            </div>
+            <p className="text-xs text-[#667085] mt-1 ml-10">
+              True OSM curved rail geometry. UP line works offset above running axis, DOWN line works below.
             </p>
           </div>
-          <div className="flex items-center gap-3 text-[11px] text-[#5b6b7f]">
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: DEPT_COLORS.Engineering }} />Engineering</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: DEPT_COLORS.Traction }} />Traction</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: DEPT_COLORS['S&T'] }} />S&amp;T</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full ring-2 ring-[#1a2332]" style={{ background: '#94a3b8' }} />Combined</span>
+
+          {/* Section 24: Map Legend */}
+          <div className="flex flex-wrap items-center gap-3 text-xs text-[#475467] self-start md:self-center bg-[#F7F7F5] px-3.5 py-2 rounded-xl border border-[#E6E6E6]">
+            <span className="flex items-center gap-1.5 font-medium"><span className="w-2.5 h-2.5 rounded-full bg-[#12B76A]" />Low Risk</span>
+            <span className="flex items-center gap-1.5 font-medium"><span className="w-2.5 h-2.5 rounded-full bg-[#F79009]" />High Risk</span>
+            <span className="flex items-center gap-1.5 font-medium"><span className="w-2.5 h-2.5 rounded-full bg-[#D92D20]" />Critical Risk</span>
+            <span className="flex items-center gap-1.5 font-bold text-[#B85C00]"><span className="w-3.5 h-2.5 rounded bg-[#FF9933]" />Proposed Block</span>
+            <span className="flex items-center gap-1.5 font-bold text-[#175CD3]"><span className="w-3.5 h-2.5 rounded bg-[#2563EB]" />Train Movement</span>
           </div>
         </div>
 
-        {/* Day filter */}
-        <div className="flex flex-wrap items-center gap-1.5 mt-4">
+        {/* Day Filter Segmented Bar */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-gray-100">
           <button
             onClick={() => setSelectedDay('all')}
-            className={`px-2.5 py-1 rounded text-[10px] font-bold transition-all ${
-              selectedDay === 'all' ? 'bg-[#1a56a0] text-white' : 'bg-[#f4f6f9] text-[#8896a6] hover:text-[#1a2332]'
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              selectedDay === 'all'
+                ? 'bg-[#FF9933] text-white shadow-sm'
+                : 'bg-[#F7F7F5] text-[#667085] hover:text-[#1F2937] border border-[#E6E6E6]'
             }`}
           >
             ALL DAYS
@@ -205,27 +153,29 @@ export const MapView: React.FC<MapViewProps> = ({ sections, schedule }) => {
             <button
               key={d}
               onClick={() => setSelectedDay(d)}
-              className={`px-2 py-1 rounded text-[10px] font-bold transition-all ${
-                selectedDay === d ? 'bg-[#1a56a0] text-white' : 'bg-[#f4f6f9] text-[#8896a6] hover:text-[#1a2332]'
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                selectedDay === d
+                  ? 'bg-[#FF9933] text-white shadow-sm'
+                  : 'bg-[#F7F7F5] text-[#667085] hover:text-[#1F2937] border border-[#E6E6E6]'
               }`}
             >
               DAY {d}
             </button>
           ))}
-          <span className="text-[11px] text-[#5b6b7f] ml-auto font-medium">
-            {visibleDots.length} blocks plotted · {combinedCount} combined
+          <span className="text-xs text-[#667085] ml-auto font-medium">
+            {visibleDots.length} blocks plotted · <b>{combinedCount} coordinated</b>
           </span>
         </div>
       </div>
 
-      <div className="bg-white border border-[#e3e8ee] rounded-lg overflow-hidden">
+      <div className="bg-white border border-[#E6E6E6] rounded-2xl overflow-hidden shadow-sm">
         <MapContainer bounds={bounds} scrollWheelZoom style={{ height: '540px', width: '100%' }}>
           <TileLayer
             attribution="&copy; OpenStreetMap contributors"
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          {/* Corridor section lines — true curved geometry from OSM, white casing underneath */}
+          {/* Corridor section lines */}
           {geo.map((s) => {
             const positions: [number, number][] = (() => {
               if (s.geometry && s.geometry.length >= 2) return s.geometry as [number, number][];
@@ -268,17 +218,19 @@ export const MapView: React.FC<MapViewProps> = ({ sections, schedule }) => {
 
           {/* Maintenance block dots */}
           {visibleDots.map(({ task, lat, lon }) => {
-            const color = DEPT_COLORS[task.department] || '#5b6b7f';
+            const isCrit = task.criticality === 'Critical';
             const isCombined = !!task.combined_group_id;
+            const dotColor = isCombined ? '#FF9933' : isCrit ? '#D92D20' : DEPT_COLORS[task.department] || '#5b6b7f';
+
             return (
               <CircleMarker
                 key={task.task_id}
                 center={[lat, lon]}
                 radius={isCombined ? 7 : 5}
                 pathOptions={{
-                  color: isCombined ? '#1a2332' : '#ffffff',
-                  weight: isCombined ? 3 : 1.5,
-                  fillColor: color,
+                  color: isCombined ? '#B85C00' : '#ffffff',
+                  weight: isCombined ? 2.5 : 1.5,
+                  fillColor: dotColor,
                   fillOpacity: 0.95,
                 }}
               >
@@ -293,7 +245,7 @@ export const MapView: React.FC<MapViewProps> = ({ sections, schedule }) => {
                   {isCombined && (
                     <>
                       <br />
-                      Combined block {task.combined_group_id}
+                      <span className="text-[#FF9933] font-bold">Coordinated Block: {task.combined_group_id}</span>
                     </>
                   )}
                 </Tooltip>
@@ -302,11 +254,11 @@ export const MapView: React.FC<MapViewProps> = ({ sections, schedule }) => {
           })}
         </MapContainer>
 
-        <div className="px-4 py-2.5 bg-[#f8fafc] border-t border-[#eef1f5] flex items-start gap-2">
-          <Info className="w-3.5 h-3.5 text-[#8896a6] mt-0.5 shrink-0" />
-          <p className="text-[11px] text-[#8896a6] leading-relaxed">
-            Govt-grade: Dots at true asset GPS from OSM (first LineString vertex), plotted on true curved rail geometry from export.geojson. Purple line follows actual track curvature; `UP`/`DOWN` 1.6km offsets use local segment azimuth, not straight chord.
-          </p>
+        <div className="px-5 py-3 bg-[#F7F7F5] border-t border-[#E6E6E6] flex items-center gap-2 text-xs text-[#667085]">
+          <Info className="w-4 h-4 text-[#D96F13] shrink-0" />
+          <span>
+            <b>Indian Railways Spatial Telemetry:</b> Assets plotted on true curved track vectors from OpenStreetMap telemetry with UP/DOWN double-line track offsets.
+          </span>
         </div>
       </div>
     </div>

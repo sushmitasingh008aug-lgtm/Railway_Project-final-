@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"math"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -53,6 +56,55 @@ type ScheduledTask struct {
 	AffectsLine       string  `json:"affects_line,omitempty"`
 	Lat               float64 `json:"lat,omitempty"`
 	Lon               float64 `json:"lon,omitempty"`
+}
+
+func proxyHTTP(c *fiber.Ctx, path string) error {
+	client := http.Client{Timeout: 15 * time.Second}
+	reqURL := "http://127.0.0.1:8765" + path
+	qs := c.Request().URI().QueryString()
+	if len(qs) > 0 {
+		reqURL += "?" + string(qs)
+	}
+
+	var bodyReader io.Reader
+	if len(c.Body()) > 0 {
+		bodyReader = bytes.NewReader(c.Body())
+	}
+	req, err := http.NewRequest(c.Method(), reqURL, bodyReader)
+	if err != nil {
+		return err
+	}
+
+	c.Request().Header.VisitAll(func(key, val []byte) {
+		k := string(key)
+		if strings.EqualFold(k, "Content-Type") || strings.EqualFold(k, "Authorization") {
+			req.Header.Set(k, string(val))
+		}
+	})
+	if req.Header.Get("Content-Type") == "" && len(c.Body()) > 0 {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	cType := resp.Header.Get("Content-Type")
+	if cType == "" {
+		cType = "application/json"
+	}
+	c.Set("Content-Type", cType)
+	return c.Status(resp.StatusCode).Send(body)
+}
+
+func proxyGet(c *fiber.Ctx, path string) error {
+	return proxyHTTP(c, path)
 }
 
 func initDB() {
@@ -184,6 +236,11 @@ func main() {
 	// 8. Operational Impact: delay eliminated vs traffic-blind baseline
 	api.Get("/impact", handleGetImpact)
 
+	// Forward any other /api/* endpoints (e.g. ML benchmark, SHAP explain, approvals, audit, risk, coordination, kpis) to Python engine
+	api.All("/*", func(c *fiber.Ctx) error {
+		return proxyHTTP(c, c.Path())
+	})
+
 	// ── Frontend SPA (same-origin :3000, no CORS) ──
 	frontendDist := resolveFrontendDist()
 	if frontendDist != "" {
@@ -212,6 +269,11 @@ func main() {
 }
 
 func handleGetMetrics(c *fiber.Ctx) error {
+	if db == nil || db.Ping() != nil {
+		if err := proxyGet(c, "/api/metrics"); err == nil {
+			return nil
+		}
+	}
 	// 1. Department Workload
 	rows, err := db.Query(`
 		SELECT a.department, COUNT(mt.task_id) 
@@ -389,6 +451,11 @@ func coordinationStats(tasks []ScheduledTask) (groups, disruptionsAvoided, coord
 }
 
 func handleGetTasks(c *fiber.Ctx) error {
+	if db == nil || db.Ping() != nil {
+		if err := proxyGet(c, "/api/tasks"); err == nil {
+			return nil
+		}
+	}
 	rows, err := db.Query(`
 		SELECT mt.task_id, mt.task_type, mt.criticality, mt.due_date, mt.duration_minutes, 
 		       COALESCE(mt.priority_score, 0), mt.status, a.department, a.asset_id, s.section_id, s.name as section_name
@@ -429,6 +496,11 @@ func handleGetTasks(c *fiber.Ctx) error {
 }
 
 func handleGetSections(c *fiber.Ctx) error {
+	if db == nil || db.Ping() != nil {
+		if err := proxyGet(c, "/api/sections"); err == nil {
+			return nil
+		}
+	}
 	rows, err := db.Query(`
 		SELECT section_id, name, corridor_id, length_km,
 		       COALESCE(start_station,''), COALESCE(end_station,''),
@@ -498,49 +570,53 @@ func nullToZero(n sql.NullFloat64) float64 {
 // handleGetTrains serves train movements as minutes relative to the optimizer
 // base time so frontend bars align exactly with scheduled block positions.
 func handleGetTrains(c *fiber.Ctx) error {
-	rows, err := db.Query(`
-		SELECT movement_id, train_id, section_id, COALESCE(train_type, 'Unknown'), COALESCE(direction, 'DOWN'), entry_time, exit_time
-		FROM train_movements
-		ORDER BY entry_time ASC
-	`)
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Failed to query train movements")
-	}
-	defer rows.Close()
+	if db != nil && db.Ping() == nil {
+		rows, err := db.Query(`
+			SELECT movement_id, train_id, section_id, COALESCE(train_type, 'Unknown'), COALESCE(direction, 'DOWN'), entry_time, exit_time
+			FROM train_movements
+			ORDER BY entry_time ASC
+		`)
+		if err == nil {
+			defer rows.Close()
 
-	const maxDays = 30
-	horizonMin := maxDays * 24 * 60
-	movements := make([]fiber.Map, 0)
-	for rows.Next() {
-		var id int
-		var tid, sid, ttype, trainDir string
-		var entryT, exitT time.Time
-		if err := rows.Scan(&id, &tid, &sid, &ttype, &trainDir, &entryT, &exitT); err != nil {
-			continue
+			const maxDays = 30
+			horizonMin := maxDays * 24 * 60
+			movements := make([]fiber.Map, 0)
+			for rows.Next() {
+				var id, tid, sid, ttype, trainDir string
+				var entryT, exitT time.Time
+				if err := rows.Scan(&id, &tid, &sid, &ttype, &trainDir, &entryT, &exitT); err != nil {
+					continue
+				}
+				entryMin := int(entryT.Sub(planBaseTime).Minutes())
+				exitMin := int(exitT.Sub(planBaseTime).Minutes())
+				if exitMin <= 0 || entryMin >= horizonMin || exitMin <= entryMin {
+					continue
+				}
+				if entryMin < 0 {
+					entryMin = 0
+				}
+				if exitMin > horizonMin {
+					exitMin = horizonMin
+				}
+				movements = append(movements, fiber.Map{
+					"movement_id": id,
+					"train_id":    tid,
+					"section_id":  sid,
+					"train_type":  ttype,
+					"direction":   trainDir,
+					"entry_min":   entryMin,
+					"exit_min":    exitMin,
+				})
+			}
+			return c.JSON(fiber.Map{"status": "success", "count": len(movements), "data": movements})
 		}
-		entryMin := int(entryT.Sub(planBaseTime).Minutes())
-		exitMin := int(exitT.Sub(planBaseTime).Minutes())
-		if exitMin <= 0 || entryMin >= horizonMin || exitMin <= entryMin {
-			continue
-		}
-		if entryMin < 0 {
-			entryMin = 0
-		}
-		if exitMin > horizonMin {
-			exitMin = horizonMin
-		}
-		movements = append(movements, fiber.Map{
-			"movement_id": id,
-			"train_id":    tid,
-			"section_id":  sid,
-			"train_type":  ttype,
-			"direction":   trainDir,
-			"entry_min":   entryMin,
-			"exit_min":    exitMin,
-		})
 	}
 
-	return c.JSON(fiber.Map{"status": "success", "count": len(movements), "data": movements})
+	if err := proxyGet(c, "/api/trains"); err == nil {
+		return nil
+	}
+	return c.JSON(fiber.Map{"status": "success", "count": 0, "data": []fiber.Map{}})
 }
 
 func handleGetSchedule(c *fiber.Ctx) error {
@@ -606,41 +682,55 @@ func loadScheduleTasks() ([]ScheduledTask, error) {
 		return nil, fmt.Errorf("failed to parse schedule CSV")
 	}
 
+	header := records[0]
+	colIdx := make(map[string]int)
+	for i, h := range header {
+		colIdx[strings.TrimSpace(h)] = i
+	}
+
+	getCol := func(row []string, name string) string {
+		if idx, ok := colIdx[name]; ok && idx < len(row) {
+			return strings.TrimSpace(row[idx])
+		}
+		return ""
+	}
+
 	tasks := make([]ScheduledTask, 0, len(records)-1)
 	for _, row := range records[1:] {
-		if len(row) < 13 {
+		if len(row) < 10 {
 			continue
 		}
-		pscore, _ := strconv.ParseFloat(row[5], 64)
-		dur, _ := strconv.Atoi(row[8])
-		smin, _ := strconv.Atoi(row[9])
-		emin, _ := strconv.Atoi(row[10])
+		pscore, _ := strconv.ParseFloat(getCol(row, "priority_score"), 64)
+		dur, _ := strconv.Atoi(getCol(row, "duration_minutes"))
+		smin, _ := strconv.Atoi(getCol(row, "start_minute"))
+		emin, _ := strconv.Atoi(getCol(row, "end_minute"))
 
-		groupID := ""
-		if len(row) > 13 {
-			groupID = row[13]
+		groupID := getCol(row, "combined_group_id")
+		affectsLine := getCol(row, "affects_line")
+		if affectsLine == "" {
+			affectsLine = "BOTH"
 		}
-		affectsLine := "BOTH"
-		if len(row) > 14 {
-			affectsLine = row[14]
-		}
+		lat, _ := strconv.ParseFloat(getCol(row, "lat"), 64)
+		lon, _ := strconv.ParseFloat(getCol(row, "lon"), 64)
 
 		tasks = append(tasks, ScheduledTask{
-			TaskID:            row[0],
-			AssetID:           row[1],
-			Department:        row[2],
-			TaskType:          row[3],
-			Criticality:       row[4],
+			TaskID:            getCol(row, "task_id"),
+			AssetID:           getCol(row, "asset_id"),
+			Department:        getCol(row, "department"),
+			TaskType:          getCol(row, "task_type"),
+			Criticality:       getCol(row, "criticality"),
 			PriorityScore:     pscore,
-			SectionID:         row[6],
-			SectionName:       row[7],
+			SectionID:         getCol(row, "section_id"),
+			SectionName:       getCol(row, "section_name"),
 			DurationMinutes:   dur,
 			StartMinute:       smin,
 			EndMinute:         emin,
-			AssignedStartTime: row[11],
-			AssignedEndTime:   row[12],
+			AssignedStartTime: getCol(row, "assigned_start_time"),
+			AssignedEndTime:   getCol(row, "assigned_end_time"),
 			CombinedGroupID:   groupID,
 			AffectsLine:       affectsLine,
+			Lat:               lat,
+			Lon:               lon,
 		})
 	}
 	return tasks, nil
@@ -986,6 +1076,11 @@ func evaluateDelays(blocksBySection map[string][]placedBlock, trainsBySection ma
 }
 
 func handleGetImpact(c *fiber.Ctx) error {
+	if db == nil || db.Ping() != nil {
+		if err := proxyGet(c, "/api/impact"); err == nil {
+			return nil
+		}
+	}
 	tasks, err := loadScheduleTasks()
 	if err != nil {
 		return fiber.NewError(fiber.StatusNotFound, err.Error())

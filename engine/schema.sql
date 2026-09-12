@@ -1,4 +1,20 @@
--- 1. Operational Context (The Network)
+-- ==============================================================================
+-- SIH 2026 - Automatic Block Planning System
+-- Master Plan v2 Database Schema (Government-Aligned Data Architecture)
+-- Compatible with PostgreSQL 16 & SQLite 3
+-- ==============================================================================
+
+-- 1. Operational Corridors
+CREATE TABLE IF NOT EXISTS corridors (
+    corridor_id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(120),
+    zone VARCHAR(50),
+    division VARCHAR(50),
+    electrification_type VARCHAR(50),
+    signaling_type VARCHAR(50)
+);
+
+-- 2. Operational Sections (Network Geography)
 CREATE TABLE IF NOT EXISTS sections (
     section_id VARCHAR(50) PRIMARY KEY,
     name VARCHAR(100),
@@ -13,56 +29,337 @@ CREATE TABLE IF NOT EXISTS sections (
     geometry TEXT
 );
 
--- 2. Assets (Mapped to Sections)
+-- 3. ASSET_MASTER (Canonical Asset Master Entity)
 CREATE TABLE IF NOT EXISTS assets (
     asset_id VARCHAR(50) PRIMARY KEY,
-    section_id VARCHAR(50) REFERENCES sections(section_id),
-    department VARCHAR(50),
+    asset_number VARCHAR(80),
     asset_type VARCHAR(100),
+    asset_subtype VARCHAR(100),
+    department VARCHAR(50),
+    zone VARCHAR(50),
+    division VARCHAR(50),
+    corridor_id VARCHAR(50),
+    section_id VARCHAR(50),
+    block_section VARCHAR(100),
+    station_from VARCHAR(80),
+    station_to VARCHAR(80),
+    chainage_km DECIMAL(8,2),
+    direction VARCHAR(10),
     location_lat DECIMAL(9,6),
-    location_lon DECIMAL(9,6)
+    location_lon DECIMAL(9,6),
+    commissioning_date DATE,
+    asset_age_years INT,
+    asset_importance DECIMAL(4,2),
+    criticality_class VARCHAR(20),
+    operational_status VARCHAR(30) DEFAULT 'Operational',
+    last_maintenance_date DATE,
+    last_inspection_date DATE,
+    condition_score INT,
+    health_index INT
 );
 
--- 3. Maintenance Backlog
+-- 4. FAILURE_EVENT_HISTORY (Ministry / UIMS / COA Operational Failure Reports)
+CREATE TABLE IF NOT EXISTS failure_event_history (
+    af_id VARCHAR(50) PRIMARY KEY,
+    uims_id VARCHAR(50),
+    zone VARCHAR(50),
+    division VARCHAR(50),
+    head VARCHAR(100),
+    sub_head VARCHAR(100),
+    failure_type VARCHAR(100),
+    failure_date DATE,
+    failure_time VARCHAR(20),
+    failure_start TIMESTAMP,
+    failure_end TIMESTAMP,
+    failure_duration_min INT,
+    corridor_id VARCHAR(50),
+    coa_section VARCHAR(100),
+    block_section VARCHAR(100),
+    station_from VARCHAR(80),
+    station_to VARCHAR(80),
+    section_id VARCHAR(50),
+    chainage_km DECIMAL(8,2),
+    direction VARCHAR(10),
+    train_name VARCHAR(120),
+    train_id VARCHAR(50),
+    loco_id VARCHAR(50),
+    coach_id VARCHAR(50),
+    wagon_id VARCHAR(50),
+    trains_delayed INT DEFAULT 0,
+    avg_detention_min DECIMAL(8,2) DEFAULT 0.0,
+    total_detention_min DECIMAL(8,2) DEFAULT 0.0,
+    service_added VARCHAR(50),
+    update_time TIMESTAMP,
+    responsibility VARCHAR(100),
+    cause VARCHAR(200),
+    subcause VARCHAR(200),
+    sm_remarks TEXT,
+    department_comment TEXT,
+    raw_description TEXT,
+    source_system VARCHAR(20)
+);
+
+-- 5. DEFECT_HISTORY (Historical Defect Tracking)
+CREATE TABLE IF NOT EXISTS defect_history (
+    defect_id VARCHAR(50) PRIMARY KEY,
+    asset_id VARCHAR(50),
+    section_id VARCHAR(50),
+    defect_type VARCHAR(100),
+    severity VARCHAR(20),
+    detected_at TIMESTAMP,
+    resolved_at TIMESTAMP,
+    recurrence_flag INT DEFAULT 0,
+    source_system VARCHAR(20),
+    description TEXT
+);
+
+-- 6. MAINTENANCE_TASKS (Unified Demand Backlog)
 CREATE TABLE IF NOT EXISTS maintenance_tasks (
     task_id VARCHAR(50) PRIMARY KEY,
-    asset_id VARCHAR(50) REFERENCES assets(asset_id),
+    source_system VARCHAR(20),
+    department VARCHAR(50),
+    asset_id VARCHAR(50),
+    asset_type VARCHAR(100),
+    section_id VARCHAR(50),
+    corridor_id VARCHAR(50),
     task_type VARCHAR(100),
-    criticality VARCHAR(20),
+    defect_code VARCHAR(50),
+    inspection_code VARCHAR(50),
+    safety_impact VARCHAR(20),
+    urgency VARCHAR(20),
     due_date DATE,
     duration_minutes INT,
+    earliest_start TIMESTAMP,
+    latest_finish TIMESTAMP,
+    required_resources VARCHAR(100),
+    isolation_requirement VARCHAR(50),
+    dependency_ids TEXT,
+    status VARCHAR(30) DEFAULT 'Pending',
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    risk_probability FLOAT,
     priority_score FLOAT,
-    status VARCHAR(20) DEFAULT 'Pending',
-    source_system VARCHAR(10),
-    affects_line VARCHAR(4)
+    criticality VARCHAR(20),
+    affects_line VARCHAR(10) DEFAULT 'BOTH'
 );
 
--- 3a. Departmental Feed Staging (BDMS-style ingestion: TMS/TDMS/SMMS drops)
+-- 7. TASK_ACTIONS (Maintenance Action Workflow Engine)
+CREATE TABLE IF NOT EXISTS task_actions (
+    action_id VARCHAR(50) PRIMARY KEY,
+    task_id VARCHAR(50),
+    action_type VARCHAR(100),
+    required_crew VARCHAR(100),
+    required_resources VARCHAR(100),
+    setup_minutes INT DEFAULT 15,
+    work_duration_minutes INT DEFAULT 60,
+    isolation_requirement VARCHAR(50),
+    possession_requirement VARCHAR(50),
+    verification_required INT DEFAULT 1,
+    sequence_order INT DEFAULT 1
+);
+
+-- 8. TRAIN_MOVEMENTS (Operational Traffic / COA Timetables)
+CREATE TABLE IF NOT EXISTS train_movements (
+    movement_id VARCHAR(50) PRIMARY KEY,
+    train_id VARCHAR(50),
+    train_name VARCHAR(120),
+    train_type VARCHAR(50),
+    corridor_id VARCHAR(50),
+    section_id VARCHAR(50),
+    block_section VARCHAR(100),
+    direction VARCHAR(10),
+    entry_time TIMESTAMP,
+    exit_time TIMESTAMP,
+    actual_entry TIMESTAMP,
+    actual_exit TIMESTAMP,
+    delay_minutes INT DEFAULT 0,
+    priority_class VARCHAR(20),
+    is_passenger INT DEFAULT 1,
+    is_goods INT DEFAULT 0,
+    date DATE
+);
+
+-- 9. BLOCK_WINDOWS (corridor maintenance window availability)
+CREATE TABLE IF NOT EXISTS block_windows (
+    block_id VARCHAR(50) PRIMARY KEY,
+    corridor_id VARCHAR(50),
+    section_id VARCHAR(50),
+    block_section VARCHAR(100),
+    date DATE,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    duration_min INT,
+    block_type VARCHAR(50),
+    availability_status VARCHAR(30) DEFAULT 'AVAILABLE',
+    direction VARCHAR(10),
+    line VARCHAR(10),
+    allowed_departments VARCHAR(100),
+    isolation_type VARCHAR(50),
+    source VARCHAR(50),
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+
+-- 10. GOODS_FORECAST (Future Freight Train Density Forecast)
+CREATE TABLE IF NOT EXISTS goods_forecast (
+    forecast_id VARCHAR(50) PRIMARY KEY,
+    corridor_id VARCHAR(50),
+    section_id VARCHAR(50),
+    forecast_date DATE,
+    time_window_start TIMESTAMP,
+    time_window_end TIMESTAMP,
+    expected_goods_trains INT DEFAULT 0,
+    forecast_confidence FLOAT DEFAULT 0.85,
+    source VARCHAR(50),
+    generated_at TIMESTAMP
+);
+
+-- 11. RESOURCES (Physical Equipment, Gangs, Crews)
+CREATE TABLE IF NOT EXISTS resources (
+    resource_id VARCHAR(50) PRIMARY KEY,
+    resource_type VARCHAR(100),
+    department VARCHAR(50),
+    capability VARCHAR(100),
+    section_id VARCHAR(50),
+    capacity INT DEFAULT 1,
+    available_from TIMESTAMP,
+    available_to TIMESTAMP,
+    team_size INT DEFAULT 5,
+    skill VARCHAR(100),
+    equipment VARCHAR(100),
+    status VARCHAR(30) DEFAULT 'AVAILABLE'
+);
+
+-- 12. TASK_COMPATIBILITY (Auditable Compatibility Audit Log)
+CREATE TABLE IF NOT EXISTS task_compatibility (
+    pair_id VARCHAR(100) PRIMARY KEY,
+    task_id_1 VARCHAR(50),
+    task_id_2 VARCHAR(50),
+    section_id VARCHAR(50),
+    is_compatible INT,
+    spatial_compatible INT,
+    possession_compatible INT,
+    isolation_compatible INT,
+    resource_compatible INT,
+    reason_codes TEXT,
+    checked_at TIMESTAMP
+);
+
+-- 13. TASK_DEPENDENCIES
+CREATE TABLE IF NOT EXISTS task_dependencies (
+    dependency_id VARCHAR(50) PRIMARY KEY,
+    predecessor_task_id VARCHAR(50),
+    successor_task_id VARCHAR(50),
+    dependency_type VARCHAR(50),
+    min_lag_minutes INT DEFAULT 0
+);
+
+-- 14. ML_PREDICTIONS (Predictive Risk & SHAP Explanations)
+CREATE TABLE IF NOT EXISTS ml_predictions (
+    prediction_id VARCHAR(50) PRIMARY KEY,
+    task_id VARCHAR(50),
+    model_version VARCHAR(50),
+    prediction_timestamp TIMESTAMP,
+    risk_probability FLOAT,
+    priority_score FLOAT,
+    safety_override INT DEFAULT 0,
+    top_positive_features TEXT,
+    top_negative_features TEXT,
+    shap_values_json TEXT
+);
+
+-- 15. OPTIMIZED_BLOCKS & SCHEDULE_VERSIONS
+CREATE TABLE IF NOT EXISTS schedule_versions (
+    version_id VARCHAR(50) PRIMARY KEY,
+    created_at TIMESTAMP,
+    horizon_days INT,
+    status VARCHAR(30) DEFAULT 'DRAFT',
+    approved_by VARCHAR(80),
+    approved_at TIMESTAMP,
+    objective_value FLOAT,
+    notes TEXT
+);
+
+CREATE TABLE IF NOT EXISTS optimized_blocks (
+    block_id VARCHAR(50) PRIMARY KEY,
+    version_id VARCHAR(50),
+    section_id VARCHAR(50),
+    corridor_id VARCHAR(50),
+    block_type VARCHAR(50),
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    duration_minutes INT,
+    task_count INT,
+    departments TEXT,
+    utilization_pct FLOAT,
+    train_conflicts_avoided INT,
+    status VARCHAR(30) DEFAULT 'PROPOSED',
+    explanation_json TEXT
+);
+
+-- 16. AUDIT_LOG (Immutable Audit Trail)
+CREATE TABLE IF NOT EXISTS audit_log (
+    log_id VARCHAR(80) PRIMARY KEY,
+    event_type VARCHAR(80),
+    entity_id VARCHAR(80),
+    timestamp TIMESTAMP,
+    user_id VARCHAR(80),
+    details_json TEXT,
+    status VARCHAR(30)
+);
+
+-- 17. Departmental Feed Staging (TMS / TDMS / SMMS Ingestion)
 CREATE TABLE IF NOT EXISTS department_feeds (
-    feed_id SERIAL PRIMARY KEY,
-    source_system VARCHAR(10),
+    feed_id VARCHAR(50) PRIMARY KEY,
+    source_system VARCHAR(20),
     asset_id VARCHAR(50),
     raw_type VARCHAR(100),
     severity VARCHAR(20),
     reported_date DATE,
-    ingested_at TIMESTAMP DEFAULT NOW()
+    ingested_at TIMESTAMP
 );
 
--- 4. Traffic & Constraints
-CREATE TABLE IF NOT EXISTS train_movements (
-    movement_id SERIAL PRIMARY KEY,
-    train_id VARCHAR(50),
-    section_id VARCHAR(50) REFERENCES sections(section_id),
-    train_type VARCHAR(20),
-    entry_time TIMESTAMP,
-    exit_time TIMESTAMP,
-    direction VARCHAR(4)
+-- 18. INSPECTIONS (Track / OHE / Signalling Condition Observations)
+CREATE TABLE IF NOT EXISTS inspections (
+    inspection_id VARCHAR(50) PRIMARY KEY,
+    asset_id VARCHAR(50),
+    section_id VARCHAR(50),
+    inspection_date DATE,
+    inspection_type VARCHAR(50),
+    condition_score INT,
+    inspector_id VARCHAR(50),
+    findings TEXT,
+    created_at TIMESTAMP
 );
 
--- 5. Physical Resources
-CREATE TABLE IF NOT EXISTS resources (
-    resource_id VARCHAR(50) PRIMARY KEY,
-    resource_type VARCHAR(50),
-    department VARCHAR(50),
-    capacity INT
+-- 19. MAINTENANCE_HISTORY (Past Completed Interventions & Outcomes)
+CREATE TABLE IF NOT EXISTS maintenance_history (
+    record_id VARCHAR(50) PRIMARY KEY,
+    task_id VARCHAR(50),
+    asset_id VARCHAR(50),
+    completed_at TIMESTAMP,
+    duration_minutes INT,
+    actual_cost FLOAT,
+    rectification_details TEXT,
+    outcome_status VARCHAR(30)
 );
+
+-- 20. BLOCK_TASKS (Many-to-Many Block Membership)
+CREATE TABLE IF NOT EXISTS block_tasks (
+    block_id VARCHAR(50),
+    task_id VARCHAR(50),
+    role VARCHAR(30) DEFAULT 'PRIMARY',
+    PRIMARY KEY (block_id, task_id)
+);
+
+-- CANONICAL UPPERCASE GOVERNMENT VIEWS (Blueprint v2 Section 09)
+CREATE VIEW IF NOT EXISTS ASSET_MASTER AS SELECT * FROM assets;
+CREATE VIEW IF NOT EXISTS FAILURE_EVENT_HISTORY AS SELECT * FROM failure_event_history;
+CREATE VIEW IF NOT EXISTS MAINTENANCE_TASKS AS SELECT * FROM maintenance_tasks;
+CREATE VIEW IF NOT EXISTS TRAIN_OPERATION_HISTORY AS SELECT * FROM train_movements;
+CREATE VIEW IF NOT EXISTS BLOCK_AVAILABILITY AS SELECT * FROM block_windows;
+CREATE VIEW IF NOT EXISTS RESOURCE_AVAILABILITY AS SELECT * FROM resources;
+CREATE VIEW IF NOT EXISTS GOODS_TRAIN_FORECAST AS SELECT * FROM goods_forecast;
+CREATE VIEW IF NOT EXISTS AUDIT_EVENTS AS SELECT * FROM audit_log;
+CREATE VIEW IF NOT EXISTS OPTIMIZED_BLOCK_PLAN AS SELECT * FROM optimized_blocks;
+

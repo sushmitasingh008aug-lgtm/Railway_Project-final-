@@ -1,58 +1,240 @@
 {
-  "model_name": "XGBoost (TUNED)",
-  "best_params": {
-    "subsample": 0.7,
-    "n_estimators": 150,
-    "min_child_weight": 3,
-    "max_depth": 4,
-    "learning_rate": 0.02,
-    "gamma": 0.3,
-    "colsample_bytree": 1.0
-  },
-  "metrics": {
-    "Accuracy": 0.94,
-    "Precision": 0.8842105263157894,
-    "Recall": 0.9230769230769231,
-    "F1": 0.9032258064516129,
-    "ROC-AUC": 0.9811767180188233,
-    "PR-AUC": 0.9583004602585555
-  },
-  "feature_columns": [
+  "model_version": "v2.0-champion",
+  "champion_model": "HistGradientBoosting",
+  "trained_at": "2026-09-11 21:54:11",
+  "evaluation_protocol": "Strict Temporal Validation (Train:65%, Val:20%, Test:15%)",
+  "target_variable": "future_critical_event_30d",
+  "feature_count": 38,
+  "feature_names": [
     "asset_importance",
     "asset_age",
     "condition_score",
     "inspection_score",
+    "health_index",
     "days_overdue",
     "days_since_last_maintenance",
+    "days_since_last_failure",
     "defects_30d",
+    "failures_7d",
+    "failures_30d",
     "failures_90d",
+    "failures_180d",
+    "failures_365d",
+    "failure_duration_30d",
+    "failure_duration_90d",
+    "repeat_failure_flag",
+    "failure_recurrence_rate",
+    "trains_delayed_90d",
+    "total_detention_90d",
+    "avg_detention_90d",
     "passenger_train_count",
     "goods_train_count",
     "department_S&T",
     "department_Traction",
     "traffic_density_Low",
-    "traffic_density_Medium"
+    "traffic_density_Medium",
+    "task_type_Ballast Deep Screening",
+    "task_type_Broken Rail Weld",
+    "task_type_Cantilever Insulator Flashover",
+    "task_type_Contact Wire Sag",
+    "task_type_Neutral Section Inspection",
+    "task_type_OHE Dropper Broken",
+    "task_type_Point Machine Detection Fault",
+    "task_type_Point Machine Mechanical Fault",
+    "task_type_Signal Aspect Lamp Fail",
+    "task_type_Track Circuit Short",
+    "task_type_Track Gauge Spread"
   ],
   "criticality_bands": [
     {
-      "min_p": 0.8,
       "class": "Critical",
+      "min_p": 0.75,
       "weight": 100.0
     },
     {
-      "min_p": 0.6,
       "class": "High",
+      "min_p": 0.5,
       "weight": 75.0
     },
     {
-      "min_p": 0.3,
       "class": "Medium",
+      "min_p": 0.25,
       "weight": 50.0
     },
     {
-      "min_p": 0.0,
       "class": "Low",
+      "min_p": 0.0,
       "weight": 25.0
+    }
+  ],
+  "champion_metrics": {
+    "model_name": "HistGradientBoosting",
+    "PR_AUC": 0.9576,
+    "ROC_AUC": 0.9698,
+    "Recall": 0.8929,
+    "Precision": 0.8865,
+    "F1_Score": 0.8897,
+    "Brier_Score": 0.0652,
+    "MAE": 0.1072,
+    "RMSE": 0.2554,
+    "Train_Time_ms": 2045.16,
+    "Inference_Latency_ms": 0.0128,
+    "Confusion_Matrix": [
+      [
+        219,
+        16
+      ],
+      [
+        15,
+        125
+      ]
+    ],
+    "composite_score": 0.918
+  },
+  "benchmark_comparison": [
+    {
+      "model_name": "HistGradientBoosting",
+      "PR_AUC": 0.9576,
+      "ROC_AUC": 0.9698,
+      "Recall": 0.8929,
+      "Precision": 0.8865,
+      "F1_Score": 0.8897,
+      "Brier_Score": 0.0652,
+      "MAE": 0.1072,
+      "RMSE": 0.2554,
+      "Train_Time_ms": 2045.16,
+      "Inference_Latency_ms": 0.0128,
+      "Confusion_Matrix": [
+        [
+          219,
+          16
+        ],
+        [
+          15,
+          125
+        ]
+      ],
+      "composite_score": 0.918
+    },
+    {
+      "model_name": "XGBoost (Tuned)",
+      "PR_AUC": 0.959,
+      "ROC_AUC": 0.9705,
+      "Recall": 0.8929,
+      "Precision": 0.8562,
+      "F1_Score": 0.8741,
+      "Brier_Score": 0.0645,
+      "MAE": 0.1139,
+      "RMSE": 0.2539,
+      "Train_Time_ms": 310.07,
+      "Inference_Latency_ms": 0.0085,
+      "Confusion_Matrix": [
+        [
+          214,
+          21
+        ],
+        [
+          15,
+          125
+        ]
+      ],
+      "composite_score": 0.9146
+    },
+    {
+      "model_name": "Random Forest",
+      "PR_AUC": 0.9469,
+      "ROC_AUC": 0.9649,
+      "Recall": 0.8643,
+      "Precision": 0.8705,
+      "F1_Score": 0.8674,
+      "Brier_Score": 0.0716,
+      "MAE": 0.1616,
+      "RMSE": 0.2676,
+      "Train_Time_ms": 186.65,
+      "Inference_Latency_ms": 0.0687,
+      "Confusion_Matrix": [
+        [
+          217,
+          18
+        ],
+        [
+          19,
+          121
+        ]
+      ],
+      "composite_score": 0.8981
+    },
+    {
+      "model_name": "Decision Tree",
+      "PR_AUC": 0.9007,
+      "ROC_AUC": 0.9351,
+      "Recall": 0.8929,
+      "Precision": 0.8446,
+      "F1_Score": 0.8681,
+      "Brier_Score": 0.0836,
+      "MAE": 0.1316,
+      "RMSE": 0.2891,
+      "Train_Time_ms": 11.77,
+      "Inference_Latency_ms": 0.0008,
+      "Confusion_Matrix": [
+        [
+          212,
+          23
+        ],
+        [
+          15,
+          125
+        ]
+      ],
+      "composite_score": 0.8898
+    },
+    {
+      "model_name": "Logistic Regression",
+      "PR_AUC": 0.9487,
+      "ROC_AUC": 0.9643,
+      "Recall": 0.8357,
+      "Precision": 0.8931,
+      "F1_Score": 0.8635,
+      "Brier_Score": 0.0689,
+      "MAE": 0.1425,
+      "RMSE": 0.2626,
+      "Train_Time_ms": 718.19,
+      "Inference_Latency_ms": 0.0021,
+      "Confusion_Matrix": [
+        [
+          221,
+          14
+        ],
+        [
+          23,
+          117
+        ]
+      ],
+      "composite_score": 0.8879
+    },
+    {
+      "model_name": "Extra Trees",
+      "PR_AUC": 0.9301,
+      "ROC_AUC": 0.9552,
+      "Recall": 0.8357,
+      "Precision": 0.8931,
+      "F1_Score": 0.8635,
+      "Brier_Score": 0.0841,
+      "MAE": 0.2028,
+      "RMSE": 0.29,
+      "Train_Time_ms": 128.81,
+      "Inference_Latency_ms": 0.068,
+      "Confusion_Matrix": [
+        [
+          221,
+          14
+        ],
+        [
+          23,
+          117
+        ]
+      ],
+      "composite_score": 0.8804
     }
   ]
 }

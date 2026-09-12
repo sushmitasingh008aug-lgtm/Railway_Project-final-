@@ -1,6 +1,11 @@
 asset_id,raw_type,severity,reported_date
-SNT-594951114,Signal Aspect Lamp Fail,2,2026-08-24
-SNT-336972826,Point Machine Detection Fault,2,2026-08-27
-SNT-670767845,Track Circuit Short,3,2026-08-29
-SNT-946118849,Signal Aspect Lamp Fail,2,2026-08-27
-SNT-1095955875,Track Circuit Short,4,2026-08-31
+SNT-594951114,Track Circuit Short,1,2026-08-22
+SNT-336972826,Track Circuit Short,1,2026-08-22
+SNT-670767845,Axle Counter Error,2,2026-08-25
+SNT-946118849,Signal Aspect Lamp Fail,1,2026-08-22
+SNT-1095955875,Point Machine Detection Fault,2,2026-08-27
+SNT-488331783,Axle Counter Error,2,2026-08-27
+SNT-492863181,Signal Aspect Lamp Fail,1,2026-08-25
+SNT-1071109458,Signal Aspect Lamp Fail,1,2026-08-25
+SNT-1316858945,Track Circuit Short,1,2026-08-23
+SNT-207701846,Track Circuit Short,1,2026-08-25

@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar, ViewType } from './components/Sidebar';
-import { MapView } from './components/MapView';
 import { Header } from './components/Header';
-import { DashboardView } from './components/DashboardView';
-import { ReportsView } from './components/ReportsView';
-import { AlertsView } from './components/AlertsView';
-import { SettingsView } from './components/SettingsView';
+import { CommandCenterView } from './components/CommandCenterView';
+import { NetworkSectionsView } from './components/NetworkSectionsView';
+import { TasksView } from './components/TasksView';
+import { AIPriorityView } from './components/AIPriorityView';
+import { CoordinationView } from './components/CoordinationView';
 import { GanttTab } from './components/GanttTab';
-import { TestSuiteTab } from './components/TestSuiteTab';
+import { BeforeAfterView } from './components/BeforeAfterView';
+import { WeeklyMonthlyView } from './components/WeeklyMonthlyView';
+import { FailureIntelligenceView } from './components/FailureIntelligenceView';
+import { WhatIfSimulatorView } from './components/WhatIfSimulatorView';
+import { ApprovalAuditView } from './components/ApprovalAuditView';
 import { SubmitTab } from './components/SubmitTab';
+import { MapView } from './components/MapView';
+import { AlertsView } from './components/AlertsView';
 import {
   MetricsResponse,
   ScheduledTask,
@@ -16,14 +22,17 @@ import {
   TestStatusResponse,
   ImpactResponse,
   TrainMovement,
+  SectionRisk,
   apiClient,
 } from './api/client';
 
 export function App() {
-  const [activeView, setActiveView] = useState<ViewType>('dashboard');
+  const [activeView, setActiveView] = useState<ViewType>('command_center');
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [metrics, setMetrics] = useState<MetricsResponse | null>(null);
   const [schedule, setSchedule] = useState<ScheduledTask[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
+  const [sectionRisks, setSectionRisks] = useState<SectionRisk[]>([]);
   const [testStatus, setTestStatus] = useState<TestStatusResponse | null>(null);
   const [impact, setImpact] = useState<ImpactResponse | null>(null);
   const [trains, setTrains] = useState<TrainMovement[]>([]);
@@ -32,13 +41,14 @@ export function App() {
   const fetchAllData = useCallback(async (showLoading = true) => {
     try {
       if (showLoading) setLoading(true);
-      const [mRes, sRes, secRes, tRes, iRes, trRes] = await Promise.all([
+      const [mRes, sRes, secRes, tRes, iRes, trRes, rRes] = await Promise.all([
         apiClient.get<MetricsResponse>('/metrics').catch(() => null),
         apiClient.get<{ data: ScheduledTask[] }>('/schedule').catch(() => null),
         apiClient.get<{ data: Section[] }>('/sections').catch(() => null),
         apiClient.get<TestStatusResponse>('/tests/status').catch(() => null),
         apiClient.get<ImpactResponse>('/impact').catch(() => null),
         apiClient.get<{ data: TrainMovement[] }>('/trains').catch(() => null),
+        apiClient.get<{ data: SectionRisk[] }>('/sections/risk').catch(() => null),
       ]);
 
       if (mRes) setMetrics(mRes.data);
@@ -47,6 +57,7 @@ export function App() {
       if (tRes) setTestStatus(tRes.data);
       if (iRes) setImpact(iRes.data);
       if (trRes) setTrains(trRes.data.data || []);
+      if (rRes) setSectionRisks(rRes.data.data || []);
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
     } finally {
@@ -59,34 +70,71 @@ export function App() {
     fetchAllData(true);
   }, [fetchAllData]);
 
-  // Refresh schedule and metrics when switching tabs
+  // Refresh data on view change
   useEffect(() => {
     fetchAllData(false);
   }, [activeView, fetchAllData]);
 
   return (
-    <div className="min-h-screen bg-[#f5f6fa] text-gray-900 flex flex-row font-sans">
-      {/* Left Sidebar */}
-      <Sidebar activeView={activeView} setActiveView={setActiveView} />
+    <div className="min-h-screen bg-[#F7F7F5] text-[#1F2937] flex flex-row font-sans antialiased">
+      {/* Left Sidebar (Desktop fixed + Mobile off-canvas drawer) */}
+      <Sidebar
+        activeView={activeView}
+        setActiveView={setActiveView}
+        isOpenMobile={isMobileNavOpen}
+        onCloseMobile={() => setIsMobileNavOpen(false)}
+      />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto max-h-screen">
         {/* Top App Header */}
-        <Header onNavigate={setActiveView} />
+        <Header
+          onToggleSidebar={() => setIsMobileNavOpen(!isMobileNavOpen)}
+          onNavigate={(view: any) => setActiveView(view)}
+        />
 
         {/* Dynamic Body Content */}
-        <main className="flex-1 px-6 pt-6 pb-10">
-          {activeView === 'dashboard' && (
-            <DashboardView
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 pt-5 pb-12 w-full max-w-[1720px] mx-auto">
+          {activeView === 'command_center' && (
+            <CommandCenterView
               metrics={metrics}
               impact={impact}
+              schedule={schedule}
+              sectionRisks={sectionRisks}
               loading={loading}
               onNavigate={setActiveView}
+            />
+          )}
+
+          {activeView === 'network_sections' && (
+            <NetworkSectionsView
+              sectionRisks={sectionRisks}
+              sections={sections}
+              schedule={schedule}
+              onNavigate={setActiveView}
+            />
+          )}
+
+          {activeView === 'maintenance_tasks' && (
+            <TasksView
+              schedule={schedule}
+              sections={sections}
+            />
+          )}
+
+          {activeView === 'ai_priority' && (
+            <AIPriorityView
               schedule={schedule}
             />
           )}
 
-          {(activeView === 'planning' || activeView === 'traffic') && (
+          {activeView === 'coordination' && (
+            <CoordinationView
+              onNavigate={setActiveView}
+            />
+          )}
+
+          {activeView === 'block_planner' && (
             <GanttTab
               schedule={schedule}
               trains={trains}
@@ -95,7 +143,30 @@ export function App() {
             />
           )}
 
-          {activeView === 'networkmap' && <MapView sections={sections} schedule={schedule} />}
+          {activeView === 'before_after' && (
+            <BeforeAfterView
+              onNavigate={setActiveView}
+            />
+          )}
+
+          {activeView === 'weekly_monthly' && (
+            <WeeklyMonthlyView
+              schedule={schedule}
+              sections={sections}
+            />
+          )}
+
+          {activeView === 'failure_intelligence' && (
+            <FailureIntelligenceView />
+          )}
+
+          {activeView === 'what_if' && (
+            <WhatIfSimulatorView />
+          )}
+
+          {activeView === 'approvals_audit' && (
+            <ApprovalAuditView />
+          )}
 
           {activeView === 'demand' && (
             <SubmitTab
@@ -105,8 +176,11 @@ export function App() {
             />
           )}
 
-          {activeView === 'reports' && (
-            <ReportsView metrics={metrics} impact={impact} />
+          {activeView === 'networkmap' && (
+            <MapView
+              sections={sections}
+              schedule={schedule}
+            />
           )}
 
           {activeView === 'alerts' && (
@@ -118,13 +192,12 @@ export function App() {
               }}
             />
           )}
-
-          {activeView === 'settings' && <SettingsView />}
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-gray-200 py-3 px-6 text-center text-[11px] text-gray-400 bg-white">
-          Automatic Block Planning System · v2.1 · Divisional Control Office, BSB
+        <footer className="border-t border-[#E6E6E6] py-3.5 px-6 text-center text-xs text-[#667085] bg-white flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>AI-Assisted Automatic Block Planning System · Bharat Rail Operations (Saffron Control)</span>
+          <span className="text-[11px] text-[#98A2B3]">Ministry of Railways · Smart India Hackathon 2026</span>
         </footer>
       </div>
     </div>

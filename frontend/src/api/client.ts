@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// Same-origin in Docker (Flask serves / + /api on 3000); Vite proxy forwards /api -> backend in dev.
-// VITE_API_URL can override at build time (e.g. http://localhost:3000/api for legacy dev).
+// Same-origin in Docker (Flask serves / + /api on 8765); Vite proxy forwards /api -> backend in dev.
 const API_BASE_URL =
   (import.meta.env.VITE_API_URL as string | undefined) || '/api';
 
@@ -83,7 +82,7 @@ export interface Section {
   start_lon: number;
   end_lat: number;
   end_lon: number;
-  geometry?: [number, number][]; // [lat, lon][] — true curved rail from OSM, if missing fallback to start→end
+  geometry?: [number, number][];
 }
 
 export interface TrainMovement {
@@ -151,4 +150,228 @@ export interface ImpactResponse {
     collision_events_avoided: number;
     avg_delay_recovered_per_train_min: number;
   };
+}
+
+// Master Plan v2 Enhanced Interfaces
+
+export interface ModelBenchmarkItem {
+  model_name: string;
+  PR_AUC: number;
+  ROC_AUC: number;
+  Recall: number;
+  Precision: number;
+  F1_Score: number;
+  Brier_Score: number;
+  MAE: number;
+  RMSE: number;
+  Train_Time_ms: number;
+  Inference_Latency_ms: number;
+  composite_score: number;
+  Confusion_Matrix: number[][];
+}
+
+export interface MLBenchmarkResponse {
+  status: string;
+  data: {
+    model_version: string;
+    champion_model: string;
+    trained_at: string;
+    evaluation_protocol: string;
+    target_variable: string;
+    feature_count: number;
+    feature_names: string[];
+    champion_metrics: ModelBenchmarkItem;
+    benchmark_comparison: ModelBenchmarkItem[];
+  };
+}
+
+export interface SHAPFeature {
+  feature: string;
+  contribution: number;
+}
+
+export interface TaskExplanationResponse {
+  status: string;
+  data: {
+    prediction_id: string;
+    task_id: string;
+    task_type: string;
+    criticality: string;
+    department: string;
+    asset_id: string;
+    condition_score: number;
+    model_version: string;
+    prediction_timestamp: string;
+    risk_probability: number;
+    priority_score: number;
+    safety_override: number;
+    top_positive_features: SHAPFeature[];
+    top_negative_features: SHAPFeature[];
+    shap_values: Record<string, number>;
+  };
+}
+
+export interface CompatibilityPair {
+  pair_id: string;
+  task_id_1: string;
+  task_id_2: string;
+  section_id: string;
+  is_compatible: number;
+  spatial_compatible: number;
+  possession_compatible: number;
+  isolation_compatible: number;
+  resource_compatible: number;
+  reason_codes: string[];
+  dept_1: string;
+  type_1: string;
+  prio_1: number;
+  dept_2: string;
+  type_2: string;
+  prio_2: number;
+  checked_at: string;
+}
+
+export interface CompatibilityResponse {
+  status: string;
+  summary: {
+    total_pairs_evaluated: number;
+    compatible_pairs: number;
+    incompatible_pairs: number;
+    coordination_readiness_pct: number;
+  };
+  data: CompatibilityPair[];
+}
+
+export interface AlternativeWindow {
+  window: string;
+  status: 'SELECTED' | 'REJECTED';
+  reason: string;
+}
+
+export interface DetailedBlock {
+  block_id: string;
+  version_id: string;
+  section_id: string;
+  corridor_id: string;
+  block_type: string;
+  start_time: string;
+  end_time: string;
+  duration_minutes: number;
+  task_count: number;
+  departments: string;
+  utilization_pct: number;
+  train_conflicts_avoided: number;
+  status: string;
+  explanation: {
+    why_chosen: string;
+    solver_objective: number;
+    is_coordinated: boolean;
+    departments_involved: string[];
+    alternative_windows_evaluated: AlternativeWindow[];
+  };
+}
+
+export interface FailureRecord {
+  af_id: string;
+  uims_id: string;
+  zone: string;
+  division: string;
+  department: string;
+  failure_type: string;
+  failure_date: string;
+  failure_time: string;
+  failure_duration_min: number;
+  section_id: string;
+  block_section: string;
+  trains_delayed: number;
+  avg_detention_min: number;
+  total_detention_min: number;
+  cause: string;
+  subcause: string;
+  sm_remarks: string;
+  raw_description: string;
+}
+
+export interface EvaluationReport {
+  timestamp: string;
+  tasks_scheduled: number;
+  coordination: {
+    coordinated_groups: number;
+    coordinated_tasks: number;
+    disruptions_avoided: number;
+    multi_department_ratio: number;
+  };
+  baseline_uncoordinated: {
+    total_blocks: number;
+    total_block_hours: number;
+    asset_downtime_hours: number;
+    block_utilization_pct: number;
+    line_closures_per_week: number;
+    train_conflicts_risk: string;
+  };
+  optimized_cpsat: {
+    total_blocks: number;
+    total_block_hours: number;
+    asset_downtime_hours: number;
+    block_utilization_pct: number;
+    line_closures_per_week: number;
+    train_conflicts_risk: string;
+  };
+  measured_benefits: {
+    blocks_saved: number;
+    block_reduction_pct: number;
+    block_hours_saved: number;
+    downtime_reduction_pct: number;
+    train_conflicts_eliminated: number;
+    throughput_availability_gain_pct: number;
+  };
+}
+
+export interface WhatIfResult {
+  status: string;
+  simulation: {
+    target_block_id: string;
+    section_id: string;
+    original_window: string;
+    shifted_window: string;
+    shift_applied_minutes: number;
+    train_conflicts_detected: number;
+    conflicting_trains: Array<{ train_id: string; train_name: string; overlap_minutes: number }>;
+    peak_window_violation: boolean;
+    feasible: boolean;
+    recommendation: string;
+  };
+}
+
+export interface ScheduleVersion {
+  version_id: string;
+  created_at: string;
+  horizon_days: number;
+  status: 'PROPOSED' | 'APPROVED' | 'REJECTED';
+  approved_by?: string;
+  approved_at?: string;
+  objective_value?: number;
+  notes?: string;
+}
+
+export interface AuditEntry {
+  log_id: string;
+  event_type: string;
+  entity_id: string;
+  timestamp: string;
+  user_id: string;
+  details: any;
+  status: string;
+}
+
+export interface SectionRisk {
+  section_id: string;
+  name: string;
+  corridor_id: string;
+  length_km: number;
+  open_tasks: number;
+  critical_tasks: number;
+  avg_condition: number;
+  avg_priority: number;
+  risk_level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 }

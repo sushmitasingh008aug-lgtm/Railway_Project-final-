@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Section, SubmitBlockRequest, SubmitBlockResponse, ScheduledTask, apiClient } from '../api/client';
-import { Minus, Plus, CheckCircle2, AlertCircle, RefreshCw, Calendar, ArrowRight, Clock, MapPin, Check } from 'lucide-react';
+import { Minus, Plus, CheckCircle2, AlertCircle, RefreshCw, Calendar, ArrowRight, Clock, MapPin, Check, ClipboardList } from 'lucide-react';
 import { ViewType } from './Sidebar';
 
 interface SubmitTabProps {
@@ -88,7 +88,7 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
             setOptimizing(false);
             if (onSubmissionSuccess) onSubmissionSuccess();
 
-            // Fetch the updated schedule to find our new task
+            // Fetch updated schedule
             const schedRes = await apiClient.get<{ data: ScheduledTask[] }>('/schedule');
             const found = (schedRes.data.data || []).find((t) => t.task_id === newResult.task_id);
             if (found) {
@@ -98,9 +98,8 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
         } catch {
           // Ignore transient poll error
         }
-      }, 1500);
+      }, 2000);
 
-      // Timeout after 30s
       setTimeout(() => {
         clearInterval(pollInterval);
         setOptimizing(false);
@@ -121,35 +120,45 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
   };
 
   const inputCls =
-    'w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-gray-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-50 transition-colors';
+    'w-full bg-[#F7F7F5] border border-[#E6E6E6] rounded-xl px-4 py-2.5 text-[#1F2937] text-xs font-semibold focus:outline-none focus:border-[#FF9933] focus:bg-white transition-all';
 
   return (
     <div className="space-y-6 pb-12">
-      <div className="bg-white border border-gray-200 rounded-xl p-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-1">
-          Maintenance Block Request
-        </h2>
-        <p className="text-sm text-gray-400 mb-8">
-          Fill in the parameters below to request a new track maintenance block window.
-        </p>
+      {/* Header */}
+      <div className="bg-white p-5 rounded-2xl border border-[#E6E6E6] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="w-8 h-8 rounded-lg bg-[#FFF3E6] border border-[#FFD9B3] flex items-center justify-center text-[#D96F13]">
+              <ClipboardList className="w-4 h-4" />
+            </span>
+            <h2 className="text-lg sm:text-xl font-bold text-[#1F2937] font-display">
+              Demand Submission &amp; Block Requisition
+            </h2>
+          </div>
+          <p className="text-xs text-[#667085] mt-1 ml-10">
+            Submit new departmental maintenance requirement for automated AI prioritization and CP-SAT block fitting
+          </p>
+        </div>
+      </div>
 
+      <div className="bg-white border border-[#E6E6E6] rounded-2xl p-6 sm:p-8 shadow-sm">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column */}
-            <div className="space-y-6">
+            <div className="space-y-5">
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
                   Department
                 </label>
                 <select value={department} onChange={(e) => handleDeptChange(e.target.value)} className={inputCls}>
-                  <option value="Engineering">Engineering</option>
-                  <option value="Traction">Traction</option>
-                  <option value="S&T">S&amp;T</option>
+                  <option value="Engineering">Engineering (TMS)</option>
+                  <option value="Traction">Traction (TDMS)</option>
+                  <option value="S&T">Signalling &amp; Telecom (SMMS)</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
                   Target Section
                 </label>
                 <select value={targetSection} onChange={(e) => setTargetSection(e.target.value)} className={inputCls}>
@@ -162,7 +171,7 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
                   Maintenance Task Type
                 </label>
                 <select value={taskType} onChange={(e) => setTaskType(e.target.value)} className={inputCls}>
@@ -174,17 +183,17 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
             </div>
 
             {/* Right Column */}
-            <div className="space-y-6">
+            <div className="space-y-5">
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <label className="text-xs font-bold text-[#1F2937] uppercase tracking-wider">
                     Criticality Level
                   </label>
-                  <span className={`text-xs font-bold ${
-                    criticality === 'Critical' ? 'text-red-600'
-                    : criticality === 'High' ? 'text-orange-500'
-                    : criticality === 'Medium' ? 'text-amber-500'
-                    : 'text-green-600'
+                  <span className={`text-xs font-extrabold ${
+                    criticality === 'Critical' ? 'text-[#D92D20]'
+                    : criticality === 'High' ? 'text-[#F79009]'
+                    : criticality === 'Medium' ? 'text-[#2563EB]'
+                    : 'text-[#12B76A]'
                   }`}>
                     {criticality}
                   </span>
@@ -196,21 +205,21 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
                   step="1"
                   value={getCritIndex()}
                   onChange={handleSliderChange}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#FF9933]"
                 />
-                <div className="flex justify-between text-[11px] text-gray-400 mt-1">
+                <div className="flex justify-between text-[11px] text-[#667085] mt-1">
                   <span>Low</span>
                   <span>Medium</span>
                   <span>High</span>
-                  <span>Critical</span>
+                  <span className="text-[#D92D20] font-bold">Critical</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
                   Required Duration (Minutes)
                 </label>
-                <div className="flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden">
+                <div className="flex items-center bg-[#F7F7F5] border border-[#E6E6E6] rounded-xl overflow-hidden">
                   <input
                     type="number"
                     min="15"
@@ -218,29 +227,27 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
                     step="15"
                     value={duration}
                     onChange={(e) => setDuration(parseInt(e.target.value, 10) || 60)}
-                    className="w-full bg-transparent px-4 py-3 text-gray-800 text-sm focus:outline-none"
+                    className="w-full bg-transparent px-4 py-2.5 text-[#1F2937] text-xs font-bold focus:outline-none"
                   />
-                  <div className="flex items-center pr-2 gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setDuration((prev) => Math.max(15, prev - 15))}
-                      className="p-1 text-gray-400 hover:text-gray-700 rounded hover:bg-gray-100 transition-colors"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDuration((prev) => Math.min(720, prev + 15))}
-                      className="p-1 text-gray-400 hover:text-gray-700 rounded hover:bg-gray-100 transition-colors"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setDuration(Math.max(15, duration - 15))}
+                    className="p-2.5 text-[#667085] hover:text-[#1F2937] hover:bg-gray-200"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDuration(duration + 15)}
+                    className="p-2.5 text-[#667085] hover:text-[#1F2937] hover:bg-gray-200"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
                   Target Completion Due Date
                 </label>
                 <input
@@ -253,16 +260,16 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
             </div>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-3 border-t border-[#E6E6E6] flex justify-end">
             <button
               type="submit"
               disabled={submitting || optimizing}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg flex items-center gap-2 transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-[#FF9933] hover:bg-[#D96F13] text-white text-xs font-bold rounded-xl flex items-center gap-2 transition shadow-sm disabled:opacity-50"
             >
               {submitting ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Submitting Block Request...</span>
+                  <span>Submitting Block Requisition...</span>
                 </>
               ) : optimizing ? (
                 <>
@@ -270,14 +277,14 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
                   <span>CP-SAT Optimizer Running...</span>
                 </>
               ) : (
-                <span>Calculate Priority &amp; Request Block Window</span>
+                <span>Calculate Priority &amp; Request Block Window →</span>
               )}
             </button>
           </div>
         </form>
 
         {errorMsg && (
-          <div className="mt-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-3">
+          <div className="mt-6 p-4 rounded-xl bg-[#FEF3F2] border border-[#FDA29B] text-[#D92D20] text-xs font-semibold flex items-center gap-3">
             <AlertCircle className="w-5 h-5 shrink-0" />
             <span>{errorMsg}</span>
           </div>
@@ -285,96 +292,27 @@ export const SubmitTab: React.FC<SubmitTabProps> = ({ sections, onSubmissionSucc
 
         {result && (
           <div className="mt-8 space-y-4">
-            {/* Status Header */}
-            <div className={`p-4 rounded-lg border text-sm font-semibold flex items-center justify-between ${
+            <div className={`p-4 rounded-xl border text-xs font-bold flex items-center justify-between ${
               optimizing 
-                ? 'bg-blue-50 border-blue-200 text-blue-800' 
-                : 'bg-green-50 border-green-200 text-green-700'
+                ? 'bg-[#FFF3E6] border-[#FFD9B3] text-[#B85C00]' 
+                : 'bg-[#D1FADF] border-[#A6F4C5] text-[#0F7644]'
             }`}>
               <div className="flex items-center gap-2">
                 {optimizing ? (
-                  <RefreshCw className="w-5 h-5 text-blue-600 animate-spin shrink-0" />
+                  <RefreshCw className="w-4 h-4 text-[#D96F13] animate-spin shrink-0" />
                 ) : (
-                  <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[#12B76A] shrink-0" />
                 )}
                 <span>
-                  {optimizing
-                    ? `Task ${result.task_id} registered! Optimizing master block schedule...`
-                    : `Task ${result.task_id} successfully scheduled in master block plan!`}
+                  {optimizing 
+                    ? `Task ${result.task_id} registered. CP-SAT solver is currently finding a conflict-free corridor slot...` 
+                    : `Task ${result.task_id} successfully scheduled into optimal corridor block!`
+                  }
                 </span>
               </div>
-
-              {!optimizing && onNavigate && (
-                <button
-                  onClick={() => onNavigate('planning')}
-                  className="px-3.5 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all"
-                >
-                  <span>View in Block Planning</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-
-            {/* Scheduled Placement Details (When Optimizer Finishes) */}
-            {scheduledTask && (
-              <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-blue-600" />
-                    <span className="text-xs font-bold text-blue-900">Assigned Maintenance Window</span>
-                  </div>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white">
-                    {scheduledTask.affects_line || 'BOTH'} LINE
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-blue-500" />
-                    <div>
-                      <p className="text-[10px] text-gray-500">Scheduled Time</p>
-                      <p className="text-xs font-bold text-gray-900 font-mono">
-                        {scheduledTask.assigned_start_time} → {scheduledTask.assigned_end_time}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-blue-500" />
-                    <div>
-                      <p className="text-[10px] text-gray-500">Section</p>
-                      <p className="text-xs font-bold text-gray-900">{scheduledTask.section_name}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-blue-500" />
-                    <div>
-                      <p className="text-[10px] text-gray-500">Duration &amp; Safety</p>
-                      <p className="text-xs font-bold text-gray-900">{scheduledTask.duration_minutes}m (Collision-Free)</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Score Breakdown Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-              <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
-                <p className="text-xs text-gray-500 font-medium">Computed Priority Score</p>
-                <p className="text-3xl font-extrabold text-gray-900 mt-1">
-                  {result.computed_priority_score.toFixed(1)} / 100.0
-                </p>
-              </div>
-              <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
-                <p className="text-xs text-gray-500 font-medium">Criticality Contribution</p>
-                <p className="text-3xl font-extrabold text-gray-900 mt-1">
-                  {result.criticality_contribution.toFixed(1)} pts (60%)
-                </p>
-              </div>
-              <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
-                <p className="text-xs text-gray-500 font-medium">Urgency Contribution</p>
-                <p className="text-3xl font-extrabold text-gray-900 mt-1">
-                  {result.urgency_contribution.toFixed(1)} pts (40%)
-                </p>
-              </div>
+              <span className="font-mono text-[10px] bg-white px-2 py-0.5 rounded border border-current">
+                Priority: {(result.computed_priority_score || 0).toFixed(1)} / 100
+              </span>
             </div>
           </div>
         )}

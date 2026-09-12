@@ -5,36 +5,63 @@
 @layer base {
   :root {
     color-scheme: light;
+    --rail-saffron: #FF9933;
+    --rail-saffron-dark: #D96F13;
+    --surface: #FFFFFF;
+    --surface-warm: #FFF9F2;
+    --canvas: #F7F7F5;
+    --text: #1F2937;
+    --text-muted: #667085;
+    --border: #E6E6E6;
+    --critical: #D92D20;
+    --warning: #F79009;
+    --success: #12B76A;
+    --info: #2563EB;
   }
 
   html, body {
-    background-color: #f5f6fa;
-    color: #111827;
-    font-family: 'Inter', 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+    background-color: #F7F7F5;
+    color: #1F2937;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Force all form controls to stay light even in OS dark mode */
+  /* Force all form controls to stay light */
   input, select, textarea, button {
     color-scheme: light;
   }
 }
 
-/* Light scrollbar */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #F1F5F9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c3ccd6;
+  background: #CBD5E1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9aa7b5;
+  background: #94A3B8;
+}
+
+/* Saffron Control Card & Element Helpers */
+.saffron-card {
+  background: #FFFFFF;
+  border: 1px solid #E6E6E6;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+}
+
+.saffron-badge {
+  background-color: #FFF3E6;
+  color: #B85C00;
+  border: 1px solid #FFD9B3;
+  font-weight: 600;
 }

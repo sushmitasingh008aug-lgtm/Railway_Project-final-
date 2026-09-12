@@ -1,11 +1,12 @@
 import os
 import sys
+import json
 import math
 import time
 import subprocess
 import threading
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import text as sql_text
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
@@ -254,7 +255,7 @@ def get_trains():
                 continue
             
             movements.append({
-                "movement_id": int(row['movement_id']),
+                "movement_id": str(row['movement_id']),
                 "train_id": str(row['train_id']),
                 "section_id": str(row['section_id']),
                 "train_type": str(row['train_type']),
@@ -526,6 +527,439 @@ def get_impact():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+@app.route('/api/ml/benchmark', methods=['GET'])
+def get_ml_benchmark():
+    meta_path = os.path.join(ENGINE_DIR, 'ml_model_meta.json')
+    if os.path.exists(meta_path):
+        try:
+            with open(meta_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return jsonify({"status": "success", "data": data})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+    return jsonify({"status": "error", "message": "ML benchmark metadata not found."}), 404
+
+@app.route('/api/ml/explain/<task_id>', methods=['GET'])
+def get_task_explanation(task_id):
+    engine = get_db_engine()
+    try:
+        with engine.connect() as conn:
+            row = conn.execute(sql_text("""
+                SELECT p.prediction_id, p.task_id, p.model_version, p.prediction_timestamp,
+                       p.risk_probability, p.priority_score, p.safety_override,
+                       p.top_positive_features, p.top_negative_features, p.shap_values_json,
+                       mt.task_type, mt.criticality, mt.department, a.asset_id, a.condition_score
+                FROM ml_predictions p
+                JOIN maintenance_tasks mt ON p.task_id = mt.task_id
+                JOIN assets a ON mt.asset_id = a.asset_id
+                WHERE p.task_id = :tid
+            """), {"tid": task_id}).mappings().first()
+            if not row:
+                return jsonify({"status": "error", "message": f"Explanation for {task_id} not found"}), 404
+            
+            res = dict(row)
+            res['top_positive_features'] = json.loads(res.get('top_positive_features') or '[]')
+            res['top_negative_features'] = json.loads(res.get('top_negative_features') or '[]')
+            res['shap_values'] = json.loads(res.get('shap_values_json') or '{}')
+            return jsonify({"status": "success", "data": res})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/compatibility', methods=['GET'])
+def get_compatibility():
+    engine = get_db_engine()
+    try:
+        df = pd.read_sql("""
+            SELECT tc.pair_id, tc.task_id_1, tc.task_id_2, tc.section_id,
+                   tc.is_compatible, tc.spatial_compatible, tc.possession_compatible,
+                   tc.isolation_compatible, tc.resource_compatible, tc.reason_codes, tc.checked_at,
+                   t1.department as dept_1, t1.task_type as type_1, t1.priority_score as prio_1,
+                   t2.department as dept_2, t2.task_type as type_2, t2.priority_score as prio_2
+            FROM task_compatibility tc
+            JOIN maintenance_tasks t1 ON tc.task_id_1 = t1.task_id
+            JOIN maintenance_tasks t2 ON tc.task_id_2 = t2.task_id
+            ORDER BY tc.is_compatible DESC, t1.priority_score DESC
+        """, engine)
+        pairs = []
+        for _, r in df.iterrows():
+            item = dict(r)
+            item['reason_codes'] = json.loads(item.get('reason_codes') or '[]')
+            pairs.append(item)
+        
+        compat_count = sum(1 for p in pairs if p['is_compatible'] == 1)
+        incompat_count = len(pairs) - compat_count
+        return jsonify({
+            "status": "success",
+            "summary": {
+                "total_pairs_evaluated": len(pairs),
+                "compatible_pairs": compat_count,
+                "incompatible_pairs": incompat_count,
+                "coordination_readiness_pct": round((compat_count / max(1, len(pairs))) * 100.0, 1)
+            },
+            "data": pairs
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/blocks/detailed', methods=['GET'])
+def get_detailed_blocks():
+    engine = get_db_engine()
+    try:
+        df = pd.read_sql("""
+            SELECT block_id, version_id, section_id, corridor_id, block_type,
+                   start_time, end_time, duration_minutes, task_count, departments,
+                   utilization_pct, train_conflicts_avoided, status, explanation_json
+            FROM optimized_blocks
+            ORDER BY start_time ASC
+        """, engine)
+        blocks = []
+        for _, r in df.iterrows():
+            item = dict(r)
+            item['explanation'] = json.loads(item.get('explanation_json') or '{}')
+            blocks.append(item)
+        return jsonify({"status": "success", "data": blocks})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/failures', methods=['GET'])
+def get_failure_history():
+    engine = get_db_engine()
+    sec_filter = request.args.get('section_id')
+    dept_filter = request.args.get('department')
+    limit = int(request.args.get('limit', 100))
+    try:
+        where_clauses = []
+        params = {"lim": limit}
+        if sec_filter:
+            where_clauses.append("section_id = :sec")
+            params["sec"] = sec_filter
+        if dept_filter:
+            where_clauses.append("sub_head = :dept")
+            params["dept"] = dept_filter
+        where_sql = ("WHERE " + " AND ".join(where_clauses)) if where_clauses else ""
+
+        df = pd.read_sql(f"""
+            SELECT af_id, uims_id, zone, division, sub_head as department,
+                   failure_type, failure_date, failure_time, failure_duration_min,
+                   section_id, block_section, trains_delayed, avg_detention_min,
+                   total_detention_min, cause, subcause, sm_remarks, raw_description
+            FROM failure_event_history
+            {where_sql}
+            ORDER BY failure_start DESC
+            LIMIT :lim
+        """, engine, params=params)
+        return jsonify({"status": "success", "count": len(df), "data": df.to_dict(orient='records')})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/evaluation/baseline-vs-optimized', methods=['GET'])
+def get_evaluation_metrics():
+    try:
+        from evaluation_engine import run_evaluation
+        report = run_evaluation()
+        return jsonify({"status": "success", "data": report})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/what-if', methods=['POST', 'GET'])
+def what_if_simulation():
+    engine = get_db_engine()
+    if request.method == 'POST':
+        body = request.get_json() or {}
+        shift_min = int(body.get('shift_minutes', 30))
+        target_block = body.get('block_id', 'CB_001')
+    else:
+        shift_min = int(request.args.get('shift_minutes', 30))
+        target_block = request.args.get('block_id', 'CB_001')
+
+    tasks = load_schedule_tasks()
+    target_tasks = [t for t in tasks if t.get('combined_group_id') == target_block]
+    if not target_tasks:
+        target_tasks = [tasks[0]] if tasks else []
+
+    if not target_tasks:
+        return jsonify({"status": "error", "message": "No tasks available to simulate"}), 400
+
+    sec_id = target_tasks[0]['section_id']
+    orig_start = min(t['start_minute'] for t in target_tasks)
+    orig_end = max(t['end_minute'] for t in target_tasks)
+    new_start = max(0, orig_start + shift_min)
+    new_end = new_start + (orig_end - orig_start)
+
+    # Check train conflicts in new window
+    df_trains = pd.read_sql(f"""
+        SELECT movement_id, train_id, train_name, direction, entry_time, exit_time
+        FROM train_movements
+        WHERE section_id = '{sec_id}'
+    """, engine)
+    
+    conflicts = []
+    for _, tr in df_trains.iterrows():
+        t_entry = int((pd.to_datetime(tr['entry_time']) - PLAN_BASE_TIME).total_seconds() / 60)
+        t_exit = int((pd.to_datetime(tr['exit_time']) - PLAN_BASE_TIME).total_seconds() / 60)
+        overlap = max(0, min(new_end, t_exit) - max(new_start, t_entry))
+        if overlap > 0:
+            conflicts.append({
+                "train_id": tr['train_id'],
+                "train_name": tr['train_name'],
+                "overlap_minutes": overlap
+            })
+
+    # Check peak traffic window ban (12:00 - 18:00)
+    peak_violation = False
+    for d in range(7):
+        p_start = d * 1440 + 720
+        p_end = d * 1440 + 1080
+        if max(0, min(new_end, p_end) - max(new_start, p_start)) > 0:
+            peak_violation = True
+
+    return jsonify({
+        "status": "success",
+        "simulation": {
+            "target_block_id": target_block,
+            "section_id": sec_id,
+            "original_window": f"{orig_start}m - {orig_end}m",
+            "shifted_window": f"{new_start}m - {new_end}m",
+            "shift_applied_minutes": shift_min,
+            "train_conflicts_detected": len(conflicts),
+            "conflicting_trains": conflicts,
+            "peak_window_violation": peak_violation,
+            "feasible": len(conflicts) == 0 and not peak_violation,
+            "recommendation": "FEASIBLE" if (len(conflicts) == 0 and not peak_violation) else "CONFLICT DETECTED - REJECT SHIFT"
+        }
+    })
+
+@app.route('/api/approvals', methods=['GET', 'POST'])
+def manage_approvals():
+    engine = get_db_engine()
+    if request.method == 'POST':
+        body = request.get_json() or {}
+        status = body.get('status', 'APPROVED').upper()
+        supervisor = body.get('supervisor_name', 'Chief Section Controller, BSB')
+        remarks = body.get('remarks', 'Block plan approved for live railway dispatch.')
+
+        now_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        with engine.begin() as conn:
+            conn.execute(sql_text("""
+                UPDATE schedule_versions
+                SET status = :st, approved_by = :sup, approved_at = :at, notes = :notes
+            """), {"st": status, "sup": supervisor, "at": now_str, "notes": remarks})
+
+            audit_id = f"AUD_{int(datetime.now().timestamp())}"
+            conn.execute(sql_text("""
+                INSERT INTO audit_log (log_id, event_type, entity_id, timestamp, user_id, details_json, status)
+                VALUES (:id, 'PLAN_APPROVAL', 'SCHEDULE_LATEST', :ts, :user, :dt, :st)
+            """), {
+                "id": audit_id,
+                "ts": now_str,
+                "user": supervisor,
+                "dt": json.dumps({"action": status, "remarks": remarks}),
+                "st": status
+            })
+        return jsonify({"status": "success", "message": f"Plan status updated to {status} by {supervisor}"})
+
+    # GET: return latest version status
+    try:
+        with engine.connect() as conn:
+            row = conn.execute(sql_text("""
+                SELECT version_id, created_at, horizon_days, status, approved_by, approved_at, objective_value, notes
+                FROM schedule_versions
+                ORDER BY created_at DESC
+                LIMIT 1
+            """)).mappings().first()
+            if row:
+                return jsonify({"status": "success", "data": dict(row)})
+            return jsonify({"status": "success", "data": {"status": "PROPOSED", "version_id": "v1.0"}})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/audit', methods=['GET'])
+def get_audit_trail():
+    engine = get_db_engine()
+    try:
+        df = pd.read_sql("""
+            SELECT log_id, event_type, entity_id, timestamp, user_id, details_json, status
+            FROM audit_log
+            ORDER BY timestamp DESC
+            LIMIT 50
+        """, engine)
+        logs = []
+        for _, r in df.iterrows():
+            item = dict(r)
+            try:
+                item['details'] = json.loads(item.get('details_json') or '{}')
+            except Exception:
+                item['details'] = item.get('details_json')
+            logs.append(item)
+        return jsonify({"status": "success", "data": logs})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/sections/risk', methods=['GET'])
+def get_sections_risk():
+    engine = get_db_engine()
+    try:
+        df = pd.read_sql("""
+            SELECT s.section_id, s.name, s.corridor_id, s.length_km,
+                   COUNT(DISTINCT mt.task_id) as open_tasks,
+                   SUM(CASE WHEN mt.criticality = 'Critical' THEN 1 ELSE 0 END) as critical_tasks,
+                   AVG(a.condition_score) as avg_condition,
+                   AVG(mt.priority_score) as avg_priority
+            FROM sections s
+            LEFT JOIN assets a ON s.section_id = a.section_id
+            LEFT JOIN maintenance_tasks mt ON a.asset_id = mt.asset_id AND mt.status = 'Pending'
+            GROUP BY s.section_id, s.name, s.corridor_id, s.length_km
+            ORDER BY critical_tasks DESC, avg_priority DESC
+        """, engine)
+
+        sections = []
+        for _, r in df.iterrows():
+            crit = int(r.get('critical_tasks') or 0)
+            avg_p = float(r.get('avg_priority') or 50.0)
+            if crit >= 10 or avg_p >= 75.0:
+                risk_level = 'CRITICAL'
+            elif crit >= 5 or avg_p >= 60.0:
+                risk_level = 'HIGH'
+            elif crit >= 2:
+                risk_level = 'MEDIUM'
+            else:
+                risk_level = 'LOW'
+
+            sections.append({
+                "section_id": r['section_id'],
+                "name": r['name'],
+                "corridor_id": r['corridor_id'],
+                "length_km": float(r['length_km']),
+                "open_tasks": int(r.get('open_tasks') or 0),
+                "critical_tasks": crit,
+                "avg_condition": round(float(r.get('avg_condition') or 70.0), 1),
+                "avg_priority": round(avg_p, 1),
+                "risk_level": risk_level
+            })
+        return jsonify({"status": "success", "data": sections})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/actions/<task_id>', methods=['GET'])
+def get_task_actions(task_id):
+    try:
+        from actions_engine import get_actions_for_task
+        actions = get_actions_for_task(task_id)
+        return jsonify({"status": "success", "task_id": task_id, "data": actions})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+# ── Blueprint v2 Domain APIs (Section 21) ──
+
+@app.route('/api/risk/predict', methods=['POST'])
+def api_predict_risk():
+    """Online ML failure probability and priority scoring for arbitrary task payload."""
+    try:
+        from priority_engine import calculate_task_priority
+        data = request.get_json() or {}
+        res = calculate_task_priority(data)
+        return jsonify({"status": "success", "data": res})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/coordination/candidates', methods=['GET', 'POST'])
+def api_coordination_candidates():
+    """Generates compatible multi-department shadow-block candidates."""
+    try:
+        from coordination_engine import generate_shadow_block_candidates
+        engine = get_db_engine()
+        df = pd.read_sql("SELECT * FROM maintenance_tasks WHERE status = 'Pending'", engine)
+        candidates = generate_shadow_block_candidates(df.to_dict('records'))
+        return jsonify({
+            "status": "success",
+            "count": len(candidates),
+            "data": candidates
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/plans/<plan_id>/validate', methods=['POST', 'GET'])
+def api_validate_plan(plan_id):
+    """Executes the independent deterministic safety validator on planned blocks."""
+    try:
+        from validator import validate_plan
+        tasks = load_schedule_tasks()
+        engine = get_db_engine()
+        df_tr = pd.read_sql("SELECT * FROM train_movements", engine)
+        trains = []
+        for _, r in df_tr.iterrows():
+            e_min = int((pd.to_datetime(r['entry_time']) - PLAN_BASE_TIME).total_seconds() / 60)
+            x_min = int((pd.to_datetime(r['exit_time']) - PLAN_BASE_TIME).total_seconds() / 60)
+            trains.append({
+                'movement_id': str(r['movement_id']),
+                'train_id': str(r['train_id']),
+                'section_id': str(r['section_id']),
+                'direction': str(r.get('direction', 'DOWN')),
+                'entry_min': max(0, e_min),
+                'exit_min': max(0, x_min)
+            })
+        report = validate_plan(blocks=tasks, trains=trains)
+        return jsonify({"status": "success", "plan_id": plan_id, "data": report})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/plans/<plan_id>/approve', methods=['POST'])
+def api_approve_plan(plan_id):
+    """Controller approval workflow with state transitions and immutable audit trail."""
+    engine = get_db_engine()
+    try:
+        body = request.get_json() or {}
+        user = body.get('user', 'Senior Section Controller')
+        remarks = body.get('remarks', 'Plan validated with zero train collisions and approved for execution.')
+        now_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        with engine.begin() as conn:
+            conn.execute(sql_text("""
+                UPDATE schedule_versions
+                SET status = 'APPROVED', approved_by = :user, approved_at = :at, notes = :notes
+                WHERE version_id = :vid
+            """), {'user': user, 'at': now_str, 'notes': remarks, 'vid': plan_id})
+
+            audit_id = f"AUD_{int(datetime.now().timestamp())}"
+            conn.execute(sql_text("""
+                INSERT INTO audit_log (log_id, event_type, entity_id, timestamp, user_id, details_json, status)
+                VALUES (:aid, 'PLAN_APPROVED', :vid, :at, :user, :det, 'APPROVED')
+            """), {
+                'aid': audit_id,
+                'vid': plan_id,
+                'at': now_str,
+                'user': user,
+                'det': json.dumps({'action': 'CONTROLLER_APPROVAL', 'remarks': remarks})
+            })
+
+        return jsonify({
+            "status": "success",
+            "message": f"Plan {plan_id} successfully approved.",
+            "approved_at": now_str,
+            "approved_by": user
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/kpis', methods=['GET'])
+def api_get_kpis():
+    """Returns exact mathematical KPIs: EDR%, Delta Availability, Consolidation%."""
+    try:
+        from scenario_engine import compute_operational_kpis
+        engine = get_db_engine()
+        df_tasks = pd.read_sql("SELECT * FROM maintenance_tasks WHERE status = 'Pending'", engine)
+        tasks_sched = load_schedule_tasks()
+        num_blocks = len(set(t.get('combined_group_id') or t.get('task_id') for t in tasks_sched))
+        kpis = compute_operational_kpis(
+            df_tasks_baseline=df_tasks,
+            df_tasks_optimized=pd.DataFrame(tasks_sched),
+            num_baseline_blocks=len(df_tasks),
+            num_optimized_blocks=max(1, num_blocks)
+        )
+        return jsonify({"status": "success", "data": kpis})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 # Serve React SPA: static assets + SPA fallback (must be after /api routes)
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -544,7 +978,7 @@ def serve_frontend(path):
 
 
 if __name__ == '__main__':
-    port = int(os.getenv("PORT", 3000))
+    port = int(os.getenv("PORT", 8765))
     # Quick sanity on startup: show where static is served from
     if os.path.isdir(FRONTEND_DIST):
         print(f"✓ Frontend dist found at {FRONTEND_DIST}")

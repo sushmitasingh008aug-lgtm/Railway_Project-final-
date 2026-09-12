@@ -366,29 +366,57 @@ def submit_task():
     urg_contrib = urgency_score * 0.4
     final_score = round(crit_contrib + urg_contrib, 2)
 
+    # Check statutory safety critical overrides
+    is_safety_critical = any(kw in task_type.lower() for kw in ["broken rail", "track circuit", "ohe dropper", "signal blank"])
+    if is_safety_critical or criticality == "Critical":
+        criticality = "Critical"
+        final_score = max(final_score, 92.5)
+
     engine = get_db_engine()
     new_task_id = f"TSK_{int(time.time() * 1000) % 1000000}"
 
     try:
-        # Find asset in target section (parameterized — no string interpolation)
+        # Find asset in target section matching department
         df_asset = pd.read_sql(
-            sql_text("SELECT asset_id FROM assets WHERE section_id = :sid LIMIT 1"),
+            sql_text("SELECT asset_id, department, section_id, corridor_id, asset_type FROM assets WHERE section_id = :sid AND department = :dept LIMIT 1"),
             engine,
-            params={"sid": target_section},
+            params={"sid": target_section, "dept": dept},
         )
-        asset_id = df_asset.iloc[0]['asset_id'] if len(df_asset) > 0 else "AST_BSB_LKO_01_01"
-        
+        if len(df_asset) > 0:
+            asset_id = str(df_asset.iloc[0]['asset_id'])
+            corridor_id = str(df_asset.iloc[0].get('corridor_id') or 'CORR_BSB_LKO')
+            asset_type = str(df_asset.iloc[0].get('asset_type') or 'Track')
+        else:
+            df_any = pd.read_sql(
+                sql_text("SELECT asset_id, department, section_id, corridor_id, asset_type FROM assets WHERE section_id = :sid LIMIT 1"),
+                engine,
+                params={"sid": target_section},
+            )
+            if len(df_any) > 0:
+                asset_id = str(df_any.iloc[0]['asset_id'])
+                corridor_id = str(df_any.iloc[0].get('corridor_id') or 'CORR_BSB_LKO')
+                asset_type = str(df_any.iloc[0].get('asset_type') or 'Track')
+            else:
+                asset_id = "AST_BSB_LKO_01_01"
+                corridor_id = "CORR_BSB_LKO"
+                asset_type = "Track"
+
         with engine.begin() as conn:
             df_ins = pd.DataFrame([{
                 "task_id": new_task_id,
+                "source_system": f"BDMS_{dept.upper()}",
+                "department": dept,
                 "asset_id": asset_id,
+                "asset_type": asset_type,
+                "section_id": target_section,
+                "corridor_id": corridor_id,
                 "task_type": task_type,
                 "criticality": criticality,
                 "due_date": due_dt.strftime("%Y-%m-%d"),
                 "duration_minutes": duration,
                 "priority_score": final_score,
                 "status": "Pending",
-                "source_system": "USER_SUBMIT"
+                "affects_line": "BOTH" if dept == "S&T" else "UP"
             }])
             df_ins.to_sql("maintenance_tasks", conn, if_exists="append", index=False)
 

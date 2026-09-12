@@ -177,13 +177,17 @@ func main() {
 		ServerHeader: "Go-Fiber-Secure",
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError
+			msg := "An error occurred while processing the request."
 			if e, ok := err.(*fiber.Error); ok {
 				code = e.Code
+				msg = e.Message
+			} else if err != nil {
+				msg = err.Error()
 			}
-			log.Printf("[ERROR] Request %s failed: %v", c.Path(), err)
+			log.Printf("[ERROR] Request %s failed (%d): %v", c.Path(), code, err)
 			return c.Status(code).JSON(fiber.Map{
 				"status":  "error",
-				"message": "An error occurred while processing the request.",
+				"message": msg,
 			})
 		},
 	})
@@ -747,30 +751,45 @@ var (
 	genOutputTail  string
 )
 
-func resolvePython() (string, string) {
-	// Env override wins, then system python3 — portable Windows ↔ Linux ↔ Docker
-	if p := os.Getenv("PYTHON_BIN"); p != "" {
+func resolveScriptPath() string {
+	for _, p := range []string{"engine/optimizer_core.py", "../engine/optimizer_core.py", filepath.Join("..", "engine", "optimizer_core.py")} {
 		if _, err := os.Stat(p); err == nil {
-			return p, "engine/optimizer_core.py"
+			return p
 		}
 	}
-	// Prefer system python with installed deps (Docker: python3, local venv: .venv/bin/python)
-	candidates := []string{"python3", "python"}
+	return "engine/optimizer_core.py"
+}
+
+func resolvePython() (string, string) {
+	// Env override wins, then system python — portable Windows ↔ Linux ↔ Docker
+	if p := os.Getenv("PYTHON_BIN"); p != "" {
+		if _, err := os.Stat(p); err == nil {
+			return p, resolveScriptPath()
+		}
+	}
+	candidates := []string{"python", "python3"}
 	for _, cand := range candidates {
 		if p, err := exec.LookPath(cand); err == nil {
-			return p, "engine/optimizer_core.py"
+			cmd := exec.Command(p, "-c", "import sys; sys.exit(0)")
+			if err := cmd.Run(); err == nil {
+				return p, resolveScriptPath()
+			}
 		}
 	}
 	// Legacy venv fallback (dev without Docker)
 	for _, p := range []string{filepath.Join("..", ".venv", "bin", "python"), filepath.Join(".venv", "bin", "python"), filepath.Join(".venv", "Scripts", "python.exe")} {
 		if _, err := os.Stat(p); err == nil {
-			return p, filepath.Join("..", "engine", "optimizer_core.py")
+			return p, resolveScriptPath()
 		}
 	}
-	return "python3", "engine/optimizer_core.py"
+	return "python", resolveScriptPath()
 }
 
 func handleGenerateSchedule(c *fiber.Ctx) error {
+	if db == nil || db.Ping() != nil {
+		return proxyHTTP(c, "/api/schedule/generate")
+	}
+
 	pythonPath, scriptPath := resolvePython()
 	// Docker WORKDIR /app → engine/optimizer_core.py exists; local dev may need ../engine
 	if _, err := os.Stat(scriptPath); os.IsNotExist(err) {
@@ -846,6 +865,10 @@ func handleGenerateSchedule(c *fiber.Ctx) error {
 }
 
 func handleGenerateStatus(c *fiber.Ctx) error {
+	if db == nil || db.Ping() != nil {
+		return proxyHTTP(c, "/api/schedule/status")
+	}
+
 	genMu.Lock()
 	defer genMu.Unlock()
 	return c.JSON(fiber.Map{
@@ -859,6 +882,10 @@ func handleGenerateStatus(c *fiber.Ctx) error {
 }
 
 func handleSubmitTask(c *fiber.Ctx) error {
+	if db == nil || db.Ping() != nil {
+		return proxyHTTP(c, "/api/tasks/submit")
+	}
+
 	var req SubmitTaskRequest
 	if err := c.BodyParser(&req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid request JSON payload")

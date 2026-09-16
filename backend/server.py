@@ -909,9 +909,9 @@ def what_if_simulation():
                 "overlap_minutes": overlap
             })
 
-    # Check peak traffic window ban (12:00 - 18:00)
+    # Check peak traffic window ban (12:00 - 18:00), covering the full monthly horizon
     peak_violation = False
-    for d in range(7):
+    for d in range(30):
         p_start = d * 1440 + 720
         p_end = d * 1440 + 1080
         if max(0, min(new_end, p_end) - max(new_start, p_start)) > 0:

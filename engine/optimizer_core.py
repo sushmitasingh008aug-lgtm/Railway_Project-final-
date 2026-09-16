@@ -111,7 +111,7 @@ def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
     for sid in df_tasks['section_id'].unique():
         sec_trains = df_trains[df_trains['section_id'] == sid]
         windows = []
-        for day in range(min(7, int(horizon_days))):
+        for day in range(int(horizon_days)):
             day_offset = day * 1440
             # Night window: 01:30 - 04:30 (90 min - 270 min)
             w1_s = day_offset + 90

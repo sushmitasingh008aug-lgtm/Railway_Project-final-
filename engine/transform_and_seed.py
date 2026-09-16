@@ -9,6 +9,8 @@ import sqlalchemy
 from sqlalchemy import text
 from datetime import datetime, timedelta
 
+SEED_HORIZON_DAYS = 30  # Data horizon (days) for timetable, block windows & goods forecast
+
 if hasattr(sys.stdout, 'reconfigure'):
     try:
         sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -444,7 +446,7 @@ def transform_and_seed():
         sec_id = s['section_id']
         cid = s['corridor_id']
         curr = base_date + timedelta(hours=random.randint(1, 3))
-        horizon_end = base_date + timedelta(days=7)
+        horizon_end = base_date + timedelta(days=SEED_HORIZON_DAYS)
 
         while curr < horizon_end:
             transit_duration = random.randint(25, 45)
@@ -492,7 +494,7 @@ def transform_and_seed():
     # 8. Block Windows
     block_windows = []
     bw_counter = 1
-    for day in range(7):
+    for day in range(SEED_HORIZON_DAYS):
         curr_day = base_date + timedelta(days=day)
         for s in sections:
             sid = s['section_id']
@@ -550,7 +552,7 @@ def transform_and_seed():
     # 9. Goods Forecast
     goods_forecasts = []
     gf_counter = 1
-    for day in range(7):
+    for day in range(SEED_HORIZON_DAYS):
         curr_day = base_date + timedelta(days=day)
         for s in sections:
             sid = s['section_id']

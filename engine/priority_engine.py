@@ -42,7 +42,9 @@ from explainability import get_explainer
 
 SAFETY_CRITICAL_TYPES = {
     'Broken Rail Weld',
+    'Broken Rail Weld Repair',
     'Track Circuit Short',
+    'Track Circuit Failure',
     'OHE Dropper Broken',
     'Signal Aspect Lamp Fail',
     'Point Machine Detection Fault',
@@ -74,7 +76,7 @@ def calculate_task_priority(task_row: dict, plan_time: datetime = None) -> dict:
     i_i, i_breakdown = compute_impact_score(c_i, dur, cid, aff)
     
     # 5. Expected-Loss Priority Formula: 100 * R_i * I_i * U_i
-    raw_priority = round(100.0 * r_i * i_i * u_i, 2)
+    raw_priority = round(max(0.1, 100.0 * r_i * i_i * u_i), 2)
     
     # 6. Safety Override Check
     ttype = str(t_dict.get('task_type', ''))
@@ -83,6 +85,7 @@ def calculate_task_priority(task_row: dict, plan_time: datetime = None) -> dict:
     is_safety_critical = (
         (raw_safety == 'Critical') or
         (ttype in SAFETY_CRITICAL_TYPES) or
+        any(k in ttype.lower() for k in ['broken rail', 'dropper broken', 'circuit short', 'circuit failure', 'point machine']) or
         (raw_crit == 'Critical')
     )
     

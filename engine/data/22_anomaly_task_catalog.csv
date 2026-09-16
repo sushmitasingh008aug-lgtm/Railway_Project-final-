@@ -1,0 +1,30 @@
+anomaly_scenario,department,recommended_task_types,recommended_actions,planning_handling
+Normal preventive work,All,Inspection;Preventive Maintenance;Condition Monitoring,Inspection;Measurement;Testing;Verification,Use routine low-risk planning and avoid unnecessary emergency blocks.
+Recurring failure,All,Corrective Maintenance;Failure Rectification;Overhaul,Inspection;Maintenance;Testing;Verification,Prioritize history-aware risk and bundle repeat work where safe.
+Critical safety defect,All,Emergency Repair;Failure Rectification,Protection;Isolation;Maintenance;Testing;Restoration,Force safety override and human approval.
+Weather: heavy rain,ENGINEERING,Drainage Cleaning;Inspection,Preparation;Cleaning;Inspection;Verification,Prefer drainage/track work around weather-risk windows.
+Weather: flooding,ENGINEERING,Emergency Repair;Drainage Cleaning,Emergency Response;Isolation;Cleaning;Restoration,Treat as high-priority disruption with restricted block options.
+Weather: extreme heat,ENGINEERING/TRD,Emergency Repair;Inspection,Protection;Measurement;Restoration,Increase thermal-risk priority and check train-path constraints.
+Weather: fog/low visibility,S&T/ENGINEERING,Inspection;Testing,Inspection;Testing;Verification,Increase signaling/visibility checks and reserve safe windows.
+Lightning event,TRD/S&T,Inspection;Testing;Failure Rectification,Protection;Testing;Restoration,Check power/signaling recovery before reopening.
+Water ingress,TRD/S&T,Corrective Maintenance;Inspection,Isolation;Maintenance;Testing,Coordinate electrical isolation and post-repair verification.
+Animal intrusion,S&T/TRD,Patrolling Follow-up;Inspection,Inspection;Protection;Verification,Use patrol-led handling and avoid high-impact blocks when possible.
+Vandalism / third-party damage,All,Emergency Repair;Corrective Maintenance,Protection;Maintenance;Restoration,Create security/third-party incident tag and re-plan rapidly.
+Electrical fault,TRD,Failure Rectification;Testing;Emergency Repair,Isolation;Testing;Restoration,Requires power isolation compatibility.
+Mechanical wear,All,Preventive Maintenance;Renewal,Inspection;Maintenance;Verification,Use condition and age features.
+Cable damage,S&T,Corrective Maintenance;Failure Rectification,Isolation;Maintenance;Testing,Check route overlap and spare crew/resources.
+Human error,All,Inspection;Joint Inspection;Corrective Maintenance,Inspection;Verification;Handover,Flag need for maker-checker style review.
+Heavy traffic / high utilization,All,Preventive Maintenance;Patrolling Follow-up,Measurement;Protection;Verification,Favor low-conflict windows with lower train density.
+Possession conflict,All,Any,Protection;Coordination;Handover,Mark as scheduling constraint; do not silently merge.
+Isolation conflict,All,Any,Isolation;Testing;Restoration,Require compatible isolation types before bundling.
+Resource shortage,All,Any,Preparation;Coordination;Handover,Defer or reassign when capacity is unavailable.
+Train path conflict,All,Any,Protection;Coordination;Verification,Avoid train occupancy; use alternate block windows.
+Dependency constraint,All,Any,Preparation;Testing;Verification,Respect predecessor and minimum lag constraints.
+Restricted block window,All,Any,Preparation;Coordination;Handover,Only schedule within valid availability and department permissions.
+Emergency replan,All,Emergency Repair;Failure Rectification,Emergency Response;Protection;Restoration,Support rapid human-reviewed reoptimization.
+Post-failure restoration,All,Restoration;Testing,Isolation;Testing;Restoration;Verification,Require testing and verification before service restoration.
+Signal/Interlocking degradation,S&T,Failure Rectification;Testing;Emergency Repair,Isolation;Testing;Restoration,High safety impact; protect train movement.
+OHE/pantograph interaction,TRD,Emergency Repair;Inspection,Protection;Isolation;Maintenance;Testing,Critical coordination between power and traffic.
+Track geometry deviation,ENGINEERING,Tamping/Grinding;Inspection,Measurement;Maintenance;Verification,Condition-driven task with machine availability check.
+Level crossing anomaly,ENGINEERING/S&T,Emergency Repair;Testing;Joint Inspection,Protection;Testing;Verification;Handover,Cross-department dependency and safety escalation.
+Bridge/structure anomaly,ENGINEERING,Joint Inspection;Emergency Repair,Inspection;Measurement;Protection;Restoration,Restrict traffic and require structural review.

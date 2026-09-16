@@ -5,6 +5,9 @@
 @layer base {
   :root {
     color-scheme: light;
+    --rail-maroon: #7F1418;
+    --rail-maroon-dark: #5E0E11;
+    --rail-navy: #0B1F4A;
     --rail-saffron: #FF9933;
     --rail-saffron-dark: #D96F13;
     --surface: #FFFFFF;

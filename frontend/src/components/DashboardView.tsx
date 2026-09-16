@@ -333,7 +333,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </table>
           </div>
           <button
-            onClick={() => onNavigate('planning')}
+            onClick={() => onNavigate('weekly_planner')}
             className="mt-3 text-[11px] text-blue-600 hover:underline font-medium flex items-center gap-1"
           >
             View All Blocks <ArrowRight className="w-3 h-3" />

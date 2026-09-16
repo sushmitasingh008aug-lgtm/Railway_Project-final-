@@ -15,6 +15,13 @@ import { ApprovalAuditView } from './components/ApprovalAuditView';
 import { SubmitTab } from './components/SubmitTab';
 import { MapView } from './components/MapView';
 import { AlertsView } from './components/AlertsView';
+import { AnomalyHandlingView } from './components/AnomalyHandlingView';
+import { TrainConflictsView } from './components/TrainConflictsView';
+import { AssetHealthView } from './components/AssetHealthView';
+import { DataIngestionView } from './components/DataIngestionView';
+import { DataQualityView } from './components/DataQualityView';
+import { ScenarioExplorerView } from './components/ScenarioExplorerView';
+import { ModelVersionsView } from './components/ModelVersionsView';
 import {
   MetricsResponse,
   ScheduledTask,
@@ -27,7 +34,7 @@ import {
 } from './api/client';
 
 export function App() {
-  const [activeView, setActiveView] = useState<ViewType>('command_center');
+  const [activeView, setActiveView] = useState<ViewType>('dashboard');
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [metrics, setMetrics] = useState<MetricsResponse | null>(null);
   const [schedule, setSchedule] = useState<ScheduledTask[]>([]);
@@ -95,46 +102,27 @@ export function App() {
 
         {/* Dynamic Body Content */}
         <main className="flex-1 px-4 sm:px-6 lg:px-8 pt-5 pb-12 w-full max-w-[1720px] mx-auto">
-          {activeView === 'command_center' && (
+          {/* OPERATIONS */}
+          {(activeView === 'dashboard' || activeView === 'command_center') && (
             <CommandCenterView
               metrics={metrics}
               impact={impact}
               schedule={schedule}
+              sections={sections}
               sectionRisks={sectionRisks}
               loading={loading}
               onNavigate={setActiveView}
             />
           )}
 
-          {activeView === 'network_sections' && (
-            <NetworkSectionsView
-              sectionRisks={sectionRisks}
-              sections={sections}
-              schedule={schedule}
-              onNavigate={setActiveView}
-            />
-          )}
-
-          {activeView === 'maintenance_tasks' && (
+          {(activeView === 'asset_backlog' || activeView === 'maintenance_tasks') && (
             <TasksView
               schedule={schedule}
               sections={sections}
             />
           )}
 
-          {activeView === 'ai_priority' && (
-            <AIPriorityView
-              schedule={schedule}
-            />
-          )}
-
-          {activeView === 'coordination' && (
-            <CoordinationView
-              onNavigate={setActiveView}
-            />
-          )}
-
-          {activeView === 'block_planner' && (
+          {(activeView === 'weekly_planner' || activeView === 'block_planner') && (
             <GanttTab
               schedule={schedule}
               trains={trains}
@@ -143,16 +131,38 @@ export function App() {
             />
           )}
 
-          {activeView === 'before_after' && (
+          {(activeView === 'monthly_forecast' || activeView === 'weekly_monthly') && (
+            <WeeklyMonthlyView
+              schedule={schedule}
+              sections={sections}
+            />
+          )}
+
+          {activeView === 'anomaly_handling' && (
+            <AnomalyHandlingView />
+          )}
+
+          {/* COORDINATION */}
+          {activeView === 'coordination' && (
+            <CoordinationView
+              onNavigate={setActiveView}
+            />
+          )}
+
+          {(activeView === 'shadow_blocks' || activeView === 'before_after') && (
             <BeforeAfterView
               onNavigate={setActiveView}
             />
           )}
 
-          {activeView === 'weekly_monthly' && (
-            <WeeklyMonthlyView
+          {activeView === 'train_conflicts' && (
+            <TrainConflictsView />
+          )}
+
+          {/* INTELLIGENCE */}
+          {activeView === 'ai_priority' && (
+            <AIPriorityView
               schedule={schedule}
-              sections={sections}
             />
           )}
 
@@ -160,12 +170,56 @@ export function App() {
             <FailureIntelligenceView />
           )}
 
+          {activeView === 'asset_health' && (
+            <AssetHealthView />
+          )}
+
           {activeView === 'what_if' && (
             <WhatIfSimulatorView />
           )}
 
+          {/* DATA */}
+          {activeView === 'data_ingestion' && (
+            <DataIngestionView />
+          )}
+
+          {activeView === 'data_quality' && (
+            <DataQualityView />
+          )}
+
+          {activeView === 'scenario_explorer' && (
+            <ScenarioExplorerView
+              onNavigate={(view) => setActiveView(view as ViewType)}
+            />
+          )}
+
+          {activeView === 'model_versions' && (
+            <ModelVersionsView />
+          )}
+
+          {/* CONTROL */}
           {activeView === 'approvals_audit' && (
             <ApprovalAuditView />
+          )}
+
+          {(activeView === 'verification_suite' || activeView === 'alerts') && (
+            <AlertsView
+              testStatus={testStatus}
+              onRefreshTests={async () => {
+                const res = await apiClient.get<TestStatusResponse>('/tests/status').catch(() => null);
+                if (res) setTestStatus(res.data);
+              }}
+            />
+          )}
+
+          {/* Legacy Extra Views */}
+          {activeView === 'network_sections' && (
+            <NetworkSectionsView
+              sectionRisks={sectionRisks}
+              sections={sections}
+              schedule={schedule}
+              onNavigate={setActiveView}
+            />
           )}
 
           {activeView === 'demand' && (
@@ -182,21 +236,11 @@ export function App() {
               schedule={schedule}
             />
           )}
-
-          {activeView === 'alerts' && (
-            <AlertsView
-              testStatus={testStatus}
-              onRefreshTests={async () => {
-                const res = await apiClient.get<TestStatusResponse>('/tests/status').catch(() => null);
-                if (res) setTestStatus(res.data);
-              }}
-            />
-          )}
         </main>
 
         {/* Footer */}
         <footer className="border-t border-[#E6E6E6] py-3.5 px-6 text-center text-xs text-[#667085] bg-white flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>AI-Assisted Automatic Block Planning System · Bharat Rail Operations (Saffron Control)</span>
+          <span>ABPS v4 — Railway Maintenance Decision-Support Control Centre (Delhi Division · SIMULATION / DEMO MODE)</span>
           <span className="text-[11px] text-[#98A2B3]">Ministry of Railways · Smart India Hackathon 2026</span>
         </footer>
       </div>

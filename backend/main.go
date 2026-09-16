@@ -455,8 +455,8 @@ func coordinationStats(tasks []ScheduledTask) (groups, disruptionsAvoided, coord
 }
 
 func handleGetTasks(c *fiber.Ctx) error {
-	if db == nil || db.Ping() != nil {
-		if err := proxyGet(c, "/api/tasks"); err == nil {
+	if len(c.Request().URI().QueryString()) > 0 || db == nil || db.Ping() != nil {
+		if err := proxyHTTP(c, "/api/tasks"); err == nil {
 			return nil
 		}
 	}

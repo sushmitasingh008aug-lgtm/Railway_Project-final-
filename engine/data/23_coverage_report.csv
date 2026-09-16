@@ -1,0 +1,26 @@
+dataset,metric,value,goal,status
+assets,unique_asset_types,36,at least 20,PASS
+assets,asset_age_min,0.0,>= 0,PASS
+assets,asset_age_max,45.0,<= 45,PASS
+assets,condition_score_min,4,broad range,PASS
+assets,condition_score_max,99,broad range,PASS
+failures,unique_failure_types,37,at least 25,PASS
+failures,unique_causes,20,at least 15,PASS
+defects,unique_severity_levels,4,4,PASS
+tasks,unique_task_types,19,at least 12,PASS
+tasks,unique_isolation_requirements,7,at least 6,PASS
+tasks,status_types,8,at least 6,PASS
+task_actions,verification_required_0,1643,greater than 0,PASS
+task_actions,verification_required_1,10357,greater than 0,PASS
+compatibility,compatible_pairs,3152,> 20% for learnable signal,PASS
+compatibility,compatible_pct,26.27,> 20%,PASS
+dependencies,dependency_types,5,at least 4,PASS
+train_movements,delay_min,0,>= 0,PASS
+train_movements,delay_max,120,>= 60 for disruption cases,PASS
+block_windows,availability_statuses,4,4,PASS
+goods_forecast,confidence_min,0.45,< 0.6 exists,FAIL
+goods_forecast,confidence_max,0.98,> 0.9 exists,PASS
+resources,resource_statuses,5,5,PASS
+ml_predictions,model_versions,5,at least 5,PASS
+ml_predictions,safety_overrides,570,> 0,PASS
+maintenance_history,outcome_statuses,8,at least 6,PASS

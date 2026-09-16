@@ -352,6 +352,53 @@ CREATE TABLE IF NOT EXISTS block_tasks (
     PRIMARY KEY (block_id, task_id)
 );
 
+-- 21. ANOMALY_TASK_CATALOG (29 Scenario Classes: Scenario -> Department -> Task -> Actions -> Planning Handling)
+CREATE TABLE IF NOT EXISTS anomaly_task_catalog (
+    anomaly_scenario VARCHAR(120) PRIMARY KEY,
+    department VARCHAR(100),
+    recommended_task_types TEXT,
+    recommended_actions TEXT,
+    planning_handling TEXT
+);
+
+-- 22. COVERAGE_REPORT (Coverage Verification Matrix)
+CREATE TABLE IF NOT EXISTS coverage_report (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    dataset VARCHAR(50),
+    metric VARCHAR(100),
+    value VARCHAR(100),
+    goal VARCHAR(100),
+    status VARCHAR(20)
+);
+
+-- 23. DATA_INGESTION_RUNS (Immutable Ingestion Run Audit Records)
+CREATE TABLE IF NOT EXISTS data_ingestion_runs (
+    ingestion_id VARCHAR(60) PRIMARY KEY,
+    source_system VARCHAR(50),
+    dataset_name VARCHAR(60),
+    source_file VARCHAR(200),
+    file_hash VARCHAR(64),
+    schema_version VARCHAR(20) DEFAULT 'v4.0',
+    uploaded_by VARCHAR(80),
+    uploaded_at TIMESTAMP,
+    rows_received INT DEFAULT 0,
+    rows_accepted INT DEFAULT 0,
+    rows_rejected INT DEFAULT 0,
+    duplicates INT DEFAULT 0,
+    validation_status VARCHAR(30),
+    notes TEXT
+);
+
+-- Performance Indexes for 12K Queries
+CREATE INDEX IF NOT EXISTS idx_assets_dept_sec ON assets(department, section_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_sec_prio ON maintenance_tasks(section_id, priority_score);
+CREATE INDEX IF NOT EXISTS idx_tasks_status ON maintenance_tasks(status);
+CREATE INDEX IF NOT EXISTS idx_failures_sec_date ON failure_event_history(section_id, failure_start);
+CREATE INDEX IF NOT EXISTS idx_trains_sec_entry ON train_movements(section_id, entry_time);
+CREATE INDEX IF NOT EXISTS idx_blocks_sec_time ON block_windows(section_id, start_time);
+CREATE INDEX IF NOT EXISTS idx_compat_tasks ON task_compatibility(task_id_1, task_id_2);
+CREATE INDEX IF NOT EXISTS idx_actions_task ON task_actions(task_id, sequence_order);
+
 -- CANONICAL UPPERCASE GOVERNMENT VIEWS (Blueprint v2 Section 09)
 CREATE VIEW IF NOT EXISTS ASSET_MASTER AS SELECT * FROM assets;
 CREATE VIEW IF NOT EXISTS FAILURE_EVENT_HISTORY AS SELECT * FROM failure_event_history;

@@ -31,34 +31,51 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) =
           <Menu className="w-5 h-5" />
         </button>
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-[15px] sm:text-[16px] font-bold text-[#1F2937] tracking-tight font-display">
-              Automatic Block Planning
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-[14px] sm:text-[15px] font-extrabold text-[#7F1418] tracking-tight font-display">
+              ABPS — Automated Block Planning System
             </h1>
+            <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#F7F7F5] text-[#344054] border border-[#E6E6E6]">
+              Delhi Division
+            </span>
             {/* Operational State Badge */}
             <div className="relative">
               <span
                 onMouseEnter={() => setShowSimTooltip(true)}
                 onMouseLeave={() => setShowSimTooltip(false)}
                 onClick={() => setShowSimTooltip(!showSimTooltip)}
-                className="cursor-pointer inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#FFF3E6] text-[#B85C00] border border-[#FFD9B3]"
+                className="cursor-pointer inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF3E6] text-[#B85C00] border border-[#FFD9B3]"
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-[#FF9933]"></span>
-                <span className="hidden sm:inline">SIMULATION MODE</span>
-                <span className="sm:hidden">SIM</span>
+                <span>SIMULATION MODE</span>
                 <HelpCircle className="w-3 h-3 text-[#D96F13] opacity-75" />
               </span>
               {showSimTooltip && (
-                <div className="absolute left-0 mt-1.5 w-64 bg-[#1F2937] text-white text-[11px] rounded-lg p-2.5 shadow-xl z-50 leading-tight">
-                  <p className="font-semibold text-[#FF9933] mb-0.5">Prototype Simulation Environment</p>
-                  Uses representative multi-department feeds (TMS, TDMS, SMMS, COA) to drive the deterministic CP-SAT optimization engine.
+                <div className="absolute left-0 mt-1.5 w-72 bg-[#1F2937] text-white text-[11px] rounded-xl p-3 shadow-xl z-50 leading-relaxed border border-[#374151]">
+                  <p className="font-bold text-[#FF9933] mb-1">Demonstration & Prototype Environment</p>
+                  Operates on diversified synthetic 12K railway datasets. Decision support only — requires controller review and formal validation prior to plan approval.
                 </div>
               )}
             </div>
           </div>
-          <p className="text-[11px] text-[#667085] hidden sm:block">
-            Smart Maintenance • Better Planning • Safer Operations
-          </p>
+          {/* Synchronized feeds status */}
+          <div className="flex items-center gap-3 mt-0.5 text-[10.5px] text-[#667085] hidden md:flex">
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#12B76A]"></span> COA · SYNCHRONIZED
+            </span>
+            <span className="text-[#D0D5DD]">|</span>
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#12B76A]"></span> TMS · SYNCHRONIZED
+            </span>
+            <span className="text-[#D0D5DD]">|</span>
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#12B76A]"></span> SMMS · SYNCHRONIZED
+            </span>
+            <span className="text-[#D0D5DD]">|</span>
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#12B76A]"></span> TDMS · SYNCHRONIZED
+            </span>
+          </div>
         </div>
       </div>
 

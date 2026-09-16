@@ -7,6 +7,9 @@ __pycache__/
 pgdata/
 engine/block_planning.db
 engine/*.db
+engine/*.db-wal
+engine/*.db-shm
+engine/*.db-journal
 engine/optimized_schedule.csv
 engine/*.log
 

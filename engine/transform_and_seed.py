@@ -691,5 +691,13 @@ def transform_and_seed():
     print("✓ Master Plan v2 Data Architecture Seed Successfully Executed!")
     print("=" * 70)
 
+    # Automatically compute and persist priorities so priority_score is never NULL
+    try:
+        from priority_engine import calculate_priorities
+        calculate_priorities()
+        print("  ✓ Automatically calculated and persisted Expected-Loss Priorities.")
+    except Exception as e:
+        print(f"  ⚠ Automatic priority calculation skipped: {e}")
+
 if __name__ == '__main__':
     transform_and_seed()

@@ -273,23 +273,23 @@ export interface DetailedBlock {
 
 export interface FailureRecord {
   af_id: string;
-  uims_id: string;
-  zone: string;
-  division: string;
+  uims_id?: string;
+  zone?: string;
+  division?: string;
   department: string;
   failure_type: string;
   failure_date: string;
-  failure_time: string;
+  failure_time?: string;
   failure_duration_min: number;
   section_id: string;
-  block_section: string;
+  block_section?: string;
   trains_delayed: number;
   avg_detention_min: number;
   total_detention_min: number;
   cause: string;
-  subcause: string;
-  sm_remarks: string;
-  raw_description: string;
+  subcause?: string;
+  sm_remarks?: string;
+  raw_description?: string;
 }
 
 export interface EvaluationReport {
@@ -374,4 +374,211 @@ export interface SectionRisk {
   avg_condition: number;
   avg_priority: number;
   risk_level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+}
+
+
+// ── ABPS v4 Domain Interfaces ──
+
+export interface AnomalyScenario {
+  anomaly_scenario: string;
+  department: string;
+  recommended_task_types: string[];
+  recommended_actions: string[];
+  planning_handling: string;
+}
+
+export interface CoverageMetric {
+  dataset: string;
+  metric: string;
+  value: string;
+  goal: string;
+  status: 'PASS' | 'WARN' | 'FAIL';
+}
+
+export interface AnomalyCoverageResponse {
+  status: string;
+  summary: {
+    total_scenarios: number;
+    asset_types: number;
+    failure_types: number;
+    task_types: number;
+    action_types: number;
+    block_types: number;
+    dependency_types: number;
+    maintenance_outcomes: number;
+    audit_event_types: number;
+  };
+  metrics: CoverageMetric[];
+}
+
+export interface AssetItem {
+  asset_id: string;
+  asset_number: string;
+  asset_type: string;
+  asset_subtype: string;
+  department: string;
+  corridor_id: string;
+  section_id: string;
+  chainage_km: number;
+  condition_score: number;
+  health_index: number;
+  criticality_class: string;
+  operational_status: string;
+  last_maintenance_date: string;
+  last_inspection_date: string;
+  location_lat?: number;
+  location_lon?: number;
+}
+
+
+
+export interface TaskAction {
+  action_id: string;
+  task_id: string;
+  action_type: string;
+  required_crew: string;
+  required_resources: string;
+  setup_minutes: number;
+  work_duration_minutes: number;
+  isolation_requirement: string;
+  possession_requirement: string;
+  verification_required: number;
+  sequence_order: number;
+}
+
+export interface TaskDependency {
+  dependency_id: string;
+  predecessor_task_id: string;
+  successor_task_id: string;
+  dependency_type: string;
+  min_lag_minutes: number;
+}
+
+export interface BlockWindow {
+  block_id: string;
+  corridor_id: string;
+  section_id: string;
+  block_section: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  duration_min: number;
+  block_type: string;
+  availability_status: string;
+  direction: string;
+  line: string;
+  allowed_departments: string;
+  isolation_type: string;
+}
+
+export interface GoodsForecastItem {
+  forecast_id: string;
+  corridor_id: string;
+  section_id: string;
+  forecast_date: string;
+  time_window_start: string;
+  time_window_end: string;
+  expected_goods_trains: number;
+  forecast_confidence: number;
+  source: string;
+}
+
+export interface ResourceItem {
+  resource_id: string;
+  resource_type: string;
+  department: string;
+  capability: string;
+  section_id: string;
+  capacity: number;
+  available_from?: string;
+  available_to?: string;
+  team_size: number;
+  skill: string;
+  equipment: string;
+  status: string;
+}
+
+export interface DataQualityDataset {
+  dataset: string;
+  row_count: number;
+  schema_status: string;
+  reference_status: string;
+  semantic_status: string;
+  status: string;
+}
+
+export interface DataIngestionRun {
+  ingestion_id: string;
+  source_system: string;
+  dataset_name: string;
+  source_file: string;
+  file_hash: string;
+  schema_version: string;
+  uploaded_by: string;
+  uploaded_at: string;
+  rows_received: number;
+  rows_accepted: number;
+  rows_rejected: number;
+  duplicates: number;
+  validation_status: string;
+  notes?: string;
+}
+
+export interface ModelBenchmarkMetric {
+  model_name: string;
+  pr_auc: number;
+  roc_auc: number;
+  f1_score: number;
+  recall: number;
+  precision: number;
+  brier_score: number;
+  training_time_s: number;
+  inference_latency_ms: number;
+}
+
+export interface ModelRegistryMeta {
+  model_version: string;
+  dataset_version: string;
+  timestamp: string;
+  target_variable: string;
+  training_samples: number;
+  positive_samples: number;
+  positive_rate: number;
+  temporal_split: { train_pct: number; val_pct: number; test_pct: number };
+  promotion_gate: {
+    status: string;
+    passed: boolean;
+    threshold_pr_auc: number;
+    best_candidate: string;
+    best_pr_auc: number;
+    reason: string;
+  };
+  champion_model: string;
+  benchmark_metrics: ModelBenchmarkMetric[];
+  feature_names: string[];
+}
+
+export interface DashboardSummaryData {
+  critical_tasks: number;
+  safety_overrides: number;
+  open_failures: number;
+  planned_blocks: number;
+  total_assets: number;
+  available_resources: number;
+  feeds: {
+    coa: { status: string; last_sync: string; records: number };
+    tms: { status: string; last_sync: string; records: number };
+    smms: { status: string; last_sync: string; records: number };
+    tdms: { status: string; last_sync: string; records: number };
+  };
+}
+
+export interface PaginatedResponse<T> {
+  status: string;
+  total: number;
+  page: number;
+  page_size?: number;
+  limit?: number;
+  total_pages?: number;
+  data: T[];
 }

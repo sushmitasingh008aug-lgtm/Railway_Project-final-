@@ -1,240 +1,123 @@
 {
-  "model_version": "v2.0-champion",
-  "champion_model": "HistGradientBoosting",
-  "trained_at": "2026-09-11 21:54:11",
-  "evaluation_protocol": "Strict Temporal Validation (Train:65%, Val:20%, Test:15%)",
+  "model_version": "v4.0-12k",
+  "dataset_version": "v4.0-12k-diversified",
+  "timestamp": "2026-09-16 01:26:46",
   "target_variable": "future_critical_event_30d",
-  "feature_count": 38,
-  "feature_names": [
-    "asset_importance",
-    "asset_age",
-    "condition_score",
-    "inspection_score",
-    "health_index",
-    "days_overdue",
-    "days_since_last_maintenance",
-    "days_since_last_failure",
-    "defects_30d",
-    "failures_7d",
-    "failures_30d",
-    "failures_90d",
-    "failures_180d",
-    "failures_365d",
-    "failure_duration_30d",
-    "failure_duration_90d",
-    "repeat_failure_flag",
-    "failure_recurrence_rate",
-    "trains_delayed_90d",
-    "total_detention_90d",
-    "avg_detention_90d",
-    "passenger_train_count",
-    "goods_train_count",
-    "department_S&T",
-    "department_Traction",
-    "traffic_density_Low",
-    "traffic_density_Medium",
-    "task_type_Ballast Deep Screening",
-    "task_type_Broken Rail Weld",
-    "task_type_Cantilever Insulator Flashover",
-    "task_type_Contact Wire Sag",
-    "task_type_Neutral Section Inspection",
-    "task_type_OHE Dropper Broken",
-    "task_type_Point Machine Detection Fault",
-    "task_type_Point Machine Mechanical Fault",
-    "task_type_Signal Aspect Lamp Fail",
-    "task_type_Track Circuit Short",
-    "task_type_Track Gauge Spread"
-  ],
-  "criticality_bands": [
-    {
-      "class": "Critical",
-      "min_p": 0.75,
-      "weight": 100.0
-    },
-    {
-      "class": "High",
-      "min_p": 0.5,
-      "weight": 75.0
-    },
-    {
-      "class": "Medium",
-      "min_p": 0.25,
-      "weight": 50.0
-    },
-    {
-      "class": "Low",
-      "min_p": 0.0,
-      "weight": 25.0
-    }
-  ],
-  "champion_metrics": {
-    "model_name": "HistGradientBoosting",
-    "PR_AUC": 0.9576,
-    "ROC_AUC": 0.9698,
-    "Recall": 0.8929,
-    "Precision": 0.8865,
-    "F1_Score": 0.8897,
-    "Brier_Score": 0.0652,
-    "MAE": 0.1072,
-    "RMSE": 0.2554,
-    "Train_Time_ms": 2045.16,
-    "Inference_Latency_ms": 0.0128,
-    "Confusion_Matrix": [
-      [
-        219,
-        16
-      ],
-      [
-        15,
-        125
-      ]
-    ],
-    "composite_score": 0.918
+  "training_samples": 12000,
+  "positive_samples": 506,
+  "positive_rate": 0.0422,
+  "temporal_split": {
+    "train_pct": 65,
+    "val_pct": 20,
+    "test_pct": 15
   },
-  "benchmark_comparison": [
+  "promotion_gate": {
+    "status": "PROMOTED",
+    "passed": true,
+    "threshold_pr_auc": 0.5,
+    "best_candidate": "Decision Tree",
+    "best_pr_auc": 1.0,
+    "reason": "Candidate Decision Tree passed all temporal validation gates with PR-AUC = 1.0000 >= 0.5"
+  },
+  "champion_model": "Decision Tree",
+  "benchmark_metrics": [
     {
-      "model_name": "HistGradientBoosting",
-      "PR_AUC": 0.9576,
-      "ROC_AUC": 0.9698,
-      "Recall": 0.8929,
-      "Precision": 0.8865,
-      "F1_Score": 0.8897,
-      "Brier_Score": 0.0652,
-      "MAE": 0.1072,
-      "RMSE": 0.2554,
-      "Train_Time_ms": 2045.16,
-      "Inference_Latency_ms": 0.0128,
-      "Confusion_Matrix": [
-        [
-          219,
-          16
-        ],
-        [
-          15,
-          125
-        ]
-      ],
-      "composite_score": 0.918
-    },
-    {
-      "model_name": "XGBoost (Tuned)",
-      "PR_AUC": 0.959,
-      "ROC_AUC": 0.9705,
-      "Recall": 0.8929,
-      "Precision": 0.8562,
-      "F1_Score": 0.8741,
-      "Brier_Score": 0.0645,
-      "MAE": 0.1139,
-      "RMSE": 0.2539,
-      "Train_Time_ms": 310.07,
-      "Inference_Latency_ms": 0.0085,
-      "Confusion_Matrix": [
-        [
-          214,
-          21
-        ],
-        [
-          15,
-          125
-        ]
-      ],
-      "composite_score": 0.9146
-    },
-    {
-      "model_name": "Random Forest",
-      "PR_AUC": 0.9469,
-      "ROC_AUC": 0.9649,
-      "Recall": 0.8643,
-      "Precision": 0.8705,
-      "F1_Score": 0.8674,
-      "Brier_Score": 0.0716,
-      "MAE": 0.1616,
-      "RMSE": 0.2676,
-      "Train_Time_ms": 186.65,
-      "Inference_Latency_ms": 0.0687,
-      "Confusion_Matrix": [
-        [
-          217,
-          18
-        ],
-        [
-          19,
-          121
-        ]
-      ],
-      "composite_score": 0.8981
+      "model_name": "Logistic Regression",
+      "pr_auc": 0.8652,
+      "roc_auc": 0.9826,
+      "f1_score": 0.8138,
+      "recall": 0.7195,
+      "precision": 0.9365,
+      "brier_score": 0.0138,
+      "training_time_s": 0.423,
+      "inference_latency_ms": 0.0
     },
     {
       "model_name": "Decision Tree",
-      "PR_AUC": 0.9007,
-      "ROC_AUC": 0.9351,
-      "Recall": 0.8929,
-      "Precision": 0.8446,
-      "F1_Score": 0.8681,
-      "Brier_Score": 0.0836,
-      "MAE": 0.1316,
-      "RMSE": 0.2891,
-      "Train_Time_ms": 11.77,
-      "Inference_Latency_ms": 0.0008,
-      "Confusion_Matrix": [
-        [
-          212,
-          23
-        ],
-        [
-          15,
-          125
-        ]
-      ],
-      "composite_score": 0.8898
+      "pr_auc": 1.0,
+      "roc_auc": 1.0,
+      "f1_score": 1.0,
+      "recall": 1.0,
+      "precision": 1.0,
+      "brier_score": 0.0,
+      "training_time_s": 0.006,
+      "inference_latency_ms": 0.0006
     },
     {
-      "model_name": "Logistic Regression",
-      "PR_AUC": 0.9487,
-      "ROC_AUC": 0.9643,
-      "Recall": 0.8357,
-      "Precision": 0.8931,
-      "F1_Score": 0.8635,
-      "Brier_Score": 0.0689,
-      "MAE": 0.1425,
-      "RMSE": 0.2626,
-      "Train_Time_ms": 718.19,
-      "Inference_Latency_ms": 0.0021,
-      "Confusion_Matrix": [
-        [
-          221,
-          14
-        ],
-        [
-          23,
-          117
-        ]
-      ],
-      "composite_score": 0.8879
+      "model_name": "Random Forest",
+      "pr_auc": 1.0,
+      "roc_auc": 1.0,
+      "f1_score": 1.0,
+      "recall": 1.0,
+      "precision": 1.0,
+      "brier_score": 0.005,
+      "training_time_s": 0.159,
+      "inference_latency_ms": 0.0151
     },
     {
       "model_name": "Extra Trees",
-      "PR_AUC": 0.9301,
-      "ROC_AUC": 0.9552,
-      "Recall": 0.8357,
-      "Precision": 0.8931,
-      "F1_Score": 0.8635,
-      "Brier_Score": 0.0841,
-      "MAE": 0.2028,
-      "RMSE": 0.29,
-      "Train_Time_ms": 128.81,
-      "Inference_Latency_ms": 0.068,
-      "Confusion_Matrix": [
-        [
-          221,
-          14
-        ],
-        [
-          23,
-          117
-        ]
-      ],
-      "composite_score": 0.8804
+      "pr_auc": 0.9943,
+      "roc_auc": 0.9995,
+      "f1_score": 0.093,
+      "recall": 0.0488,
+      "precision": 1.0,
+      "brier_score": 0.0201,
+      "training_time_s": 0.114,
+      "inference_latency_ms": 0.0144
+    },
+    {
+      "model_name": "HistGradientBoosting",
+      "pr_auc": 1.0,
+      "roc_auc": 1.0,
+      "f1_score": 1.0,
+      "recall": 1.0,
+      "precision": 1.0,
+      "brier_score": 0.0,
+      "training_time_s": 1.649,
+      "inference_latency_ms": 0.0019
+    },
+    {
+      "model_name": "XGBoost (Tuned)",
+      "pr_auc": 1.0,
+      "roc_auc": 1.0,
+      "f1_score": 1.0,
+      "recall": 1.0,
+      "precision": 1.0,
+      "brier_score": 0.0,
+      "training_time_s": 0.176,
+      "inference_latency_ms": 0.0006
     }
+  ],
+  "feature_names": [
+    "condition_score",
+    "health_index",
+    "asset_age_years",
+    "asset_importance",
+    "duration_minutes",
+    "defects_30d",
+    "days_overdue",
+    "dept_S&T",
+    "dept_TRD",
+    "crit_HIGH",
+    "crit_LOW",
+    "crit_MEDIUM",
+    "task_Condition Monitoring",
+    "task_Corrective Maintenance",
+    "task_Drainage Cleaning",
+    "task_Emergency Repair",
+    "task_Failure Rectification",
+    "task_Inspection",
+    "task_Isolation Test",
+    "task_Joint Inspection",
+    "task_Overhaul",
+    "task_Patrolling Follow-up",
+    "task_Preventive Maintenance",
+    "task_RUL Check",
+    "task_Renewal",
+    "task_Security Repair",
+    "task_Spot Replacement",
+    "task_Tamping/Grinding",
+    "task_Testing",
+    "task_Vegetation Clearance"
   ]
 }

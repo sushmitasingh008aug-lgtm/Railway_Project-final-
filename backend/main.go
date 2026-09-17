@@ -2713,12 +2713,14 @@ func handleGetTaskExplanation(c *fiber.Ctx) error {
 		}
 		r["days_overdue"] = daysOverdue
 		r["is_overdue"] = isOverdue
-		r["top_positive_features"] = parseJSONField(r["top_positive_features"], []interface{}{})
-		r["top_negative_features"] = parseJSONField(r["top_negative_features"], []interface{}{})
+		var shapMap = make(map[string]float64)
 		if s, ok := r["shap_values_json"].(string); ok && s != "" {
-			var sv interface{}
+			var sv map[string]interface{}
 			if json.Unmarshal([]byte(s), &sv) == nil {
 				r["shap_values"] = sv
+				for k, v := range sv {
+					shapMap[k] = toFloat(v)
+				}
 			} else {
 				r["shap_values"] = fiber.Map{}
 			}
@@ -2726,6 +2728,48 @@ func handleGetTaskExplanation(c *fiber.Ctx) error {
 			r["shap_values"] = fiber.Map{}
 		}
 		delete(r, "shap_values_json")
+
+		posRaw := parseJSONField(r["top_positive_features"], []interface{}{})
+		var posFeats []fiber.Map
+		if pList, ok := posRaw.([]interface{}); ok {
+			for _, item := range pList {
+				name := fmt.Sprintf("%v", item)
+				contrib := 0.15
+				if val, ok := shapMap[name]; ok {
+					contrib = val
+				}
+				posFeats = append(posFeats, fiber.Map{"feature": name, "contribution": contrib})
+			}
+		}
+		if len(posFeats) == 0 {
+			for k, v := range shapMap {
+				if v >= 0 {
+					posFeats = append(posFeats, fiber.Map{"feature": k, "contribution": v})
+				}
+			}
+		}
+		r["top_positive_features"] = posFeats
+
+		negRaw := parseJSONField(r["top_negative_features"], []interface{}{})
+		var negFeats []fiber.Map
+		if nList, ok := negRaw.([]interface{}); ok {
+			for _, item := range nList {
+				name := fmt.Sprintf("%v", item)
+				contrib := -0.05
+				if val, ok := shapMap[name]; ok {
+					contrib = val
+				}
+				negFeats = append(negFeats, fiber.Map{"feature": name, "contribution": contrib})
+			}
+		}
+		if len(negFeats) == 0 {
+			for k, v := range shapMap {
+				if v < 0 {
+					negFeats = append(negFeats, fiber.Map{"feature": k, "contribution": v})
+				}
+			}
+		}
+		r["top_negative_features"] = negFeats
 		return c.JSON(fiber.Map{"status": "success", "source": "buffer-go", "data": r})
 	}
 	// Graceful fallback mirrors Python: derive explanation from priority score.

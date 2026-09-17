@@ -22,6 +22,7 @@ import { DataIngestionView } from './components/DataIngestionView';
 import { DataQualityView } from './components/DataQualityView';
 import { ScenarioExplorerView } from './components/ScenarioExplorerView';
 import { ModelVersionsView } from './components/ModelVersionsView';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import {
   MetricsResponse,
   ScheduledTask,
@@ -108,6 +109,7 @@ export function App() {
 
         {/* Dynamic Body Content */}
         <main className="flex-1 px-4 sm:px-6 lg:px-8 pt-5 pb-12 w-full max-w-[1720px] mx-auto">
+          <ErrorBoundary key={activeView} fallbackTitle={`Error Loading ${activeView.replace(/_/g, ' ')}`}>
           {/* OPERATIONS */}
           {(activeView === 'dashboard' || activeView === 'command_center') && (
             <CommandCenterView
@@ -248,6 +250,7 @@ export function App() {
               trains={trains}
             />
           )}
+          </ErrorBoundary>
         </main>
 
         {/* Footer */}

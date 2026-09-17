@@ -781,9 +781,20 @@ def get_task_explanation(task_id):
                 diff_days = (datetime(2026, 8, 23) - pd.to_datetime(due_val)).total_seconds() / 86400.0 if due_val else 0.0
                 res['days_overdue'] = max(0.0, round(diff_days, 1))
                 res['is_overdue'] = res['days_overdue'] > 0
-                res['top_positive_features'] = json.loads(res.get('top_positive_features') or '[]')
-                res['top_negative_features'] = json.loads(res.get('top_negative_features') or '[]')
-                res['shap_values'] = json.loads(res.get('shap_values_json') or '{}')
+                raw_pos = json.loads(res.get('top_positive_features') or '[]')
+                raw_neg = json.loads(res.get('top_negative_features') or '[]')
+                shap_val = json.loads(res.get('shap_values_json') or '{}')
+                res['shap_values'] = shap_val
+                res['top_positive_features'] = [
+                    {"feature": f if isinstance(f, str) else f.get('feature', 'param'),
+                     "contribution": shap_val.get(f, 0.15) if isinstance(f, str) else f.get('contribution', 0.15)}
+                    for f in raw_pos
+                ] or [{"feature": k, "contribution": v} for k, v in shap_val.items() if v >= 0]
+                res['top_negative_features'] = [
+                    {"feature": f if isinstance(f, str) else f.get('feature', 'param'),
+                     "contribution": shap_val.get(f, -0.05) if isinstance(f, str) else f.get('contribution', -0.05)}
+                    for f in raw_neg
+                ] or [{"feature": k, "contribution": v} for k, v in shap_val.items() if v < 0]
                 return jsonify({"status": "success", "data": res})
 
             # Graceful dynamic SHAP attribution if not pre-cached

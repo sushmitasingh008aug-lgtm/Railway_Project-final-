@@ -1154,10 +1154,6 @@ func handleGenerateStatus(c *fiber.Ctx) error {
 }
 
 func handleSubmitTask(c *fiber.Ctx) error {
-	if db == nil || db.Ping() != nil {
-		return proxyHTTP(c, "/api/tasks/submit")
-	}
-
 	var req SubmitTaskRequest
 	if err := c.BodyParser(&req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid request JSON payload")
@@ -1186,6 +1182,10 @@ func handleSubmitTask(c *fiber.Ctx) error {
 		if _, err := time.Parse("2006/01/02", req.DueDate); err != nil {
 			return fiber.NewError(fiber.StatusBadRequest, "Invalid due_date format. Use YYYY-MM-DD")
 		}
+	}
+
+	if db == nil || db.Ping() != nil {
+		return proxyHTTP(c, "/api/tasks/submit")
 	}
 
 	var sectionExists bool
@@ -1605,7 +1605,8 @@ var allowlistedTables = map[string]bool{
 	"task_dependencies": true, "ml_predictions": true, "schedule_versions": true, "optimized_blocks": true,
 	"scheduled_tasks": true, "audit_log": true, "department_feeds": true, "inspections": true,
 	"maintenance_history": true, "block_tasks": true, "anomaly_task_catalog": true, "coverage_report": true,
-	"data_ingestion_runs": true,
+	"data_ingestion_runs": true, "route_station_points": true, "anomaly_scenario_instances": true,
+	"corridor_observations": true, "section_observations": true,
 }
 
 func requireDB(c *fiber.Ctx, proxyPath string) error {
@@ -2650,7 +2651,7 @@ func handleValidatePlan(c *fiber.Ctx) error {
 	if db == nil || db.Ping() != nil {
 		return proxyHTTP(c, "/api/plans/"+planID+"/validate")
 	}
-	out, err := runEngineJSON(`import json,sys,os; sys.path.insert(0,'.'); import pandas as pd; from db_helper import get_db_engine; from validator import validate_plan; e=get_db_engine(); df=pd.read_sql("SELECT * FROM scheduled_tasks", e); tasks=[{"task_id":str(r.task_id),"section_id":str(r.section_id),"start_minute":int(r.start_minute),"end_minute":int(r.end_minute),"combined_group_id":str(r.combined_group_id or ""),"affects_line":str(r.affects_line or "BOTH")} for r in df.itertuples()]; tr=pd.read_sql("SELECT movement_id, train_id, section_id, direction, entry_time, exit_time FROM train_movements", e); base=pd.Timestamp("2026-08-23"); trains=[{"movement_id":str(r.movement_id),"train_id":str(r.train_id),"section_id":str(r.section_id),"direction":str(r.direction or "DOWN"),"entry_min":max(0,int((pd.to_datetime(r.entry_time)-base).total_seconds()/60)),"exit_min":max(0,int((pd.to_datetime(r.exit_time)-base).total_seconds()/60))} for r in tr.itertuples()]; print(json.dumps({"status":"success","plan_id":os.environ.get("PLAN_ID",""),"data":validate_plan(blocks=tasks, trains=trains)}, default=str))`, "", 120, "PLAN_ID="+planID)
+	out, err := runEngineJSON(`import json,sys,os; sys.path.insert(0,'.'); import pandas as pd; from db_helper import get_db_engine; from validator import validate_plan; e=get_db_engine(); df=pd.read_sql("SELECT * FROM scheduled_tasks", e); tasks=[{"task_id":str(r.task_id),"section_id":str(r.section_id),"start_minute":int(r.start_minute),"end_minute":int(r.end_minute),"combined_group_id":str(r.combined_group_id or ""),"affects_line":str(r.affects_line or "BOTH")} for r in df.itertuples()]; tr=pd.read_sql("SELECT movement_id, train_id, section_id, direction, entry_time, exit_time FROM train_movements", e); base=pd.Timestamp("2026-09-15"); trains=[{"movement_id":str(r.movement_id),"train_id":str(r.train_id),"section_id":str(r.section_id),"direction":str(r.direction or "DOWN"),"entry_min":max(0,int((pd.to_datetime(r.entry_time)-base).total_seconds()/60)),"exit_min":max(0,int((pd.to_datetime(r.exit_time)-base).total_seconds()/60))} for r in tr.itertuples()]; print(json.dumps({"status":"success","plan_id":os.environ.get("PLAN_ID",""),"data":validate_plan(blocks=tasks, trains=trains)}, default=str))`, "", 120, "PLAN_ID="+planID)
 	if err != nil {
 		return proxyHTTP(c, "/api/plans/"+planID+"/validate")
 	}

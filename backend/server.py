@@ -484,6 +484,13 @@ def submit_task():
     duration = int(data.get("duration_minutes", 60))
     due_date_str = data.get("due_date", "").strip()
 
+    valid_depts = {"Engineering", "Traction", "S&T"}
+    if dept not in valid_depts:
+        return jsonify({"status": "error", "message": "Invalid department. Allowed: Engineering, Traction, S&T"}), 400
+
+    if duration < 15 or duration > 720:
+        return jsonify({"status": "error", "message": "Duration must be between 15 and 720 minutes"}), 400
+
     crit_weights = {"Critical": 100.0, "High": 75.0, "Medium": 50.0, "Low": 25.0}
     if criticality not in crit_weights:
         return jsonify({"status": "error", "message": "Invalid criticality"}), 400
@@ -1039,11 +1046,11 @@ def what_if_simulation():
     new_end = new_start + (orig_end - orig_start)
 
     # Check train conflicts in new window
-    df_trains = pd.read_sql(f"""
+    df_trains = pd.read_sql(sql_text("""
         SELECT movement_id, train_id, train_name, direction, entry_time, exit_time
         FROM train_movements
-        WHERE section_id = '{sec_id}'
-    """, engine)
+        WHERE section_id = :sec_id
+    """), engine, params={"sec_id": sec_id})
     
     conflicts = []
     for _, tr in df_trains.iterrows():
@@ -1659,8 +1666,12 @@ def api_get_goods_forecast():
     engine = get_db_engine()
     sec = request.args.get('section_id')
     try:
-        where = f"WHERE section_id = '{sec}'" if sec else ""
-        df = pd.read_sql(f"SELECT * FROM goods_forecast {where} ORDER BY time_window_start ASC LIMIT 100", engine)
+        if sec:
+            query = sql_text("SELECT * FROM goods_forecast WHERE section_id = :sec ORDER BY time_window_start ASC LIMIT 100")
+            df = pd.read_sql(query, engine, params={"sec": sec})
+        else:
+            query = sql_text("SELECT * FROM goods_forecast ORDER BY time_window_start ASC LIMIT 100")
+            df = pd.read_sql(query, engine)
         return jsonify({"status": "success", "data": df.to_dict(orient='records')})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -1674,6 +1685,7 @@ ALLOWLISTED_TABLES = frozenset({
     'ml_predictions', 'schedule_versions', 'optimized_blocks', 'scheduled_tasks',
     'audit_log', 'department_feeds', 'inspections', 'maintenance_history',
     'block_tasks', 'anomaly_task_catalog', 'coverage_report', 'data_ingestion_runs',
+    'route_station_points', 'anomaly_scenario_instances', 'corridor_observations', 'section_observations',
 })
 
 def _require_dataset(name):
@@ -1911,6 +1923,10 @@ def serve_frontend(path):
     # Never hijack /api routes
     if path.startswith('api/'):
         return jsonify({"status": "error", "message": "Not found"}), 404
+    # Defensive path traversal check
+    norm_path = os.path.normpath(path)
+    if '..' in norm_path or norm_path.startswith(('/', '\\')):
+        return jsonify({"status": "error", "message": "Invalid path"}), 400
     if os.path.isdir(FRONTEND_DIST):
         full = os.path.join(FRONTEND_DIST, path)
         if path and os.path.isfile(full):

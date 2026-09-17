@@ -129,8 +129,8 @@ except Exception as e:
   fi
 else
   echo "↻ DB empty — seeding (transform → priority → optimizer)"
-  # FORCE_SEED not needed here; DB is empty so transform_and_seed will TRUNCATE safely
-  python3 engine/transform_and_seed.py || { echo "✗ transform_and_seed failed"; exit 1; }
+  # Master diversified 12k dataset seeder (loads all 25 canonical CSVs)
+  python3 engine/seed_diversified_12k.py || { echo "✗ seed_diversified_12k failed"; exit 1; }
   python3 engine/ingest_feeds.py || true
   python3 engine/priority_engine.py || { echo "✗ priority_engine failed"; exit 1; }
   python3 engine/optimizer_core.py --horizon-days "${HORIZON_DAYS:-7}" --max-solver-time 30 || { echo "⚠ optimizer failed (schedule may be missing but DB remains)"; }

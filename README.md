@@ -80,7 +80,7 @@ Our system replaces manual, decentralized scheduling with an automated, mathemat
 
 | Requirement from Problem Statement | Project Implementation Module | Verification Metric / Evidence |
 | :--- | :--- | :--- |
-| **1. Data Integration (TMS, SMMS, TDMS, COA, Goods Forecast)** | `engine/transform_and_seed.py`, `engine/schema.sql`, `engine/data_feeds/` | 19,586 assets, 350 failure logs, 304 defects, 706 timetabled train movements, 336 freight forecasts unified. |
+| **1. Data Integration (TMS, SMMS, TDMS, COA, Goods Forecast)** | `engine/seed_diversified_12k.py`, `engine/schema.sql`, `engine/data_feeds/` | 19,586 assets, 350 failure logs, 304 defects, 706 timetabled train movements, 336 freight forecasts unified. |
 | **2. AI/ML Prioritization (Criticality, Urgency, Impact)** | `engine/risk_service.py`, `engine/criticality_engine.py`, `engine/urgency_engine.py`, `engine/priority_engine.py` | 30-day failure probability ($R_i$), continuous logistic urgency ($U_i$), multi-attribute criticality ($C_i$), and TreeSHAP attribution. |
 | **3. Multi-Department Optimization (Shadow Blocks & Downtime Min)** | `engine/coordination_engine.py`, `engine/optimizer_core.py` | 8-point deterministic compatibility matrix, duration containment ($D_b = \max(d_i, d_j)$), 63.2% consolidation rate. |
 | **4. Multi-Horizon Plans (Weekly & Monthly)** | `engine/optimizer_core.py` (`--horizon-days 7` or `30`), `backend/main.go`, `frontend/src/components/WeeklyMonthlyView.tsx` | Dynamic horizon scaling supporting 7-day tactical windows and 30-day master possession plans. |
@@ -501,7 +501,7 @@ automatic-block-planning/
 │   ├── scenario_engine.py          # What-If emergency disruption simulator & KPI engine
 │   ├── schema.sql                  # Canonical 20-table schema & uppercase enterprise views
 │   ├── test_suite.py               # 12-point automated mathematical & safety verification suite
-│   ├── transform_and_seed.py       # Data seeding & normalization pipeline
+│   ├── seed_diversified_12k.py     # Master 25-dataset seeding & normalization pipeline
 │   ├── urgency_engine.py           # Continuous bounded logistic urgency sigmoid engine
 │   ├── validator.py                # Independent deterministic safety validator
 │   └── data_feeds/                 # Raw TMS, SMMS, TDMS CSV telemetry feeds
@@ -553,8 +553,8 @@ cd automatic-block-planning
 # Install Python packages
 pip install flask flask-cors pandas numpy scikit-learn lightgbm shap ortools sqlalchemy joblib
 
-# Initialize SQLite database & seed all 20 canonical tables
-python engine/transform_and_seed.py
+# Initialize SQLite database & seed all 25 canonical tables (345k+ records)
+python engine/seed_diversified_12k.py
 
 # Run the CP-SAT Optimizer to generate the baseline schedule
 python engine/optimizer_core.py --horizon-days 7

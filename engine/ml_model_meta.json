@@ -1,11 +1,11 @@
 {
-  "model_version": "v4.0-12k",
+  "model_version": "v4.1-15k",
   "dataset_version": "v4.0-12k-diversified",
-  "timestamp": "2026-09-17 11:33:11",
+  "timestamp": "2026-09-17 20:10:03",
   "target_variable": "future_critical_event_30d",
   "training_samples": 12000,
-  "positive_samples": 2951,
-  "positive_rate": 0.2459,
+  "positive_samples": 2855,
+  "positive_rate": 0.2379,
   "temporal_split": {
     "train_pct": 65,
     "val_pct": 20,
@@ -15,128 +15,133 @@
     "status": "PROMOTED",
     "passed": true,
     "threshold_pr_auc": 0.4,
-    "best_candidate": "Random Forest",
-    "best_pr_auc": 0.4567,
-    "reason": "Candidate Random Forest passed all temporal validation gates with PR-AUC = 0.4567 >= 0.4"
+    "best_candidate": "Extra Trees",
+    "best_pr_auc": 0.4072,
+    "reason": "Candidate Extra Trees passed all temporal validation gates with PR-AUC = 0.4072 >= 0.4"
   },
   "calibration": {
     "is_calibrated": true,
     "method": "isotonic",
-    "expected_calibration_error": 0.0184,
-    "calibrated_brier_score": 0.1695,
+    "expected_calibration_error": 0.0143,
+    "calibrated_brier_score": 0.1715,
     "reliability_curve": [
       {
         "bin": 0,
-        "confidence": 0.0785,
-        "empirical_accuracy": 0.0636,
-        "count": 173
+        "confidence": 0.0892,
+        "empirical_accuracy": 0.25,
+        "count": 4
       },
       {
         "bin": 1,
-        "confidence": 0.1594,
-        "empirical_accuracy": 0.1534,
-        "count": 639
+        "confidence": 0.1626,
+        "empirical_accuracy": 0.1717,
+        "count": 1002
       },
       {
         "bin": 2,
-        "confidence": 0.2426,
-        "empirical_accuracy": 0.2639,
-        "count": 523
+        "confidence": 0.2424,
+        "empirical_accuracy": 0.2287,
+        "count": 363
       },
       {
         "bin": 3,
         "confidence": 0.3382,
-        "empirical_accuracy": 0.3506,
-        "count": 251
+        "empirical_accuracy": 0.3468,
+        "count": 222
       },
       {
         "bin": 4,
-        "confidence": 0.4399,
-        "empirical_accuracy": 0.4804,
-        "count": 102
+        "confidence": 0.4452,
+        "empirical_accuracy": 0.4914,
+        "count": 175
       },
       {
         "bin": 5,
-        "confidence": 0.5564,
-        "empirical_accuracy": 0.6263,
-        "count": 99
+        "confidence": 0.5371,
+        "empirical_accuracy": 0.5333,
+        "count": 30
       },
       {
         "bin": 6,
-        "confidence": 0.6173,
-        "empirical_accuracy": 0.7,
-        "count": 10
+        "confidence": 0.624,
+        "empirical_accuracy": 0.5,
+        "count": 2
       },
       {
         "bin": 7,
-        "confidence": 0.7337,
-        "empirical_accuracy": 1.0,
-        "count": 1
-      },
-      {
-        "bin": 8,
-        "confidence": 0.829,
+        "confidence": 0.7276,
         "empirical_accuracy": 1.0,
         "count": 2
       }
     ]
   },
-  "champion_model": "Random Forest",
+  "champion_model": "Extra Trees",
   "benchmark_metrics": [
     {
       "model_name": "Logistic Regression",
-      "pr_auc": 0.4518,
-      "roc_auc": 0.6964,
-      "f1_score": 0.1866,
-      "recall": 0.1096,
-      "precision": 0.625,
-      "brier_score": 0.1705,
-      "training_time_s": 0.173,
-      "inference_latency_ms": 0.0002
+      "pr_auc": 0.3985,
+      "roc_auc": 0.6521,
+      "f1_score": 0.0442,
+      "recall": 0.0228,
+      "precision": 0.7143,
+      "brier_score": 0.1727,
+      "training_time_s": 0.352,
+      "inference_latency_ms": 0.0005
     },
     {
       "model_name": "Decision Tree",
-      "pr_auc": 0.4237,
-      "roc_auc": 0.6783,
-      "f1_score": 0.2061,
-      "recall": 0.125,
-      "precision": 0.5876,
-      "brier_score": 0.1755,
-      "training_time_s": 0.028,
-      "inference_latency_ms": 0.0003
+      "pr_auc": 0.3981,
+      "roc_auc": 0.6441,
+      "f1_score": 0.2033,
+      "recall": 0.1279,
+      "precision": 0.4956,
+      "brier_score": 0.1726,
+      "training_time_s": 0.013,
+      "inference_latency_ms": 0.0
     },
     {
       "model_name": "Random Forest",
-      "pr_auc": 0.4567,
-      "roc_auc": 0.6978,
-      "f1_score": 0.128,
-      "recall": 0.0702,
-      "precision": 0.7273,
-      "brier_score": 0.1709,
-      "training_time_s": 0.332,
-      "inference_latency_ms": 0.0201
+      "pr_auc": 0.4015,
+      "roc_auc": 0.6399,
+      "f1_score": 0.031,
+      "recall": 0.016,
+      "precision": 0.5385,
+      "brier_score": 0.1724,
+      "training_time_s": 0.167,
+      "inference_latency_ms": 0.0153
     },
     {
       "model_name": "Extra Trees",
-      "pr_auc": 0.455,
-      "roc_auc": 0.6954,
-      "f1_score": 0.0087,
-      "recall": 0.0044,
-      "precision": 1.0,
-      "brier_score": 0.1745,
-      "training_time_s": 0.219,
-      "inference_latency_ms": 0.0191
+      "pr_auc": 0.4072,
+      "roc_auc": 0.6511,
+      "f1_score": 0.0,
+      "recall": 0.0,
+      "precision": 0.0,
+      "brier_score": 0.1737,
+      "training_time_s": 0.105,
+      "inference_latency_ms": 0.0145
     },
     {
       "model_name": "HistGradientBoosting",
-      "pr_auc": 0.4348,
-      "roc_auc": 0.6724,
-      "f1_score": 0.2538,
-      "recall": 0.1645,
-      "precision": 0.5556,
+      "pr_auc": 0.3798,
+      "roc_auc": 0.6238,
+      "f1_score": 0.1758,
+      "recall": 0.1027,
+      "precision": 0.6081,
+      "brier_score": 0.1754,
+      "training_time_s": 1.875,
+      "inference_latency_ms": 0.0028
+    },
+    {
+      "model_name": "XGBoost (Tuned)",
+      "pr_auc": 0.3922,
+      "roc_auc": 0.6318,
+      "f1_score": 0.1766,
+      "recall": 0.105,
+      "precision": 0.5542,
       "brier_score": 0.1743,
-      "training_time_s": 0.313,
-      "inference_latency_ms": 0.0027
+      "training_time_s": 0.355,
+      "inference_latency_ms": 0.0028
     }
   ],
   "feature_names": [
@@ -147,8 +152,6 @@
     "duration_minutes",
     "defects_30d",
     "days_overdue",
-    "dept_S&T",
-    "dept_TRD",
     "task_Condition Monitoring",
     "task_Corrective Maintenance",
     "task_Drainage Cleaning",

@@ -136,6 +136,7 @@ export function App() {
               schedule={schedule}
               trains={trains}
               sections={sections}
+              loading={loading}
               onRefreshSchedule={() => fetchAllData(false)}
             />
           )}
@@ -144,6 +145,7 @@ export function App() {
             <WeeklyMonthlyView
               schedule={schedule}
               sections={sections}
+              loading={loading}
               onHorizonChange={(days) => {
                 setHorizonDays(days);
                 fetchAllData(false, days);

@@ -3,17 +3,42 @@ import { CalendarDays, CalendarRange, Filter, ChevronRight, Layers, Combine } fr
 import { ScheduledTask, Section } from '../api/client';
 
 interface WeeklyMonthlyProps {
-  schedule: ScheduledTask[];
-  sections: Section[];
+  schedule?: ScheduledTask[];
+  sections?: Section[];
+  loading?: boolean;
   onHorizonChange?: (days: number) => void;
 }
 
-export const WeeklyMonthlyView: React.FC<WeeklyMonthlyProps> = ({ schedule, sections, onHorizonChange }) => {
+export const WeeklyMonthlyView: React.FC<WeeklyMonthlyProps> = ({
+  schedule = [],
+  sections = [],
+  loading = false,
+  onHorizonChange,
+}) => {
   const [horizonMode, setHorizonMode] = useState<'WEEKLY' | 'MONTHLY'>('WEEKLY');
   const [deptFilter, setDeptFilter] = useState<string>('ALL');
 
   const days = ['Day 1 (Sun)', 'Day 2 (Mon)', 'Day 3 (Tue)', 'Day 4 (Wed)', 'Day 5 (Thu)', 'Day 6 (Fri)', 'Day 7 (Sat)'];
   const weeks = ['Week 1 (Aug 23-29)', 'Week 2 (Aug 30-Sep 5)', 'Week 3 (Sep 6-12)', 'Week 4 (Sep 13-19)'];
+
+  if (loading || !schedule || schedule.length === 0) {
+    return (
+      <div className="bg-white p-16 rounded-2xl border border-[#E6E6E6] text-center space-y-4 shadow-sm my-6 max-w-3xl mx-auto">
+        <div className="w-14 h-14 rounded-2xl bg-[#FFF3E6] border border-[#FFD9B3] flex items-center justify-center text-[#D96F13] mx-auto animate-pulse">
+          <CalendarDays className="w-7 h-7" />
+        </div>
+        <div>
+          <h3 className="text-base font-bold text-[#1F2937]">Loading Weekly &amp; Monthly Corridor Plan...</h3>
+          <p className="text-xs text-[#667085] mt-1 max-w-md mx-auto">
+            Aggregating multi-horizon scheduled maintenance tasks across divisional sections
+          </p>
+        </div>
+        <div className="w-48 h-1.5 bg-[#F2F4F7] rounded-full mx-auto overflow-hidden">
+          <div className="bg-[#FF9933] h-full w-2/3 rounded-full animate-pulse"></div>
+        </div>
+      </div>
+    );
+  }
 
   const filteredSchedule = schedule.filter(t => {
     if (deptFilter !== 'ALL' && t.department !== deptFilter) return false;

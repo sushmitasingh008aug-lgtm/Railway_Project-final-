@@ -11,6 +11,8 @@ engine/*.db-wal
 engine/*.db-shm
 engine/*.db-journal
 engine/optimized_schedule.csv
+engine/optimized_schedule.VER-*.csv
+engine/.schedule_*.tmp
 engine/*.log
 
 # Node / React

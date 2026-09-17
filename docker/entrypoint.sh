@@ -43,6 +43,9 @@ try:
         for stmt in ddl.split(';'):
             s = stmt.strip()
             if s:
+                # Portable rewrites for Postgres (schema.sql targets SQLite):
+                # AUTOINCREMENT is SQLite-only (coverage_report.id).
+                s = s.replace('INTEGER PRIMARY KEY AUTOINCREMENT', 'SERIAL PRIMARY KEY')
                 conn.execute(text(s))
         # Migrate: add geometry column if missing (for DB created before this patch)
         try:

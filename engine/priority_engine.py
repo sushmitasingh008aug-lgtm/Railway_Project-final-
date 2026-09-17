@@ -1,10 +1,13 @@
 """Expected-Loss Priority Engine v2 (Blueprint v2 Section 14.6, 21 & 27).
 
 Calculates mathematically grounded Expected-Loss Priority:
-    Priority_i = 100 * R_i * I_i * U_i
+    Priority_i = 100 * R_i * I_i(C_i) * U_i
 where:
     R_i: ML 30-day failure probability in [0, 1] (from risk_service.py)
-    I_i: Operational consequence / impact in [0, 1] (from impact_engine.py)
+    I_i(C_i): Operational consequence / impact in [0, 1] (from impact_engine.py,
+        which itself contains C_i as I_i = 0.40*C_i + 0.25*D_i + 0.20*T_i + 0.15*A_i)
+    C_i: Engineering criticality in [0, 1] (from criticality_engine.py, folded into I_i
+        to avoid double-counting — NOT multiplied a second time)
     U_i: Bounded logistic urgency in (0, 1] (from urgency_engine.py)
 
 Non-Negotiable Safety Override (Indian Railways Permanent-Way / OHE / Signalling Rules):
@@ -57,17 +60,24 @@ def calculate_task_priority(task_row: dict, plan_time: datetime = None) -> dict:
         plan_time = datetime(2026, 8, 23)
         
     t_dict = dict(task_row)
-    
-    # 1. ML Failure Probability R_i in [0, 1]
-    risk_res = predict_task_risk(t_dict)
-    r_i = risk_res['risk_probability']
-    
-    # 2. Engineering Criticality C_i in [0, 1]
-    c_i, c_breakdown = compute_criticality_score(t_dict)
-    
-    # 3. Urgency U_i in (0, 1] via bounded logistic curve
+
+    # 0. Urgency first: derive days_overdue so the risk model sees it (B1 fix —
+    #    previously predict_task_risk ran before urgency and days_overdue was
+    #    always the 0.0 default, killing the overdue*0.12 risk term).
     due_str = t_dict.get('due_date', '2026-08-25')
     u_i, days_rem = compute_urgency_from_due_date(due_str, plan_time=plan_time)
+    try:
+        days_overdue = float(max(0.0, -float(days_rem)))
+    except Exception:
+        days_overdue = 0.0
+    t_dict['days_overdue'] = days_overdue
+
+    # 1. ML Failure Probability R_i in [0, 1] (now overdue-aware)
+    risk_res = predict_task_risk(t_dict)
+    r_i = risk_res['risk_probability']
+
+    # 2. Engineering Criticality C_i in [0, 1]
+    c_i, c_breakdown = compute_criticality_score(t_dict)
     
     # 4. Operational Impact I_i in [0, 1]
     dur = int(t_dict.get('duration_minutes', 60))
@@ -121,6 +131,7 @@ def calculate_task_priority(task_row: dict, plan_time: datetime = None) -> dict:
         'priority_score': final_score,
         'priority_band': band,
         'days_remaining': days_rem,
+        'days_overdue': round(days_overdue, 2),
         'safety_override': 1 if override_active else 0,
         'override_reason': override_reason,
         'model_version': risk_res.get('model_version'),

@@ -16,10 +16,12 @@ Mathematical Formulation:
      max Z = w1 * sum(x_i * Priority_i) + w2 * sum(CoordinationValue_b)
              - w3 * sum(BlockDuration_b) - w4 * TrainImpactPenalty
 
-Outputs:
-  - engine/optimized_schedule.csv (canonical 18-column schema)
-  - optimized_blocks database table
-  - Independent validation certification via validator.py
+Outputs (single atomic publish, fail-closed):
+  - engine/optimized_schedule.csv (canonical 18-column export artifact)
+  - scheduled_tasks buffer table (task-level rows, APIs read this, not CSV)
+  - optimized_blocks database table (block-level rows)
+  - schedule_versions manifest row (version_id, sha256, validation cert)
+  - Independent validation certification via validator.py (pre-publish gate)
 """
 import os
 import sys
@@ -262,23 +264,23 @@ def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
 
     df_export = df_sched.rename(columns={'location_lat': 'lat', 'location_lon': 'lon'})
     final_cols = [c if c not in ['location_lat', 'location_lon'] else ('lat' if c == 'location_lat' else 'lon') for c in canonical_cols]
-    
-    df_export[final_cols].to_csv(SCHEDULE_CSV, index=False)
-    print(f"  ✓ Exported schedule to {SCHEDULE_CSV} ({len(df_export)} tasks).")
 
-    # Write optimized_blocks to Database
-    if blocks_results:
-        with engine.begin() as conn:
-            conn.execute(text("DELETE FROM optimized_blocks;"))
-            df_b = pd.DataFrame(blocks_results).drop_duplicates(subset=['block_id'])
-            df_b.to_sql('optimized_blocks', conn, if_exists='append', index=False)
-        print(f"  ✓ Persisted {len(df_b)} coordinated block windows to database.")
+    # Fail-closed publish (safety-critical: readers must never see a torn or
+    # uncertified plan):
+    #  1. Abort on empty output — never rewrite artifacts with nothing.
+    #  2. Validate in-memory BEFORE any write — uncertified plans abort.
+    #  3. Publish CSV atomically (tmp + fsync + rename) plus a versioned copy.
+    #  4. Publish DB (blocks + manifest) in one transaction, stamped versioned.
+    if len(df_export) == 0:
+        print("  ✗ ABORT: optimizer produced zero tasks — artifacts untouched.")
+        return {'status': 'REJECTED_EMPTY', 'tasks_scheduled': 0,
+                'blocks_formed': 0, 'validation': None, 'version_id': None}
 
-    # 6. Execute Independent Deterministic Safety Validator
     print("=" * 75)
     print("🛡️ RUNNING INDEPENDENT DETERMINISTIC SAFETY VALIDATOR (Blueprint v2 Section 19)")
+    print("  (pre-publish gate: uncertified plans are rejected, nothing is written)")
     print("=" * 75)
-    
+
     val_report = validate_plan(
         blocks=df_export.to_dict('records'),
         trains=df_trains.to_dict('records')
@@ -288,11 +290,85 @@ def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
     for cp in val_report['checks_passed']:
         print(f"    ✓ {cp}")
 
+    if not val_report.get('is_certified'):
+        print("  ✗ ABORT: plan not certified — artifacts untouched, prior version stays live.")
+        return {'status': 'REJECTED_UNCERTIFIED',
+                'tasks_scheduled': len(df_export),
+                'blocks_formed': len(blocks_results),
+                'validation': val_report, 'version_id': None}
+
+    version_id = f"VER-{base_time.strftime('%Y%m%d')}-{int(horizon_days)}D-{datetime.now().strftime('%H%M%S')}"
+    for b in blocks_results:
+        b['version_id'] = version_id
+        b['status'] = 'CERTIFIED'
+
+    # 3. Atomic CSV publish.
+    import hashlib
+    import tempfile
+    csv_bytes = df_export[final_cols].to_csv(index=False).encode('utf-8')
+    csv_hash = hashlib.sha256(csv_bytes).hexdigest()
+    _fd, _tmp = tempfile.mkstemp(dir=BASE_DIR, prefix='.schedule_', suffix='.tmp')
+    try:
+        with os.fdopen(_fd, 'wb') as _fh:
+            _fh.write(csv_bytes)
+            _fh.flush()
+            os.fsync(_fh.fileno())
+        os.replace(_tmp, SCHEDULE_CSV)  # atomic on POSIX + Windows
+    finally:
+        try:
+            if os.path.exists(_tmp):
+                os.remove(_tmp)
+        except Exception:
+            pass
+    _versioned_csv = os.path.join(BASE_DIR, f'optimized_schedule.{version_id}.csv')
+    try:
+        with open(_versioned_csv, 'wb') as _fh:
+            _fh.write(csv_bytes)
+    except Exception as _e:
+        print(f"  ⚠ versioned CSV copy skipped: {_e}")
+    print(f"  ✓ Atomically published schedule {version_id} ({len(df_export)} tasks, sha256 {csv_hash[:12]}…).")
+
+    # 4. Atomic DB publish: blocks + manifest in one transaction.
+    manifest = {
+        'version_id': version_id,
+        'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'horizon_days': int(horizon_days),
+        'status': 'CERTIFIED',
+        'objective_value': float(len(df_export)),
+        'notes': json.dumps({
+            'csv_sha256': csv_hash,
+            'tasks_scheduled': len(df_export),
+            'blocks_formed': len(blocks_results),
+            'validation_status': val_report.get('validation_status'),
+            'violations': val_report.get('violations_count', 0),
+            'warnings': val_report.get('warnings_count', 0),
+        }),
+    }
+    with engine.begin() as conn:
+        conn.execute(text("DELETE FROM optimized_blocks;"))
+        conn.execute(text("DELETE FROM scheduled_tasks;"))
+        if blocks_results:
+            df_b = pd.DataFrame(blocks_results).drop_duplicates(subset=['block_id'])
+            df_b.to_sql('optimized_blocks', conn, if_exists='append', index=False)
+            print(f"  ✓ Persisted {len(df_b)} certified block windows to database.")
+        df_t = df_export[final_cols].copy()
+        df_t['version_id'] = version_id
+        df_t.to_sql('scheduled_tasks', conn, if_exists='append', index=False)
+        print(f"  ✓ Persisted {len(df_t)} task rows to scheduled_tasks buffer.")
+        conn.execute(text(
+            "INSERT INTO schedule_versions "
+            "(version_id, created_at, horizon_days, status, objective_value, notes) "
+            "VALUES (:version_id, :created_at, :horizon_days, :status, :objective_value, :notes)"
+        ), manifest)
+        print(f"  ✓ Manifest {version_id} recorded in schedule_versions.")
+
     return {
-        'status': 'OPTIMAL' if val_report['is_certified'] else 'FEASIBLE_WITH_WARNINGS',
+        'status': 'OPTIMAL',
         'tasks_scheduled': len(df_export),
         'blocks_formed': len(blocks_results),
-        'validation': val_report
+        'validation': val_report,
+        'version_id': version_id,
+        'csv_sha256': csv_hash,
     }
 
 if __name__ == '__main__':

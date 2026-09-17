@@ -44,7 +44,48 @@ gen_state = {
     "output_tail": ""
 }
 
+def get_live_version_id():
+    """Latest CERTIFIED manifest version, or '' when none exists."""
+    try:
+        engine = get_db_engine()
+        with engine.connect() as conn:
+            row = conn.execute(sql_text(
+                "SELECT version_id FROM schedule_versions "
+                "WHERE status = 'CERTIFIED' ORDER BY created_at DESC LIMIT 1")).first()
+            return str(row[0]) if row else ""
+    except Exception:
+        return ""
+
 def load_schedule_tasks():
+    # Phase B buffer contract: read the live scheduled_tasks buffer first;
+    # the CSV export is legacy fallback only.
+    try:
+        engine = get_db_engine()
+        df = pd.read_sql("SELECT * FROM scheduled_tasks", engine)
+        if len(df):
+            df = df.fillna('')
+            tasks = []
+            for _, row in df.iterrows():
+                tasks.append({
+                    "task_id": str(row.get('task_id', '')),
+                    "asset_id": str(row.get('asset_id', '')),
+                    "department": str(row.get('department', '')),
+                    "task_type": str(row.get('task_type', '')),
+                    "criticality": str(row.get('criticality', '')),
+                    "priority_score": float(row.get('priority_score', 0)),
+                    "section_id": str(row.get('section_id', '')),
+                    "section_name": str(row.get('section_name', '')),
+                    "duration_minutes": int(row.get('duration_minutes', 0)),
+                    "start_minute": int(row.get('start_minute', 0)),
+                    "end_minute": int(row.get('end_minute', 0)),
+                    "assigned_start_time": str(row.get('assigned_start_time', '')),
+                    "assigned_end_time": str(row.get('assigned_end_time', '')),
+                    "combined_group_id": str(row.get('combined_group_id', '')),
+                    "affects_line": str(row.get('affects_line', 'BOTH') or 'BOTH')
+                })
+            return tasks
+    except Exception as e:
+        print(f"Buffer read failed, falling back to CSV: {e}")
     if not os.path.exists(SCHEDULE_CSV):
         return []
     try:
@@ -100,7 +141,14 @@ def coordination_stats(tasks):
 
 @app.route('/api/health', methods=['GET'])
 def health():
-    return jsonify({"status": "healthy", "service": "block-planner-api"})
+    try:
+        engine = get_db_engine()
+        with engine.connect() as conn:
+            conn.execute(sql_text("SELECT 1"))
+        return jsonify({"status": "healthy", "service": "block-planner-api", "database": "connected"})
+    except Exception as e:
+        return jsonify({"status": "degraded", "service": "block-planner-api",
+                        "database": "unreachable", "detail": str(e)[:120]}), 503
 
 @app.route('/api/metrics', methods=['GET'])
 def get_metrics():
@@ -341,10 +389,18 @@ def get_trains():
 
 @app.route('/api/schedule', methods=['GET'])
 def get_schedule():
+    # Fail-closed version pin: ?version_id= must match the live CERTIFIED
+    # version; anything else is refused, never served stale.
+    want = (request.args.get('version_id') or '').strip()
+    live = get_live_version_id()
+    if want and live and want != live:
+        return jsonify({"status": "error",
+                        "message": f"Schedule version {want} is superseded or unknown; live version is {live}."}), 404
     tasks = load_schedule_tasks()
     if not tasks:
         return jsonify({"status": "error", "message": "optimized schedule file not found."}), 404
-    return jsonify({"status": "success", "count": len(tasks), "data": tasks})
+    return jsonify({"status": "success", "count": len(tasks), "data": tasks,
+                    "source": "buffer", "version_id": live})
 
 def run_optimizer_bg(horizon_days):
     global gen_state
@@ -423,54 +479,72 @@ def submit_task():
     except Exception:
         due_dt = datetime(2026, 8, 30)
 
-    today = datetime(2026, 8, 23)
-    days_left = (due_dt - today).days
-
-    if days_left < 0:
-        urgency_score = 100.0
-    elif days_left > 10:
-        urgency_score = 10.0
-    else:
-        urgency_score = max(10.0, 100.0 - (days_left * 9.0))
-
-    crit_contrib = crit_weights[criticality] * 0.6
-    urg_contrib = urgency_score * 0.4
-    final_score = round(crit_contrib + urg_contrib, 2)
-
-    # Check statutory safety critical overrides
-    is_safety_critical = any(kw in task_type.lower() for kw in ["broken rail", "track circuit", "ohe dropper", "signal blank"])
-    if is_safety_critical or criticality == "Critical":
-        criticality = "Critical"
-        final_score = max(final_score, 92.5)
+    # B2 fix: score via the Expected-Loss pipeline (100*R*I(C)*U + safety
+    # override) instead of the legacy 60/40 rule, so submitted tasks rank
+    # exactly like seeded ones. Baseline 60/40 kept only as audit reference.
 
     engine = get_db_engine()
     new_task_id = f"TSK_{int(time.time() * 1000) % 1000000}"
 
     try:
-        # Find asset in target section matching department
+        # Find asset in target section matching department (with telemetry for scoring)
+        _asset_cols = ("asset_id, department, section_id, corridor_id, asset_type, "
+                       "condition_score, health_index, asset_age_years, asset_importance")
         df_asset = pd.read_sql(
-            sql_text("SELECT asset_id, department, section_id, corridor_id, asset_type FROM assets WHERE section_id = :sid AND department = :dept LIMIT 1"),
+            sql_text(f"SELECT {_asset_cols} FROM assets WHERE section_id = :sid AND department = :dept LIMIT 1"),
             engine,
             params={"sid": target_section, "dept": dept},
         )
         if len(df_asset) > 0:
-            asset_id = str(df_asset.iloc[0]['asset_id'])
-            corridor_id = str(df_asset.iloc[0].get('corridor_id') or 'CORR_BSB_LKO')
-            asset_type = str(df_asset.iloc[0].get('asset_type') or 'Track')
+            arow = df_asset.iloc[0]
+            asset_id = str(arow['asset_id'])
+            corridor_id = str(arow.get('corridor_id') or 'CORR_BSB_LKO')
+            asset_type = str(arow.get('asset_type') or 'Track')
         else:
             df_any = pd.read_sql(
-                sql_text("SELECT asset_id, department, section_id, corridor_id, asset_type FROM assets WHERE section_id = :sid LIMIT 1"),
+                sql_text(f"SELECT {_asset_cols} FROM assets WHERE section_id = :sid LIMIT 1"),
                 engine,
                 params={"sid": target_section},
             )
             if len(df_any) > 0:
-                asset_id = str(df_any.iloc[0]['asset_id'])
-                corridor_id = str(df_any.iloc[0].get('corridor_id') or 'CORR_BSB_LKO')
-                asset_type = str(df_any.iloc[0].get('asset_type') or 'Track')
+                arow = df_any.iloc[0]
+                asset_id = str(arow['asset_id'])
+                corridor_id = str(arow.get('corridor_id') or 'CORR_BSB_LKO')
+                asset_type = str(arow.get('asset_type') or 'Track')
             else:
+                arow = None
                 asset_id = "AST_BSB_LKO_01_01"
                 corridor_id = "CORR_BSB_LKO"
                 asset_type = "Track"
+
+        # Score through the same Expected-Loss pipeline as seeded tasks (B2).
+        from priority_engine import calculate_task_priority
+        _affects = "BOTH" if dept == "S&T" else "UP"
+        _trow = {
+            "task_id": new_task_id,
+            "task_type": task_type,
+            "criticality": criticality,
+            "safety_impact": criticality,
+            "due_date": due_dt.strftime("%Y-%m-%d"),
+            "duration_minutes": duration,
+            "affects_line": _affects,
+            "department": dept,
+            "corridor_id": corridor_id,
+            "asset_importance": float(arow.get('asset_importance') or 0.80) if arow is not None else 0.80,
+            "condition_score": float(arow.get('condition_score') or 75) if arow is not None else 75,
+            "health_index": float(arow.get('health_index') or 70) if arow is not None else 70,
+            "asset_age_years": float(arow.get('asset_age_years') or 12) if arow is not None else 12,
+        }
+        _pres = calculate_task_priority(_trow)
+        final_score = _pres['priority_score']
+        criticality = _pres['priority_band']
+        risk_prob = _pres['risk_probability']
+        urgency_band = _pres['priority_band']
+
+        # Legacy 60/40 baseline kept purely as audit reference.
+        _u_rule = 100.0 if (due_dt - datetime(2026, 8, 23)).days <= 0 else max(
+            15.0, 100.0 - min(max((due_dt - datetime(2026, 8, 23)).days, 0), 10) * 8.5)
+        _baseline = round(0.60 * {"Critical": 100.0, "High": 75.0, "Medium": 50.0, "Low": 25.0}[data.get("criticality", "Medium")] + 0.40 * _u_rule, 2)
 
         with engine.begin() as conn:
             df_ins = pd.DataFrame([{
@@ -486,8 +560,10 @@ def submit_task():
                 "due_date": due_dt.strftime("%Y-%m-%d"),
                 "duration_minutes": duration,
                 "priority_score": final_score,
+                "risk_probability": risk_prob,
+                "urgency": urgency_band,
                 "status": "Pending",
-                "affects_line": "BOTH" if dept == "S&T" else "UP"
+                "affects_line": _affects
             }])
             df_ins.to_sql("maintenance_tasks", conn, if_exists="append", index=False)
 
@@ -495,8 +571,10 @@ def submit_task():
             "status": "success",
             "task_id": new_task_id,
             "computed_priority_score": final_score,
-            "criticality_contribution": crit_contrib,
-            "urgency_contribution": urg_contrib,
+            "priority_band": criticality,
+            "risk_probability": risk_prob,
+            "safety_override": _pres['safety_override'],
+            "baseline_score_60_40": _baseline,
             "section_id": target_section,
             "message": f"Task {new_task_id} prioritized and recorded."
         }), 201
@@ -537,10 +615,24 @@ def get_tests_status():
 def get_impact():
     tasks = load_schedule_tasks()
     engine = get_db_engine()
-    
+
+    # B4 fix: horizon-aware evaluation. Defaults to the generated schedule's
+    # real span (instead of a hardcoded 7 days) so 30-day plans are judged on
+    # 30 days of traffic; ?horizon_days=7|30 overrides explicitly.
+    try:
+        horizon_days = int(request.args.get('horizon_days', 0))
+    except Exception:
+        horizon_days = 0
+    if horizon_days <= 0 and tasks:
+        try:
+            horizon_days = int(max(t['end_minute'] for t in tasks) / 1440) + 1
+        except Exception:
+            horizon_days = 7
+    horizon_days = max(1, min(horizon_days or 7, 90))
+
     try:
         df_tr = pd.read_sql("SELECT section_id, entry_time, exit_time FROM train_movements", engine)
-        horizon_min = 7 * 24 * 60
+        horizon_min = horizon_days * 24 * 60
         trains_by_sec = {}
         total_movements = 0
         
@@ -597,9 +689,11 @@ def get_impact():
         colls_avoided = max(0, b_coll - o_coll)
         avg_recovered = round(float(b_delay) / b_trains, 1) if b_trains > 0 else 0.0
         baseline_on_time = round(((total_movements - b_trains) / total_movements) * 100.0, 1) if total_movements > 0 else 100.0
+        optimized_on_time = round(((total_movements - o_trains) / total_movements) * 100.0, 1) if total_movements > 0 else 100.0
 
         return jsonify({
             "status": "success",
+            "horizon_days": horizon_days,
             "tasks_evaluated": len(tasks),
             "train_movements_analyzed": total_movements,
             "baseline": {
@@ -612,9 +706,9 @@ def get_impact():
             "optimized": {
                 "description": "CP-SAT time-aware optimized block plan",
                 "collision_events": o_coll,
-                "trains_affected": o_coll,
+                "trains_affected": o_trains,
                 "total_delay_minutes": o_delay,
-                "trains_on_time_pct": 100.0
+                "trains_on_time_pct": optimized_on_time
             },
             "impact": {
                 "delay_avoided_minutes": delay_avoided,
@@ -1477,6 +1571,22 @@ def api_get_goods_forecast():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+# Fail-closed allowlist for every dynamic table-name endpoint (B10/C3).
+# Unknown dataset → 400, never interpolated SQL.
+ALLOWLISTED_TABLES = frozenset({
+    'corridors', 'sections', 'assets', 'failure_event_history', 'defect_history',
+    'maintenance_tasks', 'task_actions', 'train_movements', 'block_windows',
+    'goods_forecast', 'resources', 'task_compatibility', 'task_dependencies',
+    'ml_predictions', 'schedule_versions', 'optimized_blocks', 'scheduled_tasks',
+    'audit_log', 'department_feeds', 'inspections', 'maintenance_history',
+    'block_tasks', 'anomaly_task_catalog', 'coverage_report', 'data_ingestion_runs',
+})
+
+def _require_dataset(name):
+    if name not in ALLOWLISTED_TABLES:
+        return jsonify({"status": "error", "message": f"Unknown dataset: {name}"}), 400
+    return None
+
 @app.route('/api/data-quality/summary', methods=['GET'])
 def api_data_quality_summary():
     engine = get_db_engine()
@@ -1511,6 +1621,9 @@ def api_data_quality_summary():
 
 @app.route('/api/data-quality/<dataset>', methods=['GET'])
 def api_data_quality_dataset(dataset):
+    denied = _require_dataset(dataset)
+    if denied:
+        return denied
     engine = get_db_engine()
     try:
         cnt = pd.read_sql(sql_text(f"SELECT COUNT(*) as c FROM {dataset}"), engine).iloc[0, 0]
@@ -1536,6 +1649,9 @@ def api_ingestion_preview():
         file_name = body.get('file_name', 'upload.csv')
         source_system = body.get('source_system', 'COA')
         dataset_name = body.get('dataset_name', 'train_movements')
+        denied = _require_dataset(dataset_name)
+        if denied:
+            return denied
         
         if not rows:
             engine = get_db_engine()
@@ -1562,6 +1678,9 @@ def api_ingestion_validate():
         body = request.get_json() or {}
         dataset = body.get('dataset_name', 'train_movements')
         rows = body.get('rows', [])
+        denied = _require_dataset(dataset)
+        if denied:
+            return denied
         
         engine = get_db_engine()
         df_target = pd.read_sql(sql_text(f"SELECT * FROM {dataset} LIMIT 1"), engine)
@@ -1592,6 +1711,9 @@ def api_ingestion_commit():
         source = body.get('source_system', 'COA')
         file_name = body.get('file_name', 'data_feed.xlsx')
         row_count = int(body.get('row_count', 120))
+        denied = _require_dataset(dataset)
+        if denied:
+            return denied
         
         ingestion_id = f"ING-{datetime.now().strftime('%Y%m%d')}-{int(time.time()) % 10000:04d}"
         now_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

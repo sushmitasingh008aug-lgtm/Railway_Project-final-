@@ -92,12 +92,20 @@ def seed_all_12k():
 
             ingestion_id = f"ING-{datetime.now().strftime('%Y%m%d')}-{source_system[:4]}-{table_name[:8]}"
             try:
+                # Portable upsert (SQLite >= 3.24 and PostgreSQL both support
+                # ON CONFLICT; INSERT OR REPLACE is SQLite-only and would
+                # crash prod boot while the old except-pass hid it).
                 conn.execute(text("""
-                    INSERT OR REPLACE INTO data_ingestion_runs
+                    INSERT INTO data_ingestion_runs
                     (ingestion_id, source_system, dataset_name, source_file, file_hash, schema_version,
                      uploaded_by, uploaded_at, rows_received, rows_accepted, rows_rejected, duplicates, validation_status, notes)
                     VALUES
                     (:iid, :src, :dset, :sfile, :fhash, 'v4.0', 'System Administrator', :now, :rcv, :acc, 0, 0, 'PASS', '12K synthetic pack verified')
+                    ON CONFLICT (ingestion_id) DO UPDATE SET
+                        rows_received = EXCLUDED.rows_received,
+                        rows_accepted = EXCLUDED.rows_accepted,
+                        validation_status = EXCLUDED.validation_status,
+                        uploaded_at = EXCLUDED.uploaded_at
                 """), {
                     'iid': ingestion_id,
                     'src': source_system,
@@ -109,7 +117,7 @@ def seed_all_12k():
                     'acc': row_count
                 })
             except Exception as e:
-                pass
+                print(f"  ⚠ ingestion audit write failed for {table_name}: {e}")
 
             results.append((table_name, row_count, "PASS"))
 

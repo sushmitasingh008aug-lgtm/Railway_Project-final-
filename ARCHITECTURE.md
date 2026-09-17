@@ -33,7 +33,7 @@ START (make data) → MIDDLE (rank + combine + schedule + check) → END (serve 
   - `criticality_engine.py` = how bad if it breaks (C). Safety x route x importance.
   - `urgency_engine.py` = how late it is (U). Late = near 1, early = near 0.
   - `impact_engine.py` = how many trains it disturbs (I). Long job on busy line = high.
-  - `priority_engine.py` = `Score = 100 x R x I x U`. Broken rail / OHE snap / signal blank always 92.5+.
+  - `priority_engine.py` = `Score = 100 x R x I(C) x U`. C lives inside I, so it is used but not multiplied twice. Broken rail / OHE snap / signal blank always 92.5+.
 - Step 2 Combine (which jobs share 1 closure):
   - `compatibility_engine.py` checks 8 things per pair: same section, same possession (BOTH-or-equal), safe power-cut, no tool clash (Tamper / Tower / Cleaner are exclusive), no bad combo (ballast work x signal lamp), time ratio under 2.5x, cross-department only.
   - `coordination_engine.py` bundles pass-pairs into `CB_001, CB_002...`. Time = longest job, not sum. Saving = sum − longest.
@@ -65,7 +65,7 @@ START (make data) → MIDDLE (rank + combine + schedule + check) → END (serve 
 | Rank | `engine/criticality_engine.py` | Safety, route, importance | How bad if it breaks (C) |
 | Rank | `engine/urgency_engine.py` | Due date vs today | How late it is (U) |
 | Rank | `engine/impact_engine.py` | Duration, corridor, line | How many trains it disturbs (I) |
-| Rank | `engine/priority_engine.py` | R + C + U + I | Score = 100 x R x I x U; broken rail always 92.5+ |
+| Rank | `engine/priority_engine.py` | R + I(C) + U | Score = 100 x R x I x U where I already holds C; broken rail always 92.5+ |
 | Combine | `engine/compatibility_engine.py` | Top tasks per section | Yes/No + reason per pair |
 | Combine | `engine/coordination_engine.py` | Compatible tasks | Shared block `CB_*`, time = longest job |
 | Schedule | `engine/optimizer_core.py` | Tasks + trains + windows | `optimized_schedule.csv` + `optimized_blocks` |
@@ -85,23 +85,35 @@ START (make data) → MIDDLE (rank + combine + schedule + check) → END (serve 
 - Noon 12:00-18:00 peak = caution.
 - Shared block time = longest job, not sum.
 
-## 5. Screens — What Judge Sees
+## 5. Screens — What Judge Sees (ABPS v4, 18 in sidebar + drawers)
+- Sidebar has 5 groups: OPERATIONS 1-5, COORDINATION 6-8, INTELLIGENCE 9-12, DATA 13-16, CONTROL 17-18.
+- Top bar: horizon picker (weekly/monthly), SIMULATION MODE badge, feed sync dots, verification bell, planner profile.
+- `tsc` clean, `npm run build` passes in ~5s.
+
 | Screen | Source | What you see |
 |---|---|---|
-| CommandCenter | `/api/metrics` | Big numbers: tasks, risks, savings |
-| NetworkSections | `/api/sections` | Section cards + job table |
-| Tasks | `/api/tasks` | Full repair list, click for 6 work steps |
-| AIPriority | `/api/ml/explain` | Ranked urgent list + why (red/green bars) |
-| Coordination | `/api/compatibility` | Which jobs share 1 closure, tick marks |
-| Gantt | `/api/schedule` | Timeline of closures vs trains |
-| Map | `/api/schedule` lat/lon | Live map, colored lines, work dots |
-| BeforeAfter | `/api/impact` | Old manual vs new AI, hours saved |
-| WeeklyMonthly | `/api/schedule` | 7-day cards + monthly heat table |
-| FailureIntelligence | `/api/failures` | Past breakdowns + delays |
-| WhatIf | `/api/what-if` | Shift a block, see feasible / blocked |
-| ApprovalAudit | `/api/approvals` | Approve / reject + who-did-what log |
-| Submit | `POST /api/tasks/submit` | New repair request form |
-| Alerts | `/api/tests/status` | Green PASS checks + speed numbers |
+| Dashboard (= CommandCenter) | `/api/metrics` | Big numbers: tasks, risks, savings |
+| Asset Backlog (= Tasks) | `/api/tasks` (paged, filterable) | Full repair list, click for detail drawer |
+| Weekly Block Planner (= Gantt) | `/api/schedule` + `/api/trains` | Timeline of closures vs trains, 7/30-day switch |
+| Monthly Forecast (= WeeklyMonthly) | `/api/schedule` | 7-day cards + monthly heat table |
+| Anomaly Handling (v4) | `/api/anomalies/catalog` | 29 disruption scenarios, pick one to drill in |
+| Coordination Centre | `/api/compatibility` | Which jobs share 1 closure, tick marks |
+| Integrated / Shadow Blocks (= BeforeAfter) | `/api/impact` + `/api/blocks/detailed` | Old manual vs new AI, hours saved |
+| Train & Block Conflicts (v4) | `/api/schedule` + `/api/trains` | Where closures and trains clash |
+| AI Risk & Priority | `/api/ml/explain` | Ranked urgent list + why (red/green bars) |
+| Failure Intelligence | `/api/failures` | Past breakdowns + delays |
+| Asset Health (v4) | `/api/assets` (paged) | Asset list + health, click for detail drawer |
+| What-If Simulator | `POST /api/what-if/scenario` | Shift a block, see feasible / blocked |
+| Data Ingestion (v4) | `/api/ingestion/*` | Preview → validate → commit new data drops |
+| Data Quality (v4) | `/api/data-quality/*` | Dataset health per table |
+| Scenario Explorer (v4) | `/api/anomalies/*` | Walk any disruption scenario end to end |
+| Model / Data Versions (v4) | `/api/models/versions` + retrain | Model history + retrain button |
+| Human Review & Audit (= ApprovalAudit) | `/api/approvals` + `/api/audit` | Approve / reject + who-did-what log |
+| Verification Suite (= Alerts) | `/api/tests/status` | Green PASS checks + speed numbers |
+| Drawers: Task Detail, Asset Detail | `/api/tasks/<id>/*`, `/api/assets/<id>*` | Pop-up work steps, crew, tools, history |
+
+- 3 views exist but have no sidebar button (open only via code): Submit form (`POST /api/tasks/submit`), Map (`/api/schedule` lat/lon), NetworkSections.
+- Backend serves all of the above: Python `:8765` owns every route, Go `:3000` serves 10 natively and forwards the rest.
 
 ## 6. Run — 3 Commands
 - `python engine/transform_and_seed.py` = make demo data

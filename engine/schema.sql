@@ -297,6 +297,34 @@ CREATE TABLE IF NOT EXISTS optimized_blocks (
     explanation_json TEXT
 );
 
+-- 15b. SCHEDULED_TASKS (Phase B buffer: task-level rows of the live plan).
+-- Single-live-version semantics like optimized_blocks: the optimizer rewrites
+-- this table atomically with blocks + manifest. CSV is export artifact only;
+-- all APIs read this table (see ?version_id= pinning in both backends).
+CREATE TABLE IF NOT EXISTS scheduled_tasks (
+    version_id VARCHAR(50),
+    task_id VARCHAR(50),
+    asset_id VARCHAR(50),
+    department VARCHAR(50),
+    task_type VARCHAR(100),
+    criticality VARCHAR(20),
+    priority_score FLOAT,
+    section_id VARCHAR(50),
+    section_name VARCHAR(100),
+    corridor_id VARCHAR(50),
+    duration_minutes INT,
+    start_minute INT,
+    end_minute INT,
+    assigned_start_time TIMESTAMP,
+    assigned_end_time TIMESTAMP,
+    combined_group_id VARCHAR(50),
+    affects_line VARCHAR(10),
+    lat FLOAT,
+    lon FLOAT,
+    PRIMARY KEY (version_id, task_id)
+);
+CREATE INDEX IF NOT EXISTS idx_sched_tasks_version ON scheduled_tasks(version_id);
+
 -- 16. AUDIT_LOG (Immutable Audit Trail)
 CREATE TABLE IF NOT EXISTS audit_log (
     log_id VARCHAR(80) PRIMARY KEY,
@@ -400,13 +428,24 @@ CREATE INDEX IF NOT EXISTS idx_compat_tasks ON task_compatibility(task_id_1, tas
 CREATE INDEX IF NOT EXISTS idx_actions_task ON task_actions(task_id, sequence_order);
 
 -- CANONICAL UPPERCASE GOVERNMENT VIEWS (Blueprint v2 Section 09)
-CREATE VIEW IF NOT EXISTS ASSET_MASTER AS SELECT * FROM assets;
-CREATE VIEW IF NOT EXISTS FAILURE_EVENT_HISTORY AS SELECT * FROM failure_event_history;
-CREATE VIEW IF NOT EXISTS MAINTENANCE_TASKS AS SELECT * FROM maintenance_tasks;
-CREATE VIEW IF NOT EXISTS TRAIN_OPERATION_HISTORY AS SELECT * FROM train_movements;
-CREATE VIEW IF NOT EXISTS BLOCK_AVAILABILITY AS SELECT * FROM block_windows;
-CREATE VIEW IF NOT EXISTS RESOURCE_AVAILABILITY AS SELECT * FROM resources;
-CREATE VIEW IF NOT EXISTS GOODS_TRAIN_FORECAST AS SELECT * FROM goods_forecast;
-CREATE VIEW IF NOT EXISTS AUDIT_EVENTS AS SELECT * FROM audit_log;
-CREATE VIEW IF NOT EXISTS OPTIMIZED_BLOCK_PLAN AS SELECT * FROM optimized_blocks;
+-- Portable DROP+CREATE pattern (works on SQLite and PostgreSQL; neither
+-- supports CREATE VIEW IF NOT EXISTS).
+DROP VIEW IF EXISTS ASSET_MASTER;
+CREATE VIEW ASSET_MASTER AS SELECT * FROM assets;
+DROP VIEW IF EXISTS FAILURE_EVENT_HISTORY;
+-- (no view: name collides with failure_event_history table on both dialects)
+DROP VIEW IF EXISTS MAINTENANCE_TASKS;
+-- (no view: name collides with maintenance_tasks table on both dialects)
+DROP VIEW IF EXISTS TRAIN_OPERATION_HISTORY;
+CREATE VIEW TRAIN_OPERATION_HISTORY AS SELECT * FROM train_movements;
+DROP VIEW IF EXISTS BLOCK_AVAILABILITY;
+CREATE VIEW BLOCK_AVAILABILITY AS SELECT * FROM block_windows;
+DROP VIEW IF EXISTS RESOURCE_AVAILABILITY;
+CREATE VIEW RESOURCE_AVAILABILITY AS SELECT * FROM resources;
+DROP VIEW IF EXISTS GOODS_TRAIN_FORECAST;
+CREATE VIEW GOODS_TRAIN_FORECAST AS SELECT * FROM goods_forecast;
+DROP VIEW IF EXISTS AUDIT_EVENTS;
+CREATE VIEW AUDIT_EVENTS AS SELECT * FROM audit_log;
+DROP VIEW IF EXISTS OPTIMIZED_BLOCK_PLAN;
+CREATE VIEW OPTIMIZED_BLOCK_PLAN AS SELECT * FROM optimized_blocks;
 

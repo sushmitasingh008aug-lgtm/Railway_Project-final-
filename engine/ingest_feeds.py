@@ -76,7 +76,19 @@ def ingest_feeds(db_url=None):
                 'duration_minutes', 'priority_score', 'status', 'source_system']
         out = df[cols].rename(columns={'raw_type': 'task_type'})
 
+        # B3 fix: backfill section/corridor/department from the asset master so
+        # direct readers of maintenance_tasks.section_id (compat scan,
+        # /api/sections/risk) see FEED rows instead of silently dropping them.
         with engine.begin() as conn:
+            amap = pd.read_sql(
+                "SELECT asset_id, department, section_id, corridor_id, asset_type FROM assets",
+                conn,
+            ).drop_duplicates(subset=['asset_id']).set_index('asset_id')
+            for _c in ['department', 'section_id', 'corridor_id', 'asset_type']:
+                out[_c] = out['asset_id'].map(
+                    lambda a, _c=_c: (amap.loc[a, _c] if a in amap.index else None)
+                )
+
             existing = pd.read_sql(
                 "SELECT task_id FROM maintenance_tasks",
                 conn
@@ -84,14 +96,21 @@ def ingest_feeds(db_url=None):
             new = out[~out['task_id'].isin(set(existing['task_id']))]
             if len(new):
                 new.to_sql('maintenance_tasks', conn, if_exists='append', index=False)
-                conn.execute(
-                    sqlalchemy.text(
-                        "INSERT INTO department_feeds (source_system, asset_id, raw_type, severity, reported_date) "
-                        "SELECT source_system, asset_id, task_type, criticality, due_date FROM maintenance_tasks "
-                        "WHERE task_id LIKE :prefix"
-                    ),
-                    {"prefix": f"FEED_{fname.split('.')[0].upper()}_%"},
-                )
+                # B3 fix: department_feeds needs PK feed_id + ingested_at; the
+                # old INSERT..SELECT omitted both and failed NOT-NULL/PK.
+                feeds = pd.DataFrame({
+                    "feed_id": new['task_id'],
+                    "source_system": new['source_system'],
+                    "asset_id": new['asset_id'],
+                    "raw_type": new['task_type'],
+                    "severity": new['criticality'],
+                    "reported_date": pd.to_datetime(new['due_date']).dt.date,
+                    "ingested_at": datetime.now(),
+                })
+                have = pd.read_sql("SELECT feed_id FROM department_feeds", conn)
+                feeds = feeds[~feeds['feed_id'].isin(set(have['feed_id']))]
+                if len(feeds):
+                    feeds.to_sql('department_feeds', conn, if_exists='append', index=False)
 
         print(f"  ✓ {fname}: ingested {len(new)} new tasks (system={df['source_system'].iloc[0]}).")
         total += len(new)

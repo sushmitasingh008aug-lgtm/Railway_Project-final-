@@ -550,7 +550,7 @@ func handleGetTasks(c *fiber.Ctx) error {
 	argIdx := 1
 
 	if overdueOnly {
-		whereClauses = append(whereClauses, "mt.due_date < '2026-08-23'")
+		whereClauses = append(whereClauses, "mt.due_date < '2026-09-15'")
 	}
 	if dept != "" && dept != "ALL" {
 		whereClauses = append(whereClauses, fmt.Sprintf("a.department = $%d", argIdx))
@@ -1241,8 +1241,8 @@ func handleGetTestsStatus(c *fiber.Ctx) error {
 // CP-SAT optimized plan, and quantifies train delay eliminated.
 // ---------------------------------------------------------------------------
 
-// planBaseTime must match optimizer_core.py base_time (2026-08-23 00:00).
-var planBaseTime = time.Date(2026, 8, 23, 0, 0, 0, 0, time.UTC)
+// planBaseTime must match optimizer_core.py base_time (2026-09-15 00:00).
+var planBaseTime = time.Date(2026, 9, 15, 0, 0, 0, 0, time.UTC)
 
 const planHorizonDays = 7
 

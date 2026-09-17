@@ -1,0 +1,44 @@
+dataset,metric,value,goal,status
+01_corridors.csv,row_count,15000,15000,PASS
+02_sections.csv,row_count,15000,15000,PASS
+03_assets.csv,row_count,15000,15000,PASS
+04_failure_event_history.csv,row_count,15000,15000,PASS
+05_defect_history.csv,row_count,15000,15000,PASS
+06_maintenance_tasks.csv,row_count,15000,15000,PASS
+07_task_actions.csv,row_count,15000,15000,PASS
+08_train_movements.csv,row_count,15000,15000,PASS
+09_block_windows.csv,row_count,15000,15000,PASS
+10_goods_forecast.csv,row_count,15000,15000,PASS
+11_resources.csv,row_count,15000,15000,PASS
+12_task_compatibility.csv,row_count,15000,15000,PASS
+13_task_dependencies.csv,row_count,15000,15000,PASS
+14_ml_predictions.csv,row_count,15000,15000,PASS
+15_schedule_versions.csv,row_count,15000,15000,PASS
+16_optimized_blocks.csv,row_count,15000,15000,PASS
+17_audit_log.csv,row_count,15000,15000,PASS
+18_department_feeds.csv,row_count,15000,15000,PASS
+19_inspections.csv,row_count,15000,15000,PASS
+20_maintenance_history.csv,row_count,15000,15000,PASS
+21_block_tasks.csv,row_count,15000,15000,PASS
+22_route_station_points.csv,row_count,15000,15000,PASS
+23_anomaly_scenario_instances.csv,row_count,15000,15000,PASS
+route,canonical_major_sections,6,6,PASS
+route,planning_start,2026-09-15,2026-09-15,PASS
+route,planning_end,2026-12-15,2026-12-15,PASS
+route,line_directions,UP;DOWN,UP and DOWN,PASS
+assets,unique_asset_types,39,>=20,PASS
+assets,latitude_non_null,15000,15000,PASS
+assets,longitude_non_null,15000,15000,PASS
+failures,unique_failure_types,34,>=25,PASS
+failures,unique_causes,20,>=15,PASS
+tasks,unique_task_types,18,>=12,PASS
+tasks,unique_anomaly_scenarios,29,29,PASS
+compatibility,compatible_pct,38.52,>20%,PASS
+trains,service_categories,EXPRESS;FREIGHT;PASSENGER;RAJDHANI;SPECIAL;VANDE_BHARAT,Passenger/Express/Freight/etc,PASS
+trains,movement_coordinates,section/station-pair mapped,required,PASS
+blocks,availability_statuses,AVAILABLE;CLOSED;RESERVED;RESTRICTED,4,PASS
+goods,confidence_min,0.55,>=0.55,PASS
+goods,confidence_max,0.98,>=0.90 exists,PASS
+resources,status_types,5,5,PASS
+scenario_instances,count,15000,15000,PASS
+governance,synthetic_status,all datasets are synthetic/demo,required disclosure,PASS

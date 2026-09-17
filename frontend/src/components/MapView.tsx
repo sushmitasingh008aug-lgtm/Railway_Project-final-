@@ -28,9 +28,6 @@ import {
   RailwayAsset,
   FailureAlert,
   ActiveTrain,
-  DATASET_SECTIONS,
-  getSectionColor,
-  getDatasetBounds,
 } from '../data/railwayNetwork';
 
 export type MapLayerType = 'all' | 'assets' | 'failures' | 'blocks' | 'trains';
@@ -184,13 +181,13 @@ export const MapView: React.FC<MapViewProps> = ({
     [visibleTasks]
   );
 
-  // Authoritative bounding box — centers on Delhi–Howrah dataset corridor by default
+  // Authoritative bounding box centered on the Indian railway network
   const bounds: [[number, number], [number, number]] = useMemo(() => {
     if (selectedZone === 'NORTH') {
       return [[25.0, 76.0], [29.5, 84.5]];
     }
     if (selectedZone === 'EAST') {
-      return [[21.5, 83.0], [26.5, 89.5]];
+      return [[20.0, 83.0], [26.5, 88.5]];
     }
     if (selectedZone === 'WEST') {
       return [[18.5, 72.0], [28.5, 77.5]];
@@ -198,8 +195,10 @@ export const MapView: React.FC<MapViewProps> = ({
     if (selectedZone === 'SOUTH') {
       return [[12.5, 76.5], [23.5, 82.0]];
     }
-    // Default: zoom to the Delhi–Howrah dataset sections (from 22_route_station_points.csv lat/lon range)
-    return getDatasetBounds();
+    return [
+      [12.5, 72.0],
+      [29.8, 89.0],
+    ];
   }, [selectedZone]);
 
   const showBlocks = currentLayer === 'all' || currentLayer === 'blocks';
@@ -468,62 +467,7 @@ export const MapView: React.FC<MapViewProps> = ({
             </CircleMarker>
           ))}
 
-          {/* 3. DATASET SECTIONS (Delhi–Howrah from engine/data/02_sections.csv) */}
-          {DATASET_SECTIONS.map((sec) => {
-            const color = getSectionColor(sec.zone);
-            return (
-              <React.Fragment key={sec.sectionId}>
-                {/* Section track outline */}
-                <Polyline
-                  positions={[[sec.startLat, sec.startLon], [sec.endLat, sec.endLon]]}
-                  pathOptions={{ color: '#fff', weight: 7, opacity: 0.9 }}
-                />
-                <Polyline
-                  positions={[[sec.startLat, sec.startLon], [sec.endLat, sec.endLon]]}
-                  pathOptions={{ color, weight: 4.5, opacity: 1, dashArray: undefined }}
-                >
-                  <Tooltip sticky>
-                    <div className="text-xs">
-                      <strong className="text-sm font-bold text-[#1F2937]">{sec.sectionId}: {sec.name}</strong><br />
-                      <span className="text-[#667085]">{sec.startStation} ➔ {sec.endStation}</span><br />
-                      <span className="font-semibold text-xs text-[#D96F13]">
-                        {sec.lengthKm.toFixed(1)} km · Zone: {sec.zone} · Div: {sec.division}
-                      </span><br />
-                      <span className="text-[#475467] text-[10px]">Stations: {sec.stationCodes.join(' · ')}</span>
-                    </div>
-                  </Tooltip>
-                </Polyline>
-                {/* Start endpoint */}
-                <CircleMarker
-                  center={[sec.startLat, sec.startLon]}
-                  radius={7}
-                  pathOptions={{ color: '#fff', weight: 2, fillColor: color, fillOpacity: 1 }}
-                >
-                  <Tooltip>
-                    <div className="text-xs">
-                      <strong>{sec.startStation}</strong><br />
-                      {sec.sectionId} Start · {sec.zone}
-                    </div>
-                  </Tooltip>
-                </CircleMarker>
-                {/* End endpoint */}
-                <CircleMarker
-                  center={[sec.endLat, sec.endLon]}
-                  radius={7}
-                  pathOptions={{ color: '#fff', weight: 2, fillColor: color, fillOpacity: 1 }}
-                >
-                  <Tooltip>
-                    <div className="text-xs">
-                      <strong>{sec.endStation}</strong><br />
-                      {sec.sectionId} End · {sec.zone}
-                    </div>
-                  </Tooltip>
-                </CircleMarker>
-              </React.Fragment>
-            );
-          })}
-
-          {/* 4. LAYER: Assets (Substations, Interlocking, Turnouts) */}
+          {/* 3. LAYER: Assets (Substations, Interlocking, Turnouts) */}
           {showAssets &&
             visibleAssets.map((asset) => {
               const color = DEPT_COLORS[asset.department] || '#1d4ed8';

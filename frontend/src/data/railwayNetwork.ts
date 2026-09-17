@@ -1,6 +1,5 @@
 // Authoritative Indian Railways Track Network and Deterministic GIS Snapping Engine
 // Conforms strictly to Indian Railways operational infrastructure, Golden Quadrilateral, and HDN corridors.
-// DATASET v4.1: Updated from engine/data/02_sections.csv and engine/data/22_route_station_points.csv (15K rows)
 
 export interface StationNode {
   code: string;
@@ -22,124 +21,6 @@ export interface RailCorridor {
   endStation: string;
   lengthKm: number;
   coordinates: [number, number][];
-}
-
-// ── DATASET-DRIVEN SECTION DEFINITIONS (from 02_sections.csv + 22_route_station_points.csv) ──
-// 6 sections on Delhi–Howrah planning corridor with real lat/lon from operational dataset v4.1
-export interface DatasetSection {
-  sectionId: string;
-  name: string;
-  corridorId: string;
-  startStation: string;
-  endStation: string;
-  startLat: number;
-  startLon: number;
-  endLat: number;
-  endLon: number;
-  lengthKm: number;
-  zone: string;
-  division: string;
-  stationCodes: string[];
-}
-
-export const DATASET_SECTIONS: DatasetSection[] = [
-  {
-    sectionId: 'SEC-DH-01',
-    name: 'Delhi – Kanpur',
-    corridorId: 'COR-DH-01',
-    startStation: 'New Delhi',
-    endStation: 'Kanpur Central',
-    startLat: 28.6431, startLon: 77.2195,
-    endLat: 26.4499, endLon: 80.3319,
-    lengthKm: 461.0,
-    zone: 'NR/NCR', division: 'Delhi/Prayagraj',
-    stationCodes: ['NDLS','GZB','ALJN','TDL','FZD','ETW','CNB'],
-  },
-  {
-    sectionId: 'SEC-DH-02',
-    name: 'Kanpur – DDU',
-    corridorId: 'COR-DH-02',
-    startStation: 'Kanpur Central',
-    endStation: 'Pt. Deen Dayal Upadhyaya Junction',
-    startLat: 26.4499, startLon: 80.3319,
-    endLat: 25.2766, endLon: 83.1192,
-    lengthKm: 329.82,
-    zone: 'NCR', division: 'Prayagraj',
-    stationCodes: ['CNB','FTP','PRYJ','MZP','DDU'],
-  },
-  {
-    sectionId: 'SEC-DH-03',
-    name: 'DDU – Patna',
-    corridorId: 'COR-DH-03',
-    startStation: 'Pt. Deen Dayal Upadhyaya Junction',
-    endStation: 'Patna Junction',
-    startLat: 25.2766, startLon: 83.1192,
-    endLat: 25.5941, endLon: 85.1376,
-    lengthKm: 208.58,
-    zone: 'ECR', division: 'DDU/Danapur',
-    stationCodes: ['DDU','BXR','ARA','DNR','PNBE'],
-  },
-  {
-    sectionId: 'SEC-DH-04',
-    name: 'Patna – Asansol',
-    corridorId: 'COR-DH-04',
-    startStation: 'Patna Junction',
-    endStation: 'Asansol Junction',
-    startLat: 25.5941, startLon: 85.1376,
-    endLat: 23.6911, endLon: 86.9748,
-    lengthKm: 302.34,
-    zone: 'ECR/ER', division: 'Danapur/Asansol',
-    stationCodes: ['PNBE','MKA','KIUL','JMU','JAJ','ASN'],
-  },
-  {
-    sectionId: 'SEC-DH-05',
-    name: 'Asansol – Bardhaman',
-    corridorId: 'COR-DH-05',
-    startStation: 'Asansol Junction',
-    endStation: 'Bardhaman Junction',
-    startLat: 23.6911, startLon: 86.9748,
-    endLat: 23.2324, endLon: 87.8615,
-    lengthKm: 103.84,
-    zone: 'ER', division: 'Asansol',
-    stationCodes: ['ASN','RNG','DGR','BWN'],
-  },
-  {
-    sectionId: 'SEC-DH-06',
-    name: 'Bardhaman – Howrah',
-    corridorId: 'COR-DH-06',
-    startStation: 'Bardhaman Junction',
-    endStation: 'Howrah Junction',
-    startLat: 23.2324, startLon: 87.8615,
-    endLat: 22.5833, endLon: 88.3423,
-    lengthKm: 124.78,
-    zone: 'ER', division: 'Howrah',
-    stationCodes: ['BWN','BDC','DKAE','HWH'],
-  },
-];
-
-// Helper: build Leaflet polyline coordinates for a dataset section (interpolated)
-export function sectionToPolyline(sec: DatasetSection): [number, number][] {
-  return [[sec.startLat, sec.startLon], [sec.endLat, sec.endLon]];
-}
-
-// Helper: get map bounds for all dataset sections
-export function getDatasetBounds(): [[number, number], [number, number]] {
-  const lats = DATASET_SECTIONS.flatMap(s => [s.startLat, s.endLat]);
-  const lons = DATASET_SECTIONS.flatMap(s => [s.startLon, s.endLon]);
-  return [
-    [Math.min(...lats) - 0.5, Math.min(...lons) - 0.5],
-    [Math.max(...lats) + 0.5, Math.max(...lons) + 0.5],
-  ];
-}
-
-// Helper: get section color by zone
-export function getSectionColor(zone: string): string {
-  const colors: Record<string, string> = {
-    'NR': '#E53E3E', 'NCR': '#DD6B20', 'NR/NCR': '#E53E3E',
-    'ECR': '#38A169', 'ECR/ER': '#38A169',
-    'ER': '#3182CE',
-  };
-  return colors[zone] ?? '#718096';
 }
 
 // 1. Canonical Indian Railways Stations across all 25 Divisions
@@ -530,6 +411,22 @@ const DIVISION_TO_CORRIDOR: Record<string, string> = {
   AII: 'TRK_DEL_JP_AII_ADI',
 };
 
+// Section ID and Corridor ID lookup mapping to specific corridor tracks
+const SECTION_TO_CORRIDOR: Record<string, string> = {
+  'SEC-DH-01': 'TRK_GZB_CNB',
+  'SEC-DH-02': 'TRK_CNB_PRYJ',
+  'SEC-DH-03': 'TRK_DDU_PNBE',
+  'SEC-DH-04': 'TRK_DDU_GAYA_HWH',
+  'SEC-DH-05': 'TRK_DDU_GAYA_HWH',
+  'SEC-DH-06': 'TRK_DDU_GAYA_HWH',
+  'COR-DH-01': 'TRK_GZB_CNB',
+  'COR-DH-02': 'TRK_CNB_PRYJ',
+  'COR-DH-03': 'TRK_DDU_PNBE',
+  'COR-DH-04': 'TRK_DDU_GAYA_HWH',
+  'COR-DH-05': 'TRK_DDU_GAYA_HWH',
+  'COR-DH-06': 'TRK_DDU_GAYA_HWH',
+};
+
 // Deterministic task fraction (0.05 to 0.95) along track polyline
 export function taskFraction(taskId: string): number {
   let h = 0;
@@ -591,18 +488,39 @@ export function snapTaskToRailTrack(
     lon?: number;
   }
 ): { lat: number; lon: number; division: string; trackName: string } {
-  // 1. Detect division code from section_name (e.g. 'Section 0043 NDLS' -> 'NDLS')
+  // If task has valid real-world coordinates from the database, preserve and return them
+  if (task.lat && task.lon && task.lat > 10 && task.lon > 60) {
+    return {
+      lat: Math.round(task.lat * 1000000) / 1000000,
+      lon: Math.round(task.lon * 1000000) / 1000000,
+      division: task.section_id || 'MAIN',
+      trackName: task.section_name || task.section_id || 'Operational Section Track',
+    };
+  }
+
+  // 1. Direct section / corridor ID mapping
+  let trackId = '';
+  if (task.section_id && SECTION_TO_CORRIDOR[task.section_id]) {
+    trackId = SECTION_TO_CORRIDOR[task.section_id];
+  } else if (task.corridor_id && SECTION_TO_CORRIDOR[task.corridor_id]) {
+    trackId = SECTION_TO_CORRIDOR[task.corridor_id];
+  }
+
+  // 2. Detect division code from section_name (e.g. 'Section 0043 NDLS' -> 'NDLS')
   let divCode = 'NDLS';
   if (task.section_name) {
     const parts = task.section_name.trim().split(/\s+/);
     const last = parts[parts.length - 1].toUpperCase();
     if (DIVISION_TO_CORRIDOR[last]) {
       divCode = last;
+      if (!trackId) trackId = DIVISION_TO_CORRIDOR[last];
     }
   }
 
-  // 2. Select matching corridor track
-  const trackId = DIVISION_TO_CORRIDOR[divCode] || 'TRK_NDLS_GZB';
+  if (!trackId) {
+    trackId = DIVISION_TO_CORRIDOR[divCode] || 'TRK_NDLS_GZB';
+  }
+
   const corridor = RAIL_CORRIDORS.find((c) => c.id === trackId) || RAIL_CORRIDORS[0];
 
   // 3. Position along track polyline

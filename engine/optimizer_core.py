@@ -49,8 +49,20 @@ from coordination_engine import generate_shadow_block_candidates, evaluate_pair_
 from validator import validate_plan
 
 SCHEDULE_CSV = os.path.join(BASE_DIR, 'optimized_schedule.csv')
-PLAN_BASE_TIME = datetime(2026, 8, 23, 0, 0, 0)
+PLAN_BASE_TIME = datetime(2026, 9, 15, 0, 0, 0)
 HEADWAY_BUFFER_MIN = 10  # 10-minute safe headway buffer before and after train passings
+
+def get_plan_base_time(engine=None):
+    if engine is not None:
+        try:
+            with engine.connect() as conn:
+                row = conn.execute(text("SELECT min(entry_time) FROM train_movements")).first()
+                if row and row[0]:
+                    dt = pd.to_datetime(row[0])
+                    return datetime(dt.year, dt.month, dt.day, 0, 0, 0)
+        except Exception:
+            pass
+    return datetime(2026, 9, 15, 0, 0, 0)
 
 def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
     engine = get_db_engine() if db_url is None else sqlalchemy.create_engine(db_url)
@@ -59,7 +71,7 @@ def time_aware_optimizer(db_url=None, horizon_days=7, max_solver_time=30.0):
     print(f"🚀 EXECUTING BLOCK-CENTRIC CP-SAT OPTIMIZER v2 ({horizon_days}-DAY HORIZON)")
     print("=" * 75)
 
-    base_time = PLAN_BASE_TIME
+    base_time = get_plan_base_time(engine)
     horizon_end = base_time + timedelta(days=int(horizon_days))
     max_horizon_minutes = int(horizon_days) * 24 * 60
 

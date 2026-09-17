@@ -422,7 +422,40 @@ CREATE TABLE IF NOT EXISTS data_ingestion_runs (
     notes TEXT
 );
 
--- Performance Indexes for 12K Queries
+-- 24. ROUTE_STATION_POINTS (Detailed Geospatial Track Waypoints & Anchors)
+CREATE TABLE IF NOT EXISTS route_station_points (
+    route_point_id VARCHAR(60) PRIMARY KEY,
+    route_variant VARCHAR(50),
+    section_id VARCHAR(50),
+    corridor_id VARCHAR(50),
+    from_station_code VARCHAR(20),
+    to_station_code VARCHAR(20),
+    from_station_name VARCHAR(100),
+    to_station_name VARCHAR(100),
+    chainage_from_segment_km DECIMAL(8,3),
+    direction VARCHAR(10),
+    latitude DECIMAL(9,6),
+    longitude DECIMAL(9,6),
+    coordinate_quality VARCHAR(50),
+    source_basis VARCHAR(100)
+);
+
+-- 25. ANOMALY_SCENARIO_INSTANCES (Point-in-Time Field Anomaly Occurrences)
+CREATE TABLE IF NOT EXISTS anomaly_scenario_instances (
+    scenario_instance_id VARCHAR(60) PRIMARY KEY,
+    anomaly_scenario VARCHAR(120),
+    department VARCHAR(50),
+    recommended_task_type VARCHAR(100),
+    recommended_action VARCHAR(200),
+    planning_handling VARCHAR(100),
+    section_id VARCHAR(50),
+    corridor_id VARCHAR(50),
+    line_direction VARCHAR(20),
+    scenario_date DATE,
+    severity VARCHAR(30)
+);
+
+-- Performance Indexes for 15K Queries
 CREATE INDEX IF NOT EXISTS idx_assets_dept_sec ON assets(department, section_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_sec_prio ON maintenance_tasks(section_id, priority_score);
 CREATE INDEX IF NOT EXISTS idx_tasks_status ON maintenance_tasks(status);
@@ -431,6 +464,8 @@ CREATE INDEX IF NOT EXISTS idx_trains_sec_entry ON train_movements(section_id, e
 CREATE INDEX IF NOT EXISTS idx_blocks_sec_time ON block_windows(section_id, start_time);
 CREATE INDEX IF NOT EXISTS idx_compat_tasks ON task_compatibility(task_id_1, task_id_2);
 CREATE INDEX IF NOT EXISTS idx_actions_task ON task_actions(task_id, sequence_order);
+CREATE INDEX IF NOT EXISTS idx_route_pts_sec ON route_station_points(section_id);
+CREATE INDEX IF NOT EXISTS idx_anomaly_inst_sec ON anomaly_scenario_instances(section_id);
 
 -- CANONICAL UPPERCASE GOVERNMENT VIEWS (Blueprint v2 Section 09)
 -- Portable DROP+CREATE pattern (works on SQLite and PostgreSQL; neither

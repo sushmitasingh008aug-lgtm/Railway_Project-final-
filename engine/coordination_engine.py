@@ -238,6 +238,9 @@ def generate_shadow_block_candidates(tasks: list[dict]) -> list[dict]:
         if len(sec_tasks) < 2:
             continue
 
+        # Sort tasks by priority to evaluate highest-value multi-department bundles first
+        sec_tasks = sorted(sec_tasks, key=lambda x: float(x.get('priority_score') or 0.0), reverse=True)[:50]
+
         # Evaluate pairs to find dense multi-department cliques
         compatible_pairs = []
         for i in range(len(sec_tasks)):

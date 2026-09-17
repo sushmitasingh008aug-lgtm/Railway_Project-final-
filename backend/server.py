@@ -30,7 +30,7 @@ if not os.path.isdir(FRONTEND_DIST):
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-PLAN_BASE_TIME = datetime(2026, 8, 23, 0, 0, 0)
+PLAN_BASE_TIME = datetime(2026, 9, 15, 0, 0, 0)
 SCHEDULE_CSV = os.path.join(ENGINE_DIR, 'optimized_schedule.csv')
 
 # Background solver state
@@ -81,7 +81,9 @@ def load_schedule_tasks():
                     "assigned_start_time": str(row.get('assigned_start_time', '')),
                     "assigned_end_time": str(row.get('assigned_end_time', '')),
                     "combined_group_id": str(row.get('combined_group_id', '')),
-                    "affects_line": str(row.get('affects_line', 'BOTH') or 'BOTH')
+                    "affects_line": str(row.get('affects_line', 'BOTH') or 'BOTH'),
+                    "lat": float(row.get('lat') or row.get('location_lat') or 0.0),
+                    "lon": float(row.get('lon') or row.get('location_lon') or 0.0)
                 })
             return tasks
     except Exception as e:
@@ -108,7 +110,9 @@ def load_schedule_tasks():
                 "assigned_start_time": str(row.get('assigned_start_time', '')),
                 "assigned_end_time": str(row.get('assigned_end_time', '')),
                 "combined_group_id": str(row.get('combined_group_id', '')),
-                "affects_line": str(row.get('affects_line', 'BOTH') or 'BOTH')
+                "affects_line": str(row.get('affects_line', 'BOTH') or 'BOTH'),
+                "lat": float(row.get('lat') or row.get('location_lat') or 0.0),
+                "lon": float(row.get('lon') or row.get('location_lon') or 0.0)
             })
         return tasks
     except Exception as e:
@@ -261,7 +265,7 @@ def get_tasks():
     where = []
     params = {}
     if overdue_only and str(overdue_only).lower() in ('true', '1', 'yes'):
-        where.append("mt.due_date < '2026-08-23'")
+        where.append("mt.due_date < '2026-09-15'")
     if dept:
         where.append("a.department = :dept")
         params["dept"] = dept
@@ -275,34 +279,35 @@ def get_tasks():
         where.append("mt.status = :st")
         params["st"] = status
     if search:
-        where.append("(mt.task_id LIKE :q OR mt.task_type LIKE :q OR a.asset_id LIKE :q)")
-        params["q"] = f"%{search}%"
+        where.append("(mt.task_id LIKE :srch OR a.asset_id LIKE :srch OR mt.task_type LIKE :srch)")
+        params["srch"] = f"%{search}%"
         
     where_sql = ("WHERE " + " AND ".join(where)) if where else ""
     
     try:
-        if page is not None:
-            count_sql = f"""
-                SELECT COUNT(*) 
-                FROM maintenance_tasks mt
-                JOIN assets a ON mt.asset_id = a.asset_id
-                JOIN sections s ON a.section_id = s.section_id
-                {where_sql}
-            """
-            total = pd.read_sql(sql_text(count_sql), engine, params=params).iloc[0, 0]
+        # Total count query for pagination
+        count_q = f"""
+            SELECT COUNT(*) 
+            FROM maintenance_tasks mt
+            JOIN assets a ON mt.asset_id = a.asset_id
+            JOIN sections s ON a.section_id = s.section_id
+            {where_sql}
+        """
+        with engine.connect() as conn:
+            total = conn.execute(sql_text(count_q), params).scalar() or 0
+
+        # Paginated data query
+        limit_sql = ""
+        if page is not None and page_size is not None:
             offset = (page - 1) * page_size
-            params["lim"] = page_size
-            params["off"] = offset
-            limit_sql = "LIMIT :lim OFFSET :off"
-        else:
-            total = 250
-            params["lim"] = 250
-            limit_sql = "LIMIT :lim"
-            
+            limit_sql = f"LIMIT {page_size} OFFSET {offset}"
+
         q = f"""
-            SELECT mt.task_id, mt.task_type, mt.criticality, mt.due_date, mt.duration_minutes, 
-                   COALESCE(mt.priority_score, 0) as priority_score, mt.status, mt.urgency, mt.safety_impact,
-                   mt.isolation_requirement, a.department, a.asset_id, s.section_id, s.name as section_name
+            SELECT mt.task_id, mt.task_type, mt.criticality, mt.duration_minutes, mt.priority_score,
+                   mt.status, mt.due_date,
+                   COALESCE(mt.affects_line, 'BOTH') AS affects_line,
+                   a.asset_id, a.department, a.section_id, s.name as section_name,
+                   a.location_lat, a.location_lon
             FROM maintenance_tasks mt
             JOIN assets a ON mt.asset_id = a.asset_id
             JOIN sections s ON a.section_id = s.section_id
@@ -311,8 +316,8 @@ def get_tasks():
             {limit_sql}
         """
         df = pd.read_sql(sql_text(q), engine, params=params)
-        # Compute days_overdue and is_overdue against 2026-08-23 plan reference date
-        ref_date = datetime(2026, 8, 23)
+        # Compute days_overdue and is_overdue against plan reference date
+        ref_date = PLAN_BASE_TIME
         due_dts = pd.to_datetime(df['due_date'], errors='coerce')
         diff_days = (ref_date - due_dts).dt.total_seconds() / 86400.0
         df['days_overdue'] = np.maximum(0.0, np.round(diff_days.fillna(0.0), 1))

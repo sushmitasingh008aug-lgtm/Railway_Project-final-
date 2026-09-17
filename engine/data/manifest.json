@@ -1,0 +1,133 @@
+{
+  "generated_at": "2026-09-17T14:04:22",
+  "planning_start": "2026-09-15",
+  "planning_end": "2026-12-15",
+  "seed": 20260917,
+  "datasets": [
+    {
+      "file": "01_corridors.csv",
+      "rows": 15000,
+      "bytes": 2471592
+    },
+    {
+      "file": "02_sections.csv",
+      "rows": 15000,
+      "bytes": 3001399
+    },
+    {
+      "file": "03_assets.csv",
+      "rows": 15000,
+      "bytes": 3326515
+    },
+    {
+      "file": "04_failure_event_history.csv",
+      "rows": 15000,
+      "bytes": 9074687
+    },
+    {
+      "file": "05_defect_history.csv",
+      "rows": 15000,
+      "bytes": 2776002
+    },
+    {
+      "file": "06_maintenance_tasks.csv",
+      "rows": 15000,
+      "bytes": 4378145
+    },
+    {
+      "file": "07_task_actions.csv",
+      "rows": 15000,
+      "bytes": 1482444
+    },
+    {
+      "file": "08_train_movements.csv",
+      "rows": 15000,
+      "bytes": 4162473
+    },
+    {
+      "file": "09_block_windows.csv",
+      "rows": 15000,
+      "bytes": 3033808
+    },
+    {
+      "file": "10_goods_forecast.csv",
+      "rows": 15000,
+      "bytes": 1988304
+    },
+    {
+      "file": "11_resources.csv",
+      "rows": 15000,
+      "bytes": 1892941
+    },
+    {
+      "file": "12_task_compatibility.csv",
+      "rows": 15000,
+      "bytes": 2029064
+    },
+    {
+      "file": "13_task_dependencies.csv",
+      "rows": 15000,
+      "bytes": 918188
+    },
+    {
+      "file": "14_ml_predictions.csv",
+      "rows": 15000,
+      "bytes": 6509889
+    },
+    {
+      "file": "15_schedule_versions.csv",
+      "rows": 15000,
+      "bytes": 1316016
+    },
+    {
+      "file": "16_optimized_blocks.csv",
+      "rows": 15000,
+      "bytes": 3926756
+    },
+    {
+      "file": "17_audit_log.csv",
+      "rows": 15000,
+      "bytes": 3683952
+    },
+    {
+      "file": "18_department_feeds.csv",
+      "rows": 15000,
+      "bytes": 1339129
+    },
+    {
+      "file": "19_inspections.csv",
+      "rows": 15000,
+      "bytes": 1850171
+    },
+    {
+      "file": "20_maintenance_history.csv",
+      "rows": 15000,
+      "bytes": 3312035
+    },
+    {
+      "file": "21_block_tasks.csv",
+      "rows": 15000,
+      "bytes": 594025
+    },
+    {
+      "file": "22_route_station_points.csv",
+      "rows": 15000,
+      "bytes": 2490816
+    },
+    {
+      "file": "23_anomaly_scenario_instances.csv",
+      "rows": 15000,
+      "bytes": 1894174
+    },
+    {
+      "file": "24_anomaly_task_catalog.csv",
+      "rows": 29,
+      "bytes": 5992
+    },
+    {
+      "file": "25_coverage_report.csv",
+      "rows": 33,
+      "bytes": 2597
+    }
+  ]
+}

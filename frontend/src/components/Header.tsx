@@ -5,13 +5,17 @@ import { ViewType } from './Sidebar';
 interface HeaderProps {
   onToggleSidebar?: () => void;
   onNavigate?: (view: ViewType) => void;
+  horizonDays?: number;
+  onHorizonChange?: (days: number) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
+export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate, horizonDays = 7, onHorizonChange }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showSimTooltip, setShowSimTooltip] = useState(false);
-  const [selectedRange, setSelectedRange] = useState('Weekly · 23 – 30 Aug 2026');
+  const [selectedRange, setSelectedRange] = useState(
+    horizonDays === 30 ? 'Monthly · 23 Aug – 22 Sep 2026' : 'Weekly · 23 – 30 Aug 2026 (Active Horizon)'
+  );
 
   const ranges = [
     'Weekly · 23 – 30 Aug 2026 (Active Horizon)',
@@ -113,6 +117,8 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) =
                     onClick={() => {
                       setSelectedRange(r);
                       setShowDatePicker(false);
+                      const days = r.includes('Monthly') ? 30 : 7;
+                      onHorizonChange?.(days);
                       if (onNavigate) onNavigate('block_planner');
                     }}
                     className={`w-full text-left px-3 py-2 text-xs rounded-lg transition flex items-center justify-between ${

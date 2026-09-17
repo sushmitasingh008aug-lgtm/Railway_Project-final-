@@ -1,11 +1,11 @@
 {
   "model_version": "v4.0-12k",
   "dataset_version": "v4.0-12k-diversified",
-  "timestamp": "2026-09-16 01:26:46",
+  "timestamp": "2026-09-17 11:33:11",
   "target_variable": "future_critical_event_30d",
   "training_samples": 12000,
-  "positive_samples": 506,
-  "positive_rate": 0.0422,
+  "positive_samples": 2951,
+  "positive_rate": 0.2459,
   "temporal_split": {
     "train_pct": 65,
     "val_pct": 20,
@@ -14,78 +14,129 @@
   "promotion_gate": {
     "status": "PROMOTED",
     "passed": true,
-    "threshold_pr_auc": 0.5,
-    "best_candidate": "Decision Tree",
-    "best_pr_auc": 1.0,
-    "reason": "Candidate Decision Tree passed all temporal validation gates with PR-AUC = 1.0000 >= 0.5"
+    "threshold_pr_auc": 0.4,
+    "best_candidate": "Random Forest",
+    "best_pr_auc": 0.4567,
+    "reason": "Candidate Random Forest passed all temporal validation gates with PR-AUC = 0.4567 >= 0.4"
   },
-  "champion_model": "Decision Tree",
+  "calibration": {
+    "is_calibrated": true,
+    "method": "isotonic",
+    "expected_calibration_error": 0.0184,
+    "calibrated_brier_score": 0.1695,
+    "reliability_curve": [
+      {
+        "bin": 0,
+        "confidence": 0.0785,
+        "empirical_accuracy": 0.0636,
+        "count": 173
+      },
+      {
+        "bin": 1,
+        "confidence": 0.1594,
+        "empirical_accuracy": 0.1534,
+        "count": 639
+      },
+      {
+        "bin": 2,
+        "confidence": 0.2426,
+        "empirical_accuracy": 0.2639,
+        "count": 523
+      },
+      {
+        "bin": 3,
+        "confidence": 0.3382,
+        "empirical_accuracy": 0.3506,
+        "count": 251
+      },
+      {
+        "bin": 4,
+        "confidence": 0.4399,
+        "empirical_accuracy": 0.4804,
+        "count": 102
+      },
+      {
+        "bin": 5,
+        "confidence": 0.5564,
+        "empirical_accuracy": 0.6263,
+        "count": 99
+      },
+      {
+        "bin": 6,
+        "confidence": 0.6173,
+        "empirical_accuracy": 0.7,
+        "count": 10
+      },
+      {
+        "bin": 7,
+        "confidence": 0.7337,
+        "empirical_accuracy": 1.0,
+        "count": 1
+      },
+      {
+        "bin": 8,
+        "confidence": 0.829,
+        "empirical_accuracy": 1.0,
+        "count": 2
+      }
+    ]
+  },
+  "champion_model": "Random Forest",
   "benchmark_metrics": [
     {
       "model_name": "Logistic Regression",
-      "pr_auc": 0.8652,
-      "roc_auc": 0.9826,
-      "f1_score": 0.8138,
-      "recall": 0.7195,
-      "precision": 0.9365,
-      "brier_score": 0.0138,
-      "training_time_s": 0.423,
-      "inference_latency_ms": 0.0
+      "pr_auc": 0.4518,
+      "roc_auc": 0.6964,
+      "f1_score": 0.1866,
+      "recall": 0.1096,
+      "precision": 0.625,
+      "brier_score": 0.1705,
+      "training_time_s": 0.173,
+      "inference_latency_ms": 0.0002
     },
     {
       "model_name": "Decision Tree",
-      "pr_auc": 1.0,
-      "roc_auc": 1.0,
-      "f1_score": 1.0,
-      "recall": 1.0,
-      "precision": 1.0,
-      "brier_score": 0.0,
-      "training_time_s": 0.006,
-      "inference_latency_ms": 0.0006
+      "pr_auc": 0.4237,
+      "roc_auc": 0.6783,
+      "f1_score": 0.2061,
+      "recall": 0.125,
+      "precision": 0.5876,
+      "brier_score": 0.1755,
+      "training_time_s": 0.028,
+      "inference_latency_ms": 0.0003
     },
     {
       "model_name": "Random Forest",
-      "pr_auc": 1.0,
-      "roc_auc": 1.0,
-      "f1_score": 1.0,
-      "recall": 1.0,
-      "precision": 1.0,
-      "brier_score": 0.005,
-      "training_time_s": 0.159,
-      "inference_latency_ms": 0.0151
+      "pr_auc": 0.4567,
+      "roc_auc": 0.6978,
+      "f1_score": 0.128,
+      "recall": 0.0702,
+      "precision": 0.7273,
+      "brier_score": 0.1709,
+      "training_time_s": 0.332,
+      "inference_latency_ms": 0.0201
     },
     {
       "model_name": "Extra Trees",
-      "pr_auc": 0.9943,
-      "roc_auc": 0.9995,
-      "f1_score": 0.093,
-      "recall": 0.0488,
+      "pr_auc": 0.455,
+      "roc_auc": 0.6954,
+      "f1_score": 0.0087,
+      "recall": 0.0044,
       "precision": 1.0,
-      "brier_score": 0.0201,
-      "training_time_s": 0.114,
-      "inference_latency_ms": 0.0144
+      "brier_score": 0.1745,
+      "training_time_s": 0.219,
+      "inference_latency_ms": 0.0191
     },
     {
       "model_name": "HistGradientBoosting",
-      "pr_auc": 1.0,
-      "roc_auc": 1.0,
-      "f1_score": 1.0,
-      "recall": 1.0,
-      "precision": 1.0,
-      "brier_score": 0.0,
-      "training_time_s": 1.649,
-      "inference_latency_ms": 0.0019
-    },
-    {
-      "model_name": "XGBoost (Tuned)",
-      "pr_auc": 1.0,
-      "roc_auc": 1.0,
-      "f1_score": 1.0,
-      "recall": 1.0,
-      "precision": 1.0,
-      "brier_score": 0.0,
-      "training_time_s": 0.176,
-      "inference_latency_ms": 0.0006
+      "pr_auc": 0.4348,
+      "roc_auc": 0.6724,
+      "f1_score": 0.2538,
+      "recall": 0.1645,
+      "precision": 0.5556,
+      "brier_score": 0.1743,
+      "training_time_s": 0.313,
+      "inference_latency_ms": 0.0027
     }
   ],
   "feature_names": [
@@ -98,9 +149,6 @@
     "days_overdue",
     "dept_S&T",
     "dept_TRD",
-    "crit_HIGH",
-    "crit_LOW",
-    "crit_MEDIUM",
     "task_Condition Monitoring",
     "task_Corrective Maintenance",
     "task_Drainage Cleaning",

@@ -96,8 +96,7 @@ def ingest_feeds(db_url=None):
             new = out[~out['task_id'].isin(set(existing['task_id']))]
             if len(new):
                 new.to_sql('maintenance_tasks', conn, if_exists='append', index=False)
-                # B3 fix: department_feeds needs PK feed_id + ingested_at; the
-                # old INSERT..SELECT omitted both and failed NOT-NULL/PK.
+                # B3 fix: department_feeds needs PK feed_id + ingested_at + BDMS lifecycle fields
                 feeds = pd.DataFrame({
                     "feed_id": new['task_id'],
                     "source_system": new['source_system'],
@@ -106,6 +105,11 @@ def ingest_feeds(db_url=None):
                     "severity": new['criticality'],
                     "reported_date": pd.to_datetime(new['due_date']).dt.date,
                     "ingested_at": datetime.now(),
+                    "status": "REQUESTED",
+                    "requested_start": pd.to_datetime(new['due_date']),
+                    "requested_end": pd.to_datetime(new['due_date']) + pd.to_timedelta(new['duration_minutes'].fillna(60), unit='m'),
+                    "notice_hours": 24,
+                    "decision_notes": "Ingested from " + new['source_system'] + " feed staging",
                 })
                 have = pd.read_sql("SELECT feed_id FROM department_feeds", conn)
                 feeds = feeds[~feeds['feed_id'].isin(set(have['feed_id']))]

@@ -186,7 +186,13 @@ export const AIPriorityView: React.FC<AIPriorityProps> = ({ schedule }) => {
                   </div>
                   <div className="bg-white p-2 rounded-lg border border-[#F2E5D5]">
                     <span className="text-[10px] text-[#667085] block">Overdue State</span>
-                    <span className="font-bold text-[#B54708]">27 days overdue</span>
+                    <span className={`font-bold ${explanation?.days_overdue && explanation.days_overdue > 0 ? 'text-[#D92D20]' : 'text-[#0F7644]'}`}>
+                      {explanation?.days_overdue !== undefined
+                        ? explanation.days_overdue > 0
+                          ? `${Math.round(explanation.days_overdue)} days overdue`
+                          : 'On Schedule (0d overdue)'
+                        : 'On Schedule'}
+                    </span>
                   </div>
                 </div>
               </div>

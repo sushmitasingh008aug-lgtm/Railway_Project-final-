@@ -5,9 +5,10 @@ import { ScheduledTask, Section } from '../api/client';
 interface WeeklyMonthlyProps {
   schedule: ScheduledTask[];
   sections: Section[];
+  onHorizonChange?: (days: number) => void;
 }
 
-export const WeeklyMonthlyView: React.FC<WeeklyMonthlyProps> = ({ schedule, sections }) => {
+export const WeeklyMonthlyView: React.FC<WeeklyMonthlyProps> = ({ schedule, sections, onHorizonChange }) => {
   const [horizonMode, setHorizonMode] = useState<'WEEKLY' | 'MONTHLY'>('WEEKLY');
   const [deptFilter, setDeptFilter] = useState<string>('ALL');
 
@@ -40,7 +41,10 @@ export const WeeklyMonthlyView: React.FC<WeeklyMonthlyProps> = ({ schedule, sect
         <div className="flex flex-wrap items-center gap-2.5">
           <div className="flex bg-[#F7F7F5] p-1 rounded-xl border border-[#E6E6E6] text-xs font-semibold">
             <button
-              onClick={() => setHorizonMode('WEEKLY')}
+              onClick={() => {
+                setHorizonMode('WEEKLY');
+                onHorizonChange?.(7);
+              }}
               className={`px-3.5 py-1.5 rounded-lg transition-all ${
                 horizonMode === 'WEEKLY'
                   ? 'bg-[#FF9933] text-white shadow-sm font-bold'
@@ -50,7 +54,10 @@ export const WeeklyMonthlyView: React.FC<WeeklyMonthlyProps> = ({ schedule, sect
               Weekly Calendar (7 Days)
             </button>
             <button
-              onClick={() => setHorizonMode('MONTHLY')}
+              onClick={() => {
+                setHorizonMode('MONTHLY');
+                onHorizonChange?.(30);
+              }}
               className={`px-3.5 py-1.5 rounded-lg transition-all ${
                 horizonMode === 'MONTHLY'
                   ? 'bg-[#FF9933] text-white shadow-sm font-bold'
@@ -173,9 +180,15 @@ export const WeeklyMonthlyView: React.FC<WeeklyMonthlyProps> = ({ schedule, sect
                       </td>
 
                       {[0, 1, 2, 3].map(wIdx => {
-                        const count = Math.max(1, Math.round(secTasks.length / 4) + (idx % 2));
+                        const weekTasks = secTasks.filter(t => {
+                          const smin = Number(t.start_minute || 0);
+                          return smin >= wIdx * 10080 && smin < (wIdx + 1) * 10080;
+                        });
+                        const count = weekTasks.length;
+                        const weekMins = weekTasks.reduce((acc, t) => acc + (t.duration_minutes || 0), 0);
+                        const weekHrs = Math.round(weekMins / 60);
                         const isHeavy = count > 5;
-                        const isMod = count > 2;
+                        const isMod = count > 0;
 
                         return (
                           <td key={wIdx} className="py-3 px-4 text-center">
@@ -185,17 +198,17 @@ export const WeeklyMonthlyView: React.FC<WeeklyMonthlyProps> = ({ schedule, sect
                                   ? 'bg-[#FEE4E2] text-[#D92D20] border border-[#FDA29B]'
                                   : isMod
                                   ? 'bg-[#FEF0C7] text-[#B54708] border border-[#FEDF89]'
-                                  : 'bg-[#F6FEF9] text-[#0F7644] border border-[#A6F4C5]'
+                                  : 'bg-[#F7F7F5] text-[#98A2B3] border border-[#E6E6E6]'
                               }`}
                             >
-                              {count * 3}h ({count} blocks)
+                              {count > 0 ? `${weekHrs}h (${count} ${count === 1 ? 'task' : 'tasks'})` : '0h (0 tasks)'}
                             </span>
                           </td>
                         );
                       })}
 
                       <td className="py-3 px-4 text-center font-bold text-[#1F2937] font-mono">
-                        {totalHrs || 18} Hours
+                        {totalHrs} Hours
                       </td>
                     </tr>
                   );

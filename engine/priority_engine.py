@@ -111,12 +111,12 @@ def calculate_task_priority(task_row: dict, plan_time: datetime = None) -> dict:
             override_reason = f"MANDATORY_SAFETY_OVERRIDE: {ttype} requires zero-delay track possession."
         band = 'Critical'
     else:
-        # Final Priority Band
-        if final_score >= 88.0:
+        # Final Priority Band (strictly partitioned per MATHEMATICAL_MODEL_V2.md)
+        if final_score >= 80.0:
             band = 'Critical'
-        elif final_score >= 70.0:
+        elif final_score >= 60.0:
             band = 'High'
-        elif final_score >= 45.0:
+        elif final_score >= 35.0:
             band = 'Medium'
         else:
             band = 'Low'

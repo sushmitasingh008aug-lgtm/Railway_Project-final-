@@ -256,9 +256,12 @@ def get_tasks():
     crit = request.args.get('criticality')
     status = request.args.get('status')
     search = request.args.get('search')
+    overdue_only = request.args.get('overdue_only')
     
     where = []
     params = {}
+    if overdue_only and str(overdue_only).lower() in ('true', '1', 'yes'):
+        where.append("mt.due_date < '2026-08-23'")
     if dept:
         where.append("a.department = :dept")
         params["dept"] = dept
@@ -308,6 +311,12 @@ def get_tasks():
             {limit_sql}
         """
         df = pd.read_sql(sql_text(q), engine, params=params)
+        # Compute days_overdue and is_overdue against 2026-08-23 plan reference date
+        ref_date = datetime(2026, 8, 23)
+        due_dts = pd.to_datetime(df['due_date'], errors='coerce')
+        diff_days = (ref_date - due_dts).dt.total_seconds() / 86400.0
+        df['days_overdue'] = np.maximum(0.0, np.round(diff_days.fillna(0.0), 1))
+        df['is_overdue'] = df['days_overdue'] > 0
         tasks = df.to_dict(orient='records')
         res = {"status": "success", "data": tasks}
         if page is not None:
@@ -567,6 +576,24 @@ def submit_task():
             }])
             df_ins.to_sql("maintenance_tasks", conn, if_exists="append", index=False)
 
+            # Record BDMS feed entry with full lifecycle tracking
+            req_end = due_dt + timedelta(minutes=duration)
+            feed_df = pd.DataFrame([{
+                "feed_id": new_task_id,
+                "source_system": f"BDMS_{dept.upper()}",
+                "asset_id": asset_id,
+                "raw_type": task_type,
+                "severity": criticality,
+                "reported_date": due_dt.strftime("%Y-%m-%d"),
+                "ingested_at": datetime.now(),
+                "status": "REQUESTED",
+                "requested_start": due_dt,
+                "requested_end": req_end,
+                "notice_hours": 24,
+                "decision_notes": f"Submitted via BDMS gateway with score {final_score:.1f}"
+            }])
+            feed_df.to_sql("department_feeds", conn, if_exists="append", index=False)
+
         return jsonify({
             "status": "success",
             "task_id": new_task_id,
@@ -741,7 +768,7 @@ def get_task_explanation(task_id):
                 SELECT p.prediction_id, p.task_id, p.model_version, p.prediction_timestamp,
                        p.risk_probability, p.priority_score, p.safety_override,
                        p.top_positive_features, p.top_negative_features, p.shap_values_json,
-                       mt.task_type, mt.criticality, mt.department, a.asset_id, a.condition_score
+                       mt.task_type, mt.criticality, mt.department, mt.due_date, a.asset_id, a.condition_score
                 FROM ml_predictions p
                 JOIN maintenance_tasks mt ON p.task_id = mt.task_id
                 JOIN assets a ON mt.asset_id = a.asset_id
@@ -750,6 +777,10 @@ def get_task_explanation(task_id):
 
             if row:
                 res = dict(row)
+                due_val = res.get('due_date')
+                diff_days = (datetime(2026, 8, 23) - pd.to_datetime(due_val)).total_seconds() / 86400.0 if due_val else 0.0
+                res['days_overdue'] = max(0.0, round(diff_days, 1))
+                res['is_overdue'] = res['days_overdue'] > 0
                 res['top_positive_features'] = json.loads(res.get('top_positive_features') or '[]')
                 res['top_negative_features'] = json.loads(res.get('top_negative_features') or '[]')
                 res['shap_values'] = json.loads(res.get('shap_values_json') or '{}')
@@ -757,7 +788,7 @@ def get_task_explanation(task_id):
 
             # Graceful dynamic SHAP attribution if not pre-cached
             task_row = conn.execute(sql_text("""
-                SELECT mt.task_id, mt.task_type, mt.criticality, mt.department,
+                SELECT mt.task_id, mt.task_type, mt.criticality, mt.department, mt.due_date,
                        COALESCE(mt.priority_score, 85.0) as priority_score,
                        COALESCE(a.asset_id, 'AST-000001') as asset_id,
                        COALESCE(a.condition_score, 65.0) as condition_score
@@ -772,6 +803,10 @@ def get_task_explanation(task_id):
         dept = task_row['department'] if task_row else 'Engineering'
         ttype = task_row['task_type'] if task_row else 'Weld Repair'
         aid = task_row['asset_id'] if task_row else 'ENG-26264179'
+        due_val = str(task_row['due_date']) if task_row and 'due_date' in task_row else '2026-08-25'
+        diff_days = (datetime(2026, 8, 23) - pd.to_datetime(due_val)).total_seconds() / 86400.0 if due_val else 0.0
+        days_od = max(0.0, round(diff_days, 1))
+        is_od = days_od > 0
 
         res = {
             "prediction_id": f"PRD_{task_id}",
@@ -781,6 +816,9 @@ def get_task_explanation(task_id):
             "department": dept,
             "asset_id": aid,
             "condition_score": cond,
+            "due_date": due_val,
+            "days_overdue": days_od,
+            "is_overdue": is_od,
             "model_version": "v4.0-XGBoost-Calibrated",
             "prediction_timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             "risk_probability": round(min(0.98, max(0.12, prio / 100.0)), 3),
@@ -1032,6 +1070,7 @@ def manage_approvals():
     engine = get_db_engine()
     if request.method == 'POST':
         body = request.get_json() or {}
+        version_id = body.get('version_id')
         status = body.get('status', 'APPROVED').upper()
         supervisor = body.get('supervisor_name', 'Chief Section Controller, BSB')
         remarks = body.get('remarks', 'Block plan approved for live railway dispatch.')
@@ -1040,24 +1079,63 @@ def manage_approvals():
         try:
             with engine.connect() as conn:
                 with conn.begin():
-                    conn.execute(sql_text("""
-                        UPDATE schedule_versions
-                        SET status = :st, approved_by = :sup, approved_at = :at, notes = :notes
-                        WHERE version_id = (SELECT version_id FROM schedule_versions ORDER BY created_at DESC LIMIT 1)
-                    """), {"st": status, "sup": supervisor, "at": now_str, "notes": remarks})
+                    # Optimistic concurrency check: verify version exists and is not already approved
+                    target_vid = version_id
+                    if target_vid:
+                        row = conn.execute(sql_text("SELECT status FROM schedule_versions WHERE version_id = :vid"), {"vid": target_vid}).first()
+                        if not row:
+                            return jsonify({"status": "error", "message": f"Version {target_vid} not found"}), 404
+                        if row[0] == 'APPROVED':
+                            return jsonify({"status": "error", "message": f"Version {target_vid} is already approved (immutable)"}), 409
+                        res = conn.execute(sql_text("""
+                            UPDATE schedule_versions
+                            SET status = :st, approved_by = :sup, approved_at = :at, notes = :notes
+                            WHERE version_id = :vid AND status != 'APPROVED'
+                        """), {"st": status, "sup": supervisor, "at": now_str, "notes": remarks, "vid": target_vid})
+                    else:
+                        latest = conn.execute(sql_text("SELECT version_id, status FROM schedule_versions ORDER BY created_at DESC LIMIT 1")).first()
+                        if not latest:
+                            return jsonify({"status": "error", "message": "No schedule versions available to approve"}), 404
+                        target_vid = latest[0]
+                        if latest[1] == 'APPROVED':
+                            return jsonify({"status": "error", "message": f"Version {target_vid} is already approved"}), 409
+                        res = conn.execute(sql_text("""
+                            UPDATE schedule_versions
+                            SET status = :st, approved_by = :sup, approved_at = :at, notes = :notes
+                            WHERE version_id = :vid AND status != 'APPROVED'
+                        """), {"st": status, "sup": supervisor, "at": now_str, "notes": remarks, "vid": target_vid})
+
+                    if res.rowcount == 0:
+                        return jsonify({"status": "error", "message": "Version was modified or approved concurrently"}), 409
+
+                    # Transition associated BDMS departmental feed requests to APPROVED
+                    if status == 'APPROVED':
+                        try:
+                            conn.execute(sql_text("""
+                                UPDATE department_feeds
+                                SET status = 'APPROVED', decision_notes = :notes
+                                WHERE feed_id IN (SELECT task_id FROM scheduled_tasks WHERE version_id = :vid)
+                            """), {"notes": f"Approved by {supervisor} in plan {target_vid}", "vid": target_vid})
+                        except Exception:
+                            pass
 
                     audit_id = f"AUD_{int(datetime.now().timestamp())}"
                     conn.execute(sql_text("""
                         INSERT INTO audit_log (log_id, event_type, entity_id, timestamp, user_id, details_json, status)
-                        VALUES (:id, 'PLAN_APPROVAL', 'SCHEDULE_LATEST', :ts, :user, :dt, :st)
+                        VALUES (:id, 'PLAN_APPROVAL', :vid, :ts, :user, :dt, :st)
                     """), {
                         "id": audit_id,
+                        "vid": target_vid,
                         "ts": now_str,
                         "user": supervisor,
-                        "dt": json.dumps({"action": status, "remarks": remarks}),
+                        "dt": json.dumps({"action": status, "remarks": remarks, "version_id": target_vid}),
                         "st": status
                     })
-            return jsonify({"status": "success", "message": f"Plan status updated to {status} by {supervisor}"})
+            return jsonify({
+                "status": "success",
+                "version_id": target_vid,
+                "message": f"Plan {target_vid} status updated to {status} by {supervisor}"
+            })
         except Exception as e:
             return jsonify({"status": "error", "message": f"Failed to commit approval: {str(e)}"}), 500
 

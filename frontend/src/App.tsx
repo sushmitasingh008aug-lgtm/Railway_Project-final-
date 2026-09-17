@@ -43,9 +43,10 @@ export function App() {
   const [testStatus, setTestStatus] = useState<TestStatusResponse | null>(null);
   const [impact, setImpact] = useState<ImpactResponse | null>(null);
   const [trains, setTrains] = useState<TrainMovement[]>([]);
+  const [horizonDays, setHorizonDays] = useState<number>(7);
   const [loading, setLoading] = useState(true);
 
-  const fetchAllData = useCallback(async (showLoading = true) => {
+  const fetchAllData = useCallback(async (showLoading = true, days = horizonDays) => {
     try {
       if (showLoading) setLoading(true);
       const [mRes, sRes, secRes, tRes, iRes, trRes, rRes] = await Promise.all([
@@ -53,7 +54,7 @@ export function App() {
         apiClient.get<{ data: ScheduledTask[] }>('/schedule').catch(() => null),
         apiClient.get<{ data: Section[] }>('/sections').catch(() => null),
         apiClient.get<TestStatusResponse>('/tests/status').catch(() => null),
-        apiClient.get<ImpactResponse>('/impact').catch(() => null),
+        apiClient.get<ImpactResponse>(`/impact?horizon_days=${days}`).catch(() => null),
         apiClient.get<{ data: TrainMovement[] }>('/trains').catch(() => null),
         apiClient.get<{ data: SectionRisk[] }>('/sections/risk').catch(() => null),
       ]);
@@ -70,7 +71,7 @@ export function App() {
     } finally {
       if (showLoading) setLoading(false);
     }
-  }, []);
+  }, [horizonDays]);
 
   // Initial fetch
   useEffect(() => {
@@ -98,6 +99,11 @@ export function App() {
         <Header
           onToggleSidebar={() => setIsMobileNavOpen(!isMobileNavOpen)}
           onNavigate={(view: any) => setActiveView(view)}
+          horizonDays={horizonDays}
+          onHorizonChange={(days) => {
+            setHorizonDays(days);
+            fetchAllData(false, days);
+          }}
         />
 
         {/* Dynamic Body Content */}
@@ -110,6 +116,7 @@ export function App() {
               schedule={schedule}
               sections={sections}
               sectionRisks={sectionRisks}
+              trains={trains}
               loading={loading}
               onNavigate={setActiveView}
             />
@@ -135,6 +142,10 @@ export function App() {
             <WeeklyMonthlyView
               schedule={schedule}
               sections={sections}
+              onHorizonChange={(days) => {
+                setHorizonDays(days);
+                fetchAllData(false, days);
+              }}
             />
           )}
 
@@ -234,6 +245,7 @@ export function App() {
             <MapView
               sections={sections}
               schedule={schedule}
+              trains={trains}
             />
           )}
         </main>

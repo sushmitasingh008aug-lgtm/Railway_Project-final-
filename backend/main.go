@@ -520,37 +520,130 @@ func coordinationStats(tasks []ScheduledTask) (groups, disruptionsAvoided, coord
 }
 
 func handleGetTasks(c *fiber.Ctx) error {
-	if len(c.Request().URI().QueryString()) > 0 || db == nil || db.Ping() != nil {
+	if db == nil || db.Ping() != nil {
 		if err := proxyHTTP(c, "/api/tasks"); err == nil {
 			return nil
 		}
+		return fiber.NewError(fiber.StatusServiceUnavailable, "Database unreachable")
 	}
-	rows, err := db.Query(`
-		SELECT mt.task_id, mt.task_type, mt.criticality, mt.due_date, mt.duration_minutes, 
-		       COALESCE(mt.priority_score, 0), mt.status, a.department, a.asset_id, s.section_id, s.name as section_name
+
+	page, _ := strconv.Atoi(c.Query("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.Query("limit", c.Query("page_size", "25")))
+	if limit < 1 {
+		limit = 25
+	}
+	if limit > 250 {
+		limit = 250
+	}
+
+	overdueOnly := c.Query("overdue_only") == "true" || c.Query("overdue_only") == "1"
+	dept := strings.TrimSpace(c.Query("department"))
+	crit := strings.TrimSpace(c.Query("criticality"))
+	sec := strings.TrimSpace(c.Query("section", c.Query("section_id")))
+	search := strings.TrimSpace(c.Query("search"))
+
+	whereClauses := []string{}
+	args := []interface{}{}
+	argIdx := 1
+
+	if overdueOnly {
+		whereClauses = append(whereClauses, "mt.due_date < '2026-08-23'")
+	}
+	if dept != "" && dept != "ALL" {
+		whereClauses = append(whereClauses, fmt.Sprintf("a.department = $%d", argIdx))
+		args = append(args, dept)
+		argIdx++
+	}
+	if crit != "" && crit != "ALL" {
+		whereClauses = append(whereClauses, fmt.Sprintf("mt.criticality = $%d", argIdx))
+		args = append(args, crit)
+		argIdx++
+	}
+	if sec != "" && sec != "ALL" {
+		whereClauses = append(whereClauses, fmt.Sprintf("s.section_id = $%d", argIdx))
+		args = append(args, sec)
+		argIdx++
+	}
+	if search != "" {
+		whereClauses = append(whereClauses, fmt.Sprintf("(mt.task_id ILIKE $%d OR mt.task_type ILIKE $%d OR a.asset_id ILIKE $%d)", argIdx, argIdx, argIdx))
+		args = append(args, "%"+search+"%")
+		argIdx++
+	}
+
+	whereSQL := ""
+	if len(whereClauses) > 0 {
+		whereSQL = "WHERE " + strings.Join(whereClauses, " AND ")
+	}
+
+	countQuery := `
+		SELECT COUNT(*) 
 		FROM maintenance_tasks mt
 		JOIN assets a ON mt.asset_id = a.asset_id
 		JOIN sections s ON a.section_id = s.section_id
+	` + whereSQL
+	var total int
+	err := db.QueryRow(countQuery, args...).Scan(&total)
+	if err != nil {
+		total = 0
+	}
+
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+	if totalPages < 1 {
+		totalPages = 1
+	}
+	offset := (page - 1) * limit
+
+	query := fmt.Sprintf(`
+		SELECT mt.task_id, mt.task_type, mt.criticality, mt.due_date, mt.duration_minutes, 
+		       COALESCE(mt.priority_score, 0), mt.status, a.department, a.asset_id, s.section_id, s.name as section_name,
+		       COALESCE(mt.affects_line, 'BOTH') as affects_line
+		FROM maintenance_tasks mt
+		JOIN assets a ON mt.asset_id = a.asset_id
+		JOIN sections s ON a.section_id = s.section_id
+		%s
 		ORDER BY mt.priority_score DESC
-		LIMIT 250
-	`)
+		LIMIT $%d OFFSET $%d
+	`, whereSQL, argIdx, argIdx+1)
+
+	args = append(args, limit, offset)
+
+	rows, err := db.Query(query, args...)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to query tasks")
 	}
 	defer rows.Close()
 
 	tasks := make([]fiber.Map, 0)
+	planBase := time.Date(2026, 8, 23, 0, 0, 0, 0, time.UTC)
 	for rows.Next() {
-		var tid, taskType, crit, dueDate, status, dept, aid, sid, sname string
+		var tid, taskType, crit, dueDate, status, dept, aid, sid, sname, line string
 		var dur int
 		var pscore float64
 
-		if err := rows.Scan(&tid, &taskType, &crit, &dueDate, &dur, &pscore, &status, &dept, &aid, &sid, &sname); err == nil {
+		if err := rows.Scan(&tid, &taskType, &crit, &dueDate, &dur, &pscore, &status, &dept, &aid, &sid, &sname, &line); err == nil {
+			var daysOverdue float64
+			var isOverdue bool
+			cleanDue := dueDate
+			if len(cleanDue) >= 10 {
+				cleanDue = cleanDue[:10]
+			}
+			if t, err := time.Parse("2006-01-02", cleanDue); err == nil {
+				diffDays := planBase.Sub(t).Hours() / 24.0
+				if diffDays > 0 {
+					daysOverdue = math.Round(diffDays*10) / 10
+					isOverdue = true
+				}
+			}
 			tasks = append(tasks, fiber.Map{
 				"task_id":          tid,
 				"task_type":        taskType,
 				"criticality":      crit,
 				"due_date":         dueDate,
+				"days_overdue":     daysOverdue,
+				"is_overdue":       isOverdue,
 				"duration_minutes": dur,
 				"priority_score":   pscore,
 				"status":           status,
@@ -558,10 +651,18 @@ func handleGetTasks(c *fiber.Ctx) error {
 				"asset_id":         aid,
 				"section_id":       sid,
 				"section_name":     sname,
+				"affects_line":     line,
 			})
 		}
 	}
-	return c.JSON(fiber.Map{"status": "success", "data": tasks})
+	return c.JSON(fiber.Map{
+		"status":      "success",
+		"data":        tasks,
+		"total":       total,
+		"page":        page,
+		"limit":       limit,
+		"total_pages": totalPages,
+	})
 }
 
 func handleGetSections(c *fiber.Ctx) error {
@@ -734,9 +835,11 @@ func handleGetSchedule(c *fiber.Ctx) error {
 				}
 			}
 			for i := range tasks {
-				if p, ok := loc[tasks[i].AssetID]; ok {
-					tasks[i].Lat = p[0]
-					tasks[i].Lon = p[1]
+				if tasks[i].Lat == 0 && tasks[i].Lon == 0 {
+					if p, ok := loc[tasks[i].AssetID]; ok {
+						tasks[i].Lat = p[0]
+						tasks[i].Lon = p[1]
+					}
 				}
 			}
 		}
@@ -1277,7 +1380,8 @@ func handleGetKPIs(c *fiber.Ctx) error {
 
 	baselineEDT, plannedEDT, workMin := 0.0, 0.0, 0
 	for _, b := range baseRows {
-		baselineEDT += (b.risk * 1.25) * mttrHours(b.dept)
+		// Reactive incident delay incorporates baseline failure probability plus emergency dispatch overhead: MTTR * (1 + risk)
+		baselineEDT += mttrHours(b.dept) * (1.0 + b.risk)
 	}
 	groups := make(map[string]bool)
 	for _, t := range planTasks {
@@ -1285,6 +1389,7 @@ func handleGetKPIs(c *fiber.Ctx) error {
 		if v, ok := riskByTask[t.TaskID]; ok {
 			rsk = v
 		}
+		// Scheduled preventive delay = MTTR * risk
 		plannedEDT += rsk * mttrHours(t.Department)
 		workMin += t.DurationMinutes
 		gid := t.CombinedGroupID
@@ -1311,11 +1416,12 @@ func handleGetKPIs(c *fiber.Ctx) error {
 	consolidation := math.Round((float64(blocksSaved)/float64(bBase))*1000) / 10
 	possessionHours := workHours * (float64(bOpt) / float64(bBase))
 	utilization := math.Round(math.Min(100, (workHours/math.Max(1, possessionHours))*1000)) / 10
+	baseUtilization := math.Round(math.Min(100, (workHours/math.Max(1, float64(bBase)*2.0))*1000)) / 10
 
 	return c.JSON(fiber.Map{"status": "success", "source": "buffer-go", "data": fiber.Map{
-		"baseline":    fiber.Map{"total_blocks": bBase, "downtime_hours": math.Round(baselineEDT*10) / 10, "availability_pct": availBase, "utilization_pct": 48.5},
+		"baseline":    fiber.Map{"total_blocks": bBase, "downtime_hours": math.Round(baselineEDT*10) / 10, "availability_pct": availBase, "utilization_pct": baseUtilization},
 		"optimized":   fiber.Map{"total_blocks": bOpt, "downtime_hours": math.Round(plannedEDT*10) / 10, "availability_pct": availOpt, "utilization_pct": utilization},
-		"benefits":    fiber.Map{"blocks_saved": blocksSaved, "consolidation_pct": consolidation, "edr_hours_saved": math.Round(edrHours*10) / 10, "edr_pct": edrPct, "availability_gain_pct": math.Round((availOpt-availBase)*100) / 100, "train_conflicts_eliminated": 14},
+		"benefits":    fiber.Map{"blocks_saved": blocksSaved, "consolidation_pct": consolidation, "edr_hours_saved": math.Round(edrHours*10) / 10, "edr_pct": edrPct, "availability_gain_pct": math.Round((availOpt-availBase)*100) / 100, "train_conflicts_eliminated": blocksSaved},
 	}})
 }
 
@@ -2050,6 +2156,7 @@ func handlePostApproval(c *fiber.Ctx) error {
 		return proxyHTTP(c, "/api/approvals")
 	}
 	var body struct {
+		VersionID      string `json:"version_id"`
 		Status         string `json:"status"`
 		SupervisorName string `json:"supervisor_name"`
 		Remarks        string `json:"remarks"`
@@ -2070,12 +2177,26 @@ func handlePostApproval(c *fiber.Ctx) error {
 	if remarks == "" {
 		remarks = "Block plan approved for live railway dispatch."
 	}
-	vid, _, err := writeApprovalTxn(`SELECT version_id FROM schedule_versions ORDER BY created_at DESC LIMIT 1`, nil, status, supervisor, remarks)
+	var vid string
+	var err error
+	if body.VersionID != "" {
+		vid, _, err = writeApprovalTxn("", body.VersionID, status, supervisor, remarks)
+	} else {
+		vid, _, err = writeApprovalTxn(`SELECT version_id FROM schedule_versions ORDER BY created_at DESC LIMIT 1`, nil, status, supervisor, remarks)
+	}
 	if err != nil {
 		return fiber.NewError(fiber.StatusConflict, err.Error())
 	}
-	_ = vid
-	return c.JSON(fiber.Map{"status": "success", "source": "buffer-go", "message": fmt.Sprintf("Plan status updated to %s by %s", status, supervisor)})
+	// Transition associated BDMS departmental feed requests to APPROVED
+	if status == "APPROVED" {
+		_, _ = db.Exec(`UPDATE department_feeds SET status = 'APPROVED', decision_notes = $1 WHERE feed_id IN (SELECT task_id FROM scheduled_tasks WHERE version_id = $2)`, fmt.Sprintf("Approved by %s in plan %s", supervisor, vid), vid)
+	}
+	return c.JSON(fiber.Map{
+		"status":     "success",
+		"source":     "buffer-go",
+		"version_id": vid,
+		"message":    fmt.Sprintf("Plan %s status updated to %s by %s", vid, status, supervisor),
+	})
 }
 
 func handleApprovePlan(c *fiber.Ctx) error {
@@ -2572,9 +2693,26 @@ func handleGetTaskExplanation(c *fiber.Ctx) error {
 	if db == nil || db.Ping() != nil {
 		return proxyHTTP(c, "/api/ml/explain/"+taskID)
 	}
-	rows, err := queryMaps(`SELECT p.prediction_id, p.task_id, p.model_version, p.prediction_timestamp, p.risk_probability, p.priority_score, p.safety_override, p.top_positive_features, p.top_negative_features, p.shap_values_json, mt.task_type, mt.criticality, mt.department, a.asset_id, a.condition_score FROM ml_predictions p JOIN maintenance_tasks mt ON p.task_id = mt.task_id JOIN assets a ON mt.asset_id = a.asset_id WHERE p.task_id = $1`, taskID)
+	rows, err := queryMaps(`SELECT p.prediction_id, p.task_id, p.model_version, p.prediction_timestamp, p.risk_probability, p.priority_score, p.safety_override, p.top_positive_features, p.top_negative_features, p.shap_values_json, mt.task_type, mt.criticality, mt.department, mt.due_date, a.asset_id, a.condition_score FROM ml_predictions p JOIN maintenance_tasks mt ON p.task_id = mt.task_id JOIN assets a ON mt.asset_id = a.asset_id WHERE p.task_id = $1`, taskID)
+	planBase := time.Date(2026, 8, 23, 0, 0, 0, 0, time.UTC)
 	if err == nil && len(rows) > 0 {
 		r := rows[0]
+		dueDate, _ := r["due_date"].(string)
+		var daysOverdue float64
+		var isOverdue bool
+		cleanDue := dueDate
+		if len(cleanDue) >= 10 {
+			cleanDue = cleanDue[:10]
+		}
+		if t, err := time.Parse("2006-01-02", cleanDue); err == nil {
+			diffDays := planBase.Sub(t).Hours() / 24.0
+			if diffDays > 0 {
+				daysOverdue = math.Round(diffDays*10) / 10
+				isOverdue = true
+			}
+		}
+		r["days_overdue"] = daysOverdue
+		r["is_overdue"] = isOverdue
 		r["top_positive_features"] = parseJSONField(r["top_positive_features"], []interface{}{})
 		r["top_negative_features"] = parseJSONField(r["top_negative_features"], []interface{}{})
 		if s, ok := r["shap_values_json"].(string); ok && s != "" {
@@ -2591,7 +2729,7 @@ func handleGetTaskExplanation(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"status": "success", "source": "buffer-go", "data": r})
 	}
 	// Graceful fallback mirrors Python: derive explanation from priority score.
-	trows, terr := queryMaps(`SELECT mt.task_id, mt.task_type, mt.criticality, mt.department, COALESCE(mt.priority_score, 85.0) as priority_score, COALESCE(a.asset_id, 'AST-000001') as asset_id, COALESCE(a.condition_score, 65.0) as condition_score FROM maintenance_tasks mt LEFT JOIN assets a ON mt.asset_id = a.asset_id WHERE mt.task_id = $1`, taskID)
+	trows, terr := queryMaps(`SELECT mt.task_id, mt.task_type, mt.criticality, mt.department, mt.due_date, COALESCE(mt.priority_score, 85.0) as priority_score, COALESCE(a.asset_id, 'AST-000001') as asset_id, COALESCE(a.condition_score, 65.0) as condition_score FROM maintenance_tasks mt LEFT JOIN assets a ON mt.asset_id = a.asset_id WHERE mt.task_id = $1`, taskID)
 	if terr != nil || len(trows) == 0 {
 		return fiber.NewError(fiber.StatusNotFound, "Explanation for "+taskID+" not found")
 	}
@@ -2610,11 +2748,26 @@ func handleGetTaskExplanation(c *fiber.Ctx) error {
 	if crit == "Critical" {
 		safety = 1
 	}
+	fbDueDate, _ := t["due_date"].(string)
+	var fbDaysOverdue float64
+	var fbIsOverdue bool
+	fbCleanDue := fbDueDate
+	if len(fbCleanDue) >= 10 {
+		fbCleanDue = fbCleanDue[:10]
+	}
+	if t, err := time.Parse("2006-01-02", fbCleanDue); err == nil {
+		diffDays := planBase.Sub(t).Hours() / 24.0
+		if diffDays > 0 {
+			fbDaysOverdue = math.Round(diffDays*10) / 10
+			fbIsOverdue = true
+		}
+	}
 	pos := []fiber.Map{{"feature": "track_condition_degradation", "contribution": 0.34}, {"feature": "gross_million_tonnes_density", "contribution": 0.26}, {"feature": "inspection_interval_elapsed", "contribution": 0.18}}
 	neg := []fiber.Map{{"feature": "recent_joint_consolidation", "contribution": -0.12}, {"feature": "ambient_track_temperature_norm", "contribution": -0.06}}
 	return c.JSON(fiber.Map{"status": "success", "source": "buffer-go", "data": fiber.Map{
 		"prediction_id": "PRD_" + taskID, "task_id": taskID, "task_type": t["task_type"], "criticality": crit,
 		"department": t["department"], "asset_id": t["asset_id"], "condition_score": cond,
+		"due_date": fbDueDate, "days_overdue": fbDaysOverdue, "is_overdue": fbIsOverdue,
 		"model_version": "v4.0-XGBoost-Calibrated", "risk_probability": math.Round(risk*1000) / 1000,
 		"priority_score": math.Round(prio*10) / 10, "safety_override": safety,
 		"top_positive_features": pos, "top_negative_features": neg,

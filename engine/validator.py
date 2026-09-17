@@ -100,7 +100,9 @@ def validate_plan(blocks: list[dict], trains: list[dict], tasks: list[dict] = No
 
             # Directional overlap condition:
             # If block is BOTH, or train direction matches block line, they share the physical track
-            track_conflict_possible = (b_line == 'BOTH') or (b_line == t_dir)
+            b_line_norm = 'DN' if b_line in ('DN', 'DOWN') else ('UP' if b_line == 'UP' else 'BOTH')
+            t_dir_norm = 'DN' if t_dir in ('DN', 'DOWN') else ('UP' if t_dir == 'UP' else 'BOTH')
+            track_conflict_possible = (b_line_norm == 'BOTH') or (t_dir_norm == 'BOTH') or (b_line_norm == t_dir_norm)
 
             if track_conflict_possible:
                 # Required: b_end <= t_entry - BUFFER OR b_start >= t_exit + BUFFER

@@ -54,28 +54,35 @@ def extract_features(task_dict: dict) -> dict:
     health = float(task_dict.get('health_index', cond - 5.0))
     age = float(task_dict.get('asset_age_years', 12.0))
     imp = float(task_dict.get('asset_importance', 0.85))
-    
     overdue = float(task_dict.get('days_overdue', 0.0))
     dur = float(task_dict.get('duration_minutes', 60.0))
+    defects = float(task_dict.get('defects_30d', 2.0 if cond < 45 else (1.0 if cond < 65 else 0.0)))
     
     # 30d/90d historical estimates
     repeat = 1.0 if cond < 50 else 0.0
     failures_30d = 2.0 if cond < 40 else (1.0 if cond < 65 else 0.0)
     failures_90d = failures_30d + (2.0 if cond < 55 else 1.0)
     detention_30d = failures_30d * 45.0
+
+    dept = str(task_dict.get('department', 'Engineering'))
+    ttype = str(task_dict.get('task_type', ''))
     
-    return {
+    feats = {
         'condition_score': cond,
         'health_index': health,
         'asset_age_years': age,
         'asset_importance': imp,
         'days_overdue': overdue,
         'duration_minutes': dur,
+        'defects_30d': defects,
         'failures_30d': failures_30d,
         'failures_90d': failures_90d,
         'detention_minutes_30d': detention_30d,
-        'repeat_failure_flag': repeat
+        'repeat_failure_flag': repeat,
+        f'dept_{dept}': 1.0,
+        f'task_{ttype}': 1.0
     }
+    return feats
 
 def predict_task_risk(task_dict: dict) -> dict:
     """Calculates ML risk probability R_i in [0, 1] and risk score in [0, 100]."""
@@ -86,7 +93,7 @@ def predict_task_risk(task_dict: dict) -> dict:
         try:
             feat_names = meta.get('feature_names', list(features.keys()))
             X_row = pd.DataFrame([[features.get(f, 0.0) for f in feat_names]], columns=feat_names)
-            probs = model.predict_proba(X_row)[0]
+            probs = model.predict_proba(X_row.values)[0]
             # Probability of critical event (class 1)
             prob = float(probs[1]) if len(probs) > 1 else float(probs[0])
             model_ver = meta.get('model_version', 'v2.1-champion')

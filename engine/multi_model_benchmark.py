@@ -163,13 +163,57 @@ def run_benchmark():
     print(f"   PR-AUC: {benchmark_results[0]['PR_AUC']:.4f} | Recall: {benchmark_results[0]['Recall']:.4f} | ROC-AUC: {benchmark_results[0]['ROC_AUC']:.4f}")
     print("=" * 75)
 
-    # 5. Persist Champion Model & Metadata
-    joblib.dump(champion_model, MODEL_OUT)
+    # 5. Isotonic Calibration & Reliability Evaluation (Master Plan v2 Section 10)
+    print("\nFitting Isotonic Calibration on Champion Model...")
+    try:
+        calibrated_champion = CalibratedClassifierCV(estimator=champion_model, method='isotonic', cv=3)
+        calibrated_champion.fit(X_train, y_train)
+        calibrated_probs = calibrated_champion.predict_proba(X_test)[:, 1]
+        model_to_save = calibrated_champion
+        is_calibrated = True
+    except Exception as e:
+        print(f"  ⚠ Calibration fallback: {e}")
+        calibrated_probs = probas
+        model_to_save = champion_model
+        is_calibrated = False
+
+    calibrated_brier = float(brier_score_loss(y_test, calibrated_probs))
+
+    # Expected Calibration Error (ECE) across 10 bins
+    n_bins = 10
+    bin_boundaries = np.linspace(0, 1, n_bins + 1)
+    ece = 0.0
+    reliability_curve = []
+    for i in range(n_bins):
+        bin_lower = bin_boundaries[i]
+        bin_upper = bin_boundaries[i + 1]
+        in_bin = (calibrated_probs >= bin_lower) & (calibrated_probs < bin_upper)
+        prop_in_bin = float(np.mean(in_bin))
+        if prop_in_bin > 0:
+            acc_in_bin = float(np.mean(y_test[in_bin]))
+            conf_in_bin = float(np.mean(calibrated_probs[in_bin]))
+            ece += abs(acc_in_bin - conf_in_bin) * prop_in_bin
+            reliability_curve.append({
+                "bin": i,
+                "confidence": round(conf_in_bin, 4),
+                "empirical_accuracy": round(acc_in_bin, 4),
+                "count": int(np.sum(in_bin))
+            })
+
+    print(f"  ✓ Isotonic Calibration complete: ECE = {ece:.4f}, Calibrated Brier Score = {calibrated_brier:.4f}")
+
+    # 6. Persist Champion Model & Metadata
+    joblib.dump(model_to_save, MODEL_OUT)
     print(f"✓ Saved champion model to {MODEL_OUT}")
 
     metadata = {
-        "model_version": "v2.0-champion",
+        "model_version": "v2.0-champion-calibrated",
         "champion_model": champion_name,
+        "is_calibrated": is_calibrated,
+        "calibration_method": "isotonic",
+        "expected_calibration_error": round(float(ece), 4),
+        "calibrated_brier_score": round(float(calibrated_brier), 4),
+        "reliability_curve": reliability_curve,
         "trained_at": time.strftime('%Y-%m-%d %H:%M:%S'),
         "evaluation_protocol": "Strict Temporal Validation (Train:65%, Val:20%, Test:15%)",
         "target_variable": "future_critical_event_30d",

@@ -69,6 +69,9 @@ export interface ScheduledTask {
   affects_line?: string;
   lat?: number;
   lon?: number;
+  due_date?: string;
+  days_overdue?: number;
+  is_overdue?: boolean;
 }
 
 export interface Section {
@@ -205,6 +208,9 @@ export interface TaskExplanationResponse {
     risk_probability: number;
     priority_score: number;
     safety_override: number;
+    due_date?: string;
+    days_overdue?: number;
+    is_overdue?: boolean;
     top_positive_features: SHAPFeature[];
     top_negative_features: SHAPFeature[];
     shap_values: Record<string, number>;

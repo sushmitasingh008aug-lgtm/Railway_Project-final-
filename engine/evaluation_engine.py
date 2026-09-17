@@ -82,8 +82,9 @@ def run_evaluation(db_url=None):
     # Each coordinated group of N tasks would have required N separate corridor possessions
     baseline_total_blocks = total_tasks
     baseline_block_hours = round(task_work_hours, 1)
-    baseline_downtime_hours = round(task_work_hours * 1.35, 1) # Additional isolation/cancellation overhead
-    baseline_utilization = round(min(65.0, (task_work_hours / max(1.0, baseline_downtime_hours)) * 100.0), 1)
+    # In uncoordinated mode, each separate block requires independent 15-minute possession setup/handover overhead
+    baseline_downtime_hours = round(task_work_hours + (baseline_total_blocks * 15.0 / 60.0), 1)
+    baseline_utilization = round(min(100.0, (task_work_hours / max(1.0, baseline_downtime_hours)) * 100.0), 1)
 
     # 3. MEASURED SAVINGS & EFFICIENCIES
     blocks_saved = max(0, baseline_total_blocks - optimized_total_blocks)
@@ -124,8 +125,8 @@ def run_evaluation(db_url=None):
             "block_reduction_pct": block_reduction_pct,
             "block_hours_saved": hours_saved,
             "downtime_reduction_pct": downtime_reduction_pct,
-            "train_conflicts_eliminated": disruptions_avoided + 18, # Avoided collision conflicts
-            "throughput_availability_gain_pct": round(downtime_reduction_pct * 0.72, 1)
+            "train_conflicts_eliminated": disruptions_avoided, # Actual multi-department corridor closures avoided
+            "throughput_availability_gain_pct": round(((baseline_downtime_hours - optimized_downtime_hours) / max(1.0, baseline_downtime_hours)) * 100.0, 1)
         }
     }
     return evaluation_summary

@@ -38,7 +38,10 @@ from db_helper import get_db_engine
 INCOMPATIBLE_WORK_PAIRS = [
     ('Ballast Deep Screening', 'Signal Aspect Lamp Fail'), # Heavy ballast dust/vibration impairs optical signal calibration
     ('Broken Rail Weld', 'Contact Wire Sag'),             # Severe track hydraulic lifting destabilizes tower wagon staging
-    ('Track Tamper Machine', 'Signal Testing Rig')         # Heavy track vibration disrupts electronic axle counters
+    ('Track Tamper Machine', 'Signal Testing Rig'),        # Heavy track vibration disrupts electronic axle counters
+    ('Flash Butt Welding Plant', 'USFD Machine'),          # Thermal rail distortion invalidates ultrasonic flaw detection
+    ('Flash Butt Welding', 'Ultrasonic Testing'),          # Thermal rail distortion invalidates ultrasonic flaw detection
+    ('Track Tamper Machine', 'Axle Counter Reset'),        # Vibration invalidates magnetic axle sensors
 ]
 
 STATUS_ELIGIBLE = 'ELIGIBLE'
@@ -47,7 +50,7 @@ STATUS_REJECTED = 'REJECTED'
 STATUS_UNKNOWN = 'UNKNOWN'
 
 def evaluate_pair_compatibility(t1: dict, t2: dict) -> dict:
-    """Evaluates 8 deterministic criteria between two maintenance tasks.
+    """Evaluates 8 deterministic criteria between two maintenance tasks according to MATHEMATICAL_MODEL_V2 Section 7.
     
     Returns structured compatibility evaluation:
         {
@@ -62,15 +65,19 @@ def evaluate_pair_compatibility(t1: dict, t2: dict) -> dict:
     reasons = []
     checks = {
         'spatial': False,
+        'possession': False,
         'direction': False,
         'isolation': True,
         'resources': True,
-        'safety': True,
+        'dependencies': True,
+        'precedence': True,
+        'time': True,
         'duration_ratio': True,
-        'precedence': True
+        'safety': True,
+        'operations': True
     }
 
-    # 1. Spatial Check: Must belong to the exact same operational section
+    # 1. Spatial Check (S_ij): Must belong to the exact same operational corridor section
     s1 = t1.get('section_id')
     s2 = t2.get('section_id')
     if s1 and s2 and s1 == s2:
@@ -79,7 +86,19 @@ def evaluate_pair_compatibility(t1: dict, t2: dict) -> dict:
         checks['spatial'] = False
         reasons.append("SPATIAL_MISMATCH: Tasks belong to different operational corridor sections.")
 
-    # 2. Direction / Line Possession Check
+    # 1b. Longitudinal chainage check (within 20km section boundary)
+    km1 = t1.get('chainage_km')
+    km2 = t2.get('chainage_km')
+    if km1 is not None and km2 is not None:
+        try:
+            delta_km = abs(float(km1) - float(km2))
+            if delta_km > 20.0:
+                checks['spatial'] = False
+                reasons.append(f"SPATIAL_SPAN_EXCEEDED: Distance between tasks ({delta_km:.1f} km) exceeds 20 km section limit.")
+        except (ValueError, TypeError):
+            pass
+
+    # 2. Possession / Direction Check (Dir_ij)
     l1 = t1.get('affects_line', 'BOTH')
     l2 = t2.get('affects_line', 'BOTH')
     dept1 = t1.get('department', '')
@@ -87,44 +106,106 @@ def evaluate_pair_compatibility(t1: dict, t2: dict) -> dict:
     
     if l1 == 'BOTH' or l2 == 'BOTH' or l1 == l2:
         checks['direction'] = True
+        checks['possession'] = True
     else:
         checks['direction'] = False
+        checks['possession'] = False
         reasons.append(f"DIRECTION_DISJUNCTION: Line {l1} and {l2} cannot share a single track possession.")
 
-    # 3. Machine / Resource Exclusivity Check
+    # 3. Electrical Isolation Check (Iso_ij): Power block vs live electrical work
+    iso1 = str(t1.get('isolation_requirement', 'None'))
+    iso2 = str(t2.get('isolation_requirement', 'None'))
+    type1 = str(t1.get('task_type', ''))
+    type2 = str(t2.get('task_type', ''))
+    
+    needs_cut_1 = any(k in iso1.upper() for k in ['POWER_BLOCK', 'OHE', 'TRACTION', 'ISOLATION']) or dept1 in ['Traction', 'TRD']
+    needs_cut_2 = any(k in iso2.upper() for k in ['POWER_BLOCK', 'OHE', 'TRACTION', 'ISOLATION']) or dept2 in ['Traction', 'TRD']
+    needs_live_1 = any(k in type1 for k in ['Testing Rig', 'Live', 'Signal Testing', 'Electrification Test'])
+    needs_live_2 = any(k in type2 for k in ['Testing Rig', 'Live', 'Signal Testing', 'Electrification Test'])
+    
+    if (needs_cut_1 and needs_live_2) or (needs_cut_2 and needs_live_1):
+        checks['isolation'] = False
+        reasons.append("ISOLATION_CONFLICT: Work requiring traction power de-energization cannot co-occur with live electrical testing.")
+
+    # 4. Machine / Resource Exclusivity Check (Res_ij)
     res1 = str(t1.get('required_resources', ''))
     res2 = str(t2.get('required_resources', ''))
-    if res1 and res2 and res1 == res2 and any(k in res1 for k in ['Tamper', 'Tower', 'Cleaner', 'Crane']):
+    heavy_machines = ['Tamper', 'Tower', 'Cleaner', 'Crane', 'BCM', 'DTS', 'USFD', 'Grinding']
+    if res1 and res2 and res1 == res2 and any(k in res1 for k in heavy_machines):
         checks['resources'] = False
         reasons.append(f"RESOURCE_CONTENTION: Both tasks contend for exclusive machinery ({res1}).")
 
-    # 4. Domain Safety Prohibitions
-    type1 = str(t1.get('task_type', ''))
-    type2 = str(t2.get('task_type', ''))
-    pair_ab = (type1, type2)
-    pair_ba = (type2, type1)
-    if pair_ab in INCOMPATIBLE_WORK_PAIRS or pair_ba in INCOMPATIBLE_WORK_PAIRS:
-        checks['safety'] = False
-        reasons.append(f"SAFETY_PROHIBITION: Prohibited simultaneous activity between {type1} and {type2}.")
+    # 5. Precedence / Dependency Check (Dep_ij)
+    dep1 = [d.strip() for d in str(t1.get('dependency_ids', '')).split(',') if d.strip()]
+    dep2 = [d.strip() for d in str(t2.get('dependency_ids', '')).split(',') if d.strip()]
+    tid1 = str(t1.get('task_id', ''))
+    tid2 = str(t2.get('task_id', ''))
+    if (tid1 and tid1 in dep2) or (tid2 and tid2 in dep1):
+        checks['dependencies'] = False
+        checks['precedence'] = False
+        reasons.append("DEPENDENCY_CONFLICT: One task has a precedence dependency on the other and cannot be executed concurrently.")
 
-    # 5. Duration Containment Ratio Check (cannot pair 15 min inspection with 180 min relay overhaul without review)
+    # 6. Duration Containment Ratio & Due Date Proximity (T_ij)
     d1 = int(t1.get('duration_minutes', 60))
     d2 = int(t2.get('duration_minutes', 60))
     ratio = max(d1, d2) / max(1.0, min(d1, d2))
     if ratio > 3.0:
         checks['duration_ratio'] = False
+        checks['time'] = False
         reasons.append(f"DURATION_IMBALANCE: Duration ratio ({ratio:.1f}x) exceeds maximum 3.0x efficiency bound.")
 
+    due1_raw = t1.get('due_date')
+    due2_raw = t2.get('due_date')
+    if due1_raw and due2_raw:
+        try:
+            dt1 = pd.to_datetime(due1_raw)
+            dt2 = pd.to_datetime(due2_raw)
+            due_diff_days = abs((dt1 - dt2).days)
+            if due_diff_days > 3:
+                checks['time'] = False
+                checks['duration_ratio'] = False
+                reasons.append(f"DUE_DATE_DISPERSION: Due dates differ by {due_diff_days} days (> 3-day coordination window).")
+        except Exception:
+            pass
+
+    # 7. Domain Safety Prohibitions & Longitudinal Buffer (Safety_ij)
+    pair_ab = (type1, type2)
+    pair_ba = (type2, type1)
+    if pair_ab in INCOMPATIBLE_WORK_PAIRS or pair_ba in INCOMPATIBLE_WORK_PAIRS:
+        checks['safety'] = False
+        reasons.append(f"SAFETY_PROHIBITION: Prohibited simultaneous activity between '{type1}' and '{type2}'.")
+
+    # Longitudinal safety clearance buffer >= 500m between mobile crews (unless exact same asset)
+    a1 = t1.get('asset_id')
+    a2 = t2.get('asset_id')
+    if a1 and a2 and a1 != a2 and km1 is not None and km2 is not None:
+        try:
+            dist_km = abs(float(km1) - float(km2))
+            if dist_km < 0.5: # less than 500 meters
+                checks['safety'] = False
+                reasons.append(f"SAFETY_CLEARANCE_VIOLATION: Tasks on separate assets are within 500m longitudinal clearance ({dist_km * 1000:.0f}m < 500m).")
+        except (ValueError, TypeError):
+            pass
+
+    # 8. Departmental Rules: Must be different departments for cross-department shadow consolidation
+    if dept1 and dept2 and dept1 == dept2:
+        checks['operations'] = False
+        reasons.append("INTRA_DEPARTMENT: Same department tasks are scheduled sequentially, not merged into a single concurrent block.")
+
     # Determine Overall Status
-    is_compat = all(checks.values())
+    critical_checks = [checks['spatial'], checks['safety'], checks['resources'], checks['isolation']]
+    secondary_checks = [checks['direction'], checks['duration_ratio'], checks['dependencies'], checks['operations']]
+    
+    is_compat = all(critical_checks) and all(secondary_checks)
+    
     if is_compat:
         status = STATUS_ELIGIBLE
-        # If different departments combine, it's a prime multi-dept shadow block
+        reasons.append(f"COORDINATION_APPROVED: All 8 spatial, safety, resource, isolation, and precedence checks passed.")
         if dept1 != dept2 and dept1 and dept2:
             reasons.append(f"MULTI_DEPT_OPPORTUNITY: Safe multi-possession between {dept1} and {dept2}.")
-    elif not checks['spatial'] or not checks['safety'] or not checks['resources']:
+    elif not all(critical_checks):
         status = STATUS_REJECTED
-    elif not checks['direction'] or not checks['duration_ratio']:
+    elif not all(secondary_checks):
         status = STATUS_CONDITIONAL
     else:
         status = STATUS_UNKNOWN
@@ -133,7 +214,7 @@ def evaluate_pair_compatibility(t1: dict, t2: dict) -> dict:
     saving = (d1 + d2 - d_combined) if is_compat else 0
 
     return {
-        'pair_id': f"{t1.get('task_id')}_{t2.get('task_id')}",
+        'pair_id': f"{t1.get('task_id', 'T1')}_{t2.get('task_id', 'T2')}",
         'status': status,
         'is_compatible': is_compat,
         'duration_combined': d_combined,

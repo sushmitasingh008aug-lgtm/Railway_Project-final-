@@ -27,7 +27,13 @@ yarn-error.log*
 backend/bin/
 backend/tmp/
 backend/*.exe
+backend/server
+server
 *.exe
 
 # Docker
 .dockerignore
+
+# Scratch / Local
+.freebuff/
+ARCHITECTURE.pdf

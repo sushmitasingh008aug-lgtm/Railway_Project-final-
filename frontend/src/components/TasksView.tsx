@@ -21,6 +21,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = 
   const [deptFilter, setDeptFilter] = useState('ALL');
   const [critFilter, setCritFilter] = useState('ALL');
   const [secFilter, setSecFilter] = useState('ALL');
+  const [overdueOnly, setOverdueOnly] = useState(false);
 
   // Drawer
   const [drawerTaskId, setDrawerTaskId] = useState<string | null>(null);
@@ -36,12 +37,15 @@ export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = 
       if (deptFilter !== 'ALL') params.append('department', deptFilter);
       if (critFilter !== 'ALL') params.append('criticality', critFilter);
       if (secFilter !== 'ALL') params.append('section', secFilter);
+      if (overdueOnly) params.append('overdue_only', 'true');
 
       const res = await apiClient.get<PaginatedResponse<any>>(`/tasks?${params.toString()}`);
       if (res.data && res.data.data) {
-        setTasks(res.data.data);
-        setTotal(res.data.total);
-        setTotalPages(res.data.total_pages || Math.ceil(res.data.total / limit));
+        const list = Array.isArray(res.data.data) ? res.data.data : [];
+        setTasks(list);
+        const count = typeof res.data.total === 'number' ? res.data.total : list.length;
+        setTotal(count);
+        setTotalPages(res.data.total_pages || Math.max(1, Math.ceil(count / limit)));
       } else {
         fallbackToSchedule();
       }
@@ -51,13 +55,14 @@ export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = 
     } finally {
       setLoading(false);
     }
-  }, [page, limit, searchQuery, deptFilter, critFilter, secFilter]);
+  }, [page, limit, searchQuery, deptFilter, critFilter, secFilter, overdueOnly]);
 
   const fallbackToSchedule = () => {
     let filtered = schedule;
     if (deptFilter !== 'ALL') filtered = filtered.filter(t => t.department === deptFilter);
     if (critFilter !== 'ALL') filtered = filtered.filter(t => t.criticality === critFilter);
     if (secFilter !== 'ALL') filtered = filtered.filter(t => t.section_id === secFilter);
+    if (overdueOnly) filtered = filtered.filter(t => t.is_overdue || (t.days_overdue && t.days_overdue > 0));
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(t =>
@@ -94,7 +99,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = 
             </h2>
           </div>
           <p className="text-xs text-[#667085] mt-1 ml-10">
-            Catalog of {total.toLocaleString()} multi-department tasks across Engineering (TMS), Traction (TDMS), and Signalling (SMMS)
+            Catalog of {(total || 0).toLocaleString()} multi-department tasks across Engineering (TMS), Traction (TDMS), and Signalling (SMMS)
           </p>
         </div>
 
@@ -155,6 +160,21 @@ export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = 
               <option key={s.section_id} value={s.section_id}>{s.section_id}</option>
             ))}
           </select>
+
+          <button
+            onClick={() => {
+              setOverdueOnly(!overdueOnly);
+              setPage(1);
+            }}
+            className={`text-xs px-3 py-1.5 rounded-xl font-bold border transition inline-flex items-center gap-1.5 ${
+              overdueOnly
+                ? 'bg-[#FEE4E2] text-[#D92D20] border-[#FDA29B] shadow-sm'
+                : 'bg-[#F7F7F5] text-[#475467] border-[#E6E6E6] hover:bg-[#F0F0EE]'
+            }`}
+          >
+            <ShieldAlert className="w-3.5 h-3.5" />
+            {overdueOnly ? 'Overdue Only (Active)' : 'Filter Overdue'}
+          </button>
         </div>
       </div>
 
@@ -169,6 +189,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = 
                 <th className="py-3 px-4 font-bold">Asset ID</th>
                 <th className="py-3 px-4 font-bold">Task Description</th>
                 <th className="py-3 px-4 font-bold">Section</th>
+                <th className="py-3 px-4 font-bold">Due / Overdue</th>
                 <th className="py-3 px-4 font-bold">Criticality</th>
                 <th className="py-3 px-4 font-bold">Priority</th>
                 <th className="py-3 px-4 font-bold">Duration</th>
@@ -179,13 +200,13 @@ export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = 
             <tbody className="divide-y divide-[#E6E6E6]">
               {loading ? (
                 <tr>
-                  <td colSpan={10} className="text-center py-16 text-[#667085] animate-pulse">
+                  <td colSpan={11} className="text-center py-16 text-[#667085] animate-pulse">
                     Querying 12K maintenance tasks backlog...
                   </td>
                 </tr>
               ) : tasks.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="text-center py-16 text-[#667085]">
+                  <td colSpan={11} className="text-center py-16 text-[#667085]">
                     No maintenance tasks matched the selected criteria.
                   </td>
                 </tr>
@@ -220,6 +241,20 @@ export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = 
                       <td className="py-3 px-4 font-mono text-[#667085]">{t.asset_id}</td>
                       <td className="py-3 px-4 font-semibold text-[#1F2937]">{t.task_type || t.description}</td>
                       <td className="py-3 px-4 font-medium text-[#475467]">{t.section_id}</td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <div className="font-mono text-[11px] text-[#475467]">
+                          {t.due_date ? String(t.due_date).substring(0, 10) : '2026-08-25'}
+                        </div>
+                        {t.is_overdue || (t.days_overdue && t.days_overdue > 0) ? (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-[#FEE4E2] text-[#D92D20] mt-0.5">
+                            {Math.round(t.days_overdue)}d overdue
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9.5px] font-medium bg-[#ECFDF3] text-[#027A48] mt-0.5">
+                            On schedule
+                          </span>
+                        )}
+                      </td>
                       <td className="py-3 px-4">
                         <span
                           className={`px-2 py-0.5 rounded-full text-[9.5px] font-bold ${
@@ -265,8 +300,8 @@ export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = 
         <div className="p-4 border-t border-[#E6E6E6] bg-[#F7F7F5] flex flex-wrap items-center justify-between gap-3 text-xs text-[#475467]">
           <div>
             Showing <b className="text-[#1F2937]">{tasks.length > 0 ? (page - 1) * limit + 1 : 0}</b> to{' '}
-            <b className="text-[#1F2937]">{Math.min(page * limit, total)}</b> of{' '}
-            <b className="text-[#1F2937]">{total.toLocaleString()}</b> total tasks
+            <b className="text-[#1F2937]">{Math.min(page * limit, total || 0)}</b> of{' '}
+            <b className="text-[#1F2937]">{(total || 0).toLocaleString()}</b> total tasks
           </div>
 
           <div className="flex items-center gap-2">

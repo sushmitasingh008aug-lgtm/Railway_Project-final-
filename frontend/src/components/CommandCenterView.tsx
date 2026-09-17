@@ -21,7 +21,7 @@ import {
   FileCheck2,
   Database
 } from 'lucide-react';
-import { MetricsResponse, ScheduledTask, ImpactResponse, SectionRisk, apiClient, DashboardSummaryData } from '../api/client';
+import { MetricsResponse, ScheduledTask, ImpactResponse, SectionRisk, apiClient, DashboardSummaryData, TrainMovement } from '../api/client';
 import { ViewType } from './Sidebar';
 import { MapView } from './MapView';
 import { TaskDetailDrawer } from './TaskDetailDrawer';
@@ -32,6 +32,7 @@ interface CommandCenterProps {
   schedule: ScheduledTask[];
   sections?: any[];
   sectionRisks: SectionRisk[];
+  trains?: TrainMovement[];
   loading: boolean;
   onNavigate: (view: ViewType) => void;
 }
@@ -42,6 +43,7 @@ export const CommandCenterView: React.FC<CommandCenterProps> = ({
   schedule,
   sections = [],
   sectionRisks,
+  trains = [],
   loading,
   onNavigate,
 }) => {
@@ -379,6 +381,9 @@ export const CommandCenterView: React.FC<CommandCenterProps> = ({
           <MapView
             sections={sections}
             schedule={schedule}
+            trains={trains}
+            activeLayer={mapLayer}
+            onLayerChange={setMapLayer}
             compact={true}
           />
         </div>

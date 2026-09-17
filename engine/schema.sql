@@ -336,7 +336,7 @@ CREATE TABLE IF NOT EXISTS audit_log (
     status VARCHAR(30)
 );
 
--- 17. Departmental Feed Staging (TMS / TDMS / SMMS Ingestion)
+-- 17. Departmental Feed Staging (TMS / TDMS / SMMS / BDMS Ingestion & Lifecycle)
 CREATE TABLE IF NOT EXISTS department_feeds (
     feed_id VARCHAR(50) PRIMARY KEY,
     source_system VARCHAR(20),
@@ -344,7 +344,12 @@ CREATE TABLE IF NOT EXISTS department_feeds (
     raw_type VARCHAR(100),
     severity VARCHAR(20),
     reported_date DATE,
-    ingested_at TIMESTAMP
+    ingested_at TIMESTAMP,
+    status VARCHAR(30) DEFAULT 'REQUESTED',
+    requested_start TIMESTAMP,
+    requested_end TIMESTAMP,
+    notice_hours INT DEFAULT 24,
+    decision_notes TEXT
 );
 
 -- 18. INSPECTIONS (Track / OHE / Signalling Condition Observations)

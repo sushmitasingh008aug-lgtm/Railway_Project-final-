@@ -19,29 +19,30 @@ if hasattr(sys.stdout, 'reconfigure'):
     except Exception:
         pass
 
-def compute_impact_score(c_i: float, duration_minutes: int, corridor_id: str, affects_line: str = 'BOTH') -> tuple[float, dict]:
+def compute_impact_score(c_i: float, duration_minutes: int, corridor_id: str, affects_line: str = 'BOTH', freight_count: int = 0) -> tuple[float, dict]:
     """Computes operational consequence I_i in [0, 1].
     
     Returns:
         (impact_score, component_breakdown_dict)
     """
-    # 1. Downtime Consequence D_i: 120 min work is heavy possession (1.0)
+    # 1. Downtime Consequence D_i: 360 min work is heavy possession (1.0) (spec MATHEMATICAL_MODEL_V2.md)
     dur = float(duration_minutes or 60)
-    d_i = float(np.clip(dur / 120.0, 0.20, 1.0))
+    d_i = float(np.clip(dur / 360.0, 0.20, 1.0))
     
-    # 2. Train Impact Consequence T_impact
+    # 2. Train Impact Consequence T_impact (passenger corridor baseline + goods train forecast penalty)
     if 'DLI' in str(corridor_id):
-        t_impact = 0.90
+        t_base = 0.90
     elif 'BSB' in str(corridor_id):
-        t_impact = 0.75
+        t_base = 0.75
     else:
-        t_impact = 0.60
+        t_base = 0.60
+    t_impact = float(np.clip(t_base + 0.02 * min(float(freight_count or 0), 10.0), 0.0, 1.0))
         
     # 3. Asset Availability Consequence A_impact
     if affects_line == 'BOTH':
         a_impact = 1.0   # Both tracks blocked -> complete line availability loss
     else:
-        a_impact = 0.50  # Single track possession allows single-line bypass
+        a_impact = 0.60  # Single track possession allows single-line bypass (spec MATHEMATICAL_MODEL_V2.md)
         
     # Weighted composite
     i_score = (
@@ -70,7 +71,8 @@ def evaluate_tasks_impact(df_tasks: pd.DataFrame) -> pd.DataFrame:
         dur = row.get('duration_minutes', 60)
         cid = row.get('corridor_id', 'CORR_BSB_LKO')
         aff = row.get('affects_line', 'BOTH')
-        score, _ = compute_impact_score(c_val, dur, cid, aff)
+        fc = row.get('expected_goods_trains', 0)
+        score, _ = compute_impact_score(c_val, dur, cid, aff, freight_count=fc)
         impacts.append(round(score, 4))
     df['impact_score'] = impacts
     return df

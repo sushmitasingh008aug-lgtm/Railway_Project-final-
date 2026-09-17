@@ -27,6 +27,7 @@ export const ApprovalAuditView: React.FC = () => {
   const handleDecision = (status: 'APPROVED' | 'REJECTED') => {
     setSubmitting(true);
     apiClient.post('/approvals', {
+      version_id: version?.version_id,
       status,
       supervisor_name: supervisorName,
       remarks
@@ -169,18 +170,18 @@ export const ApprovalAuditView: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => handleDecision('REJECTED')}
-              disabled={submitting}
-              className="px-4 py-2 border border-[#FDA29B] bg-[#FEF3F2] text-[#D92D20] text-xs font-bold rounded-xl hover:bg-[#FEE4E2] transition"
+              disabled={submitting || isApproved}
+              className="px-4 py-2 border border-[#FDA29B] bg-[#FEF3F2] text-[#D92D20] text-xs font-bold rounded-xl hover:bg-[#FEE4E2] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Revision Required
             </button>
             <button
               onClick={() => handleDecision('APPROVED')}
-              disabled={submitting}
-              className="px-6 py-2 bg-[#FF9933] hover:bg-[#D96F13] text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-2"
+              disabled={submitting || isApproved}
+              className="px-6 py-2 bg-[#FF9933] hover:bg-[#D96F13] text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <CheckCircle2 className="w-4 h-4" />
-              Approve Recommended Plan
+              {isApproved ? 'Plan Approved (Locked)' : 'Approve Recommended Plan'}
             </button>
           </div>
         </div>

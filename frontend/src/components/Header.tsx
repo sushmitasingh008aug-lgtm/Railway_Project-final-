@@ -94,15 +94,10 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) =
         </div>
       </div>
 
-      {/* Right: Working Operational Calendar, 24-Hr Live Clock, Alerts & Controller */}
+      {/* Right: Working Operational Calendar, Alerts, Controller & Top-Right Live Clock */}
       <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
         {/* Working Operational Planning Calendar */}
         <WorkingCalendar />
-
-        {/* 24-Hour Live Operational Clock (IST) */}
-        <div className="hidden xs:block">
-          <LiveClock />
-        </div>
 
         {/* Verification / Alert Bell */}
         <button
@@ -163,6 +158,11 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) =
               </div>
             </div>
           )}
+        </div>
+
+        {/* Top-Right Corner: 24-Hour Live Operational Clock (IST) */}
+        <div className="pl-1 sm:pl-2 border-l border-[#E6E6E6] shrink-0">
+          <LiveClock />
         </div>
       </div>
     </header>

@@ -29,6 +29,7 @@ import {
   FailureAlert,
   ActiveTrain,
 } from '../data/railwayNetwork';
+import { usePlanningCalendar } from '../context/PlanningCalendarContext';
 
 export type MapLayerType = 'all' | 'assets' | 'failures' | 'blocks' | 'trains';
 
@@ -83,6 +84,7 @@ export const MapView: React.FC<MapViewProps> = ({
 
   const [selectedDay, setSelectedDay] = useState<number | 'all'>('all');
   const [selectedZone, setSelectedZone] = useState<string>('all');
+  const { state: calendarState } = usePlanningCalendar();
 
   // Filter corridors based on selected zone
   const activeCorridors = useMemo(() => {
@@ -262,6 +264,10 @@ export const MapView: React.FC<MapViewProps> = ({
             {showBlocks && (
               <div className="flex flex-wrap items-center gap-1.5">
                 <span className="text-xs font-semibold text-[#667085] mr-1">Horizon:</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#FFF3E6] border border-[#FFD9B3] text-[11px] font-bold text-[#B85C00] mr-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF9933]"></span>
+                  <span>{calendarState.displayText}</span>
+                </span>
                 <button
                   onClick={() => setSelectedDay('all')}
                   className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${

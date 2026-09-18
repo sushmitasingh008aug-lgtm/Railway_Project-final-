@@ -25,6 +25,7 @@ import { MetricsResponse, ScheduledTask, ImpactResponse, SectionRisk, apiClient,
 import { ViewType } from './Sidebar';
 import { MapView } from './MapView';
 import { TaskDetailDrawer } from './TaskDetailDrawer';
+import { usePlanningCalendar } from '../context/PlanningCalendarContext';
 
 interface CommandCenterProps {
   metrics: MetricsResponse | null;
@@ -101,8 +102,37 @@ export const CommandCenterView: React.FC<CommandCenterProps> = ({
     }
   ];
 
+  const { state: calendarState } = usePlanningCalendar();
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 sm:space-y-5">
+      {/* 0. Operational Planning Context Bar */}
+      <div className="bg-white border border-[#E6E6E6] rounded-xl px-4 py-2.5 shadow-sm flex flex-wrap items-center justify-between gap-3 select-none">
+        <div className="flex items-center gap-2.5">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D96F13] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#D96F13]"></span>
+          </span>
+          <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#7F1418] font-display">
+            Operational Planning Window:
+          </span>
+          <span className="text-xs font-bold text-[#1F2937] bg-[#F7F7F5] px-2 py-0.5 rounded border border-[#E6E6E6]">
+            {calendarState.displayText}
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-[#667085]">
+          <span className="font-semibold text-[#667085] uppercase text-[10px]">MODE:</span>
+          <span className="font-bold text-[#B85C00] uppercase text-[10.5px] bg-[#FFF3E6] px-2 py-0.5 rounded border border-[#FFD9B3]">
+            {calendarState.mode}
+          </span>
+          <span className="text-[#D0D5DD]">|</span>
+          <span className="font-semibold text-[#667085] uppercase text-[10px]">HORIZON:</span>
+          <span className="font-bold text-[#1F2937] bg-[#F7F7F5] px-2 py-0.5 rounded border border-[#E6E6E6]">
+            {calendarState.horizonDays} {calendarState.horizonDays === 1 ? 'Day' : 'Days'}
+          </span>
+        </div>
+      </div>
+
       {/* 1. Top KPI Operational Bar (Section 4 Layout) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
         <div className="bg-white p-4 rounded-xl border border-[#E6E6E6] border-l-4 border-l-[#D92D20] shadow-sm flex items-center justify-between">

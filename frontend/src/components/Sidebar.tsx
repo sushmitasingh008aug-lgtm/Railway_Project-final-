@@ -1,4 +1,5 @@
 import React from 'react';
+import irLogo from '../assets/indian-railways-logo.png';
 import {
   LayoutDashboard,
   Layers,
@@ -129,28 +130,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <div className="flex flex-col h-full bg-white border-r border-[#E6E6E6] select-none shadow-sm w-72 shrink-0">
       {/* Brand Header */}
       <div className="px-4 py-3.5 border-b border-[#E6E6E6] bg-gradient-to-b from-white to-[#FDFBF9] flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#7F1418] border border-[#5E0E11] flex items-center justify-center text-white shadow-sm shrink-0">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="4" y1="3" x2="4" y2="21" />
-              <line x1="20" y1="3" x2="20" y2="21" />
-              <line x1="4" y1="6" x2="20" y2="6" />
-              <line x1="4" y1="11" x2="20" y2="11" />
-              <line x1="4" y1="16" x2="20" y2="16" />
-              <circle cx="12" cy="11" r="2.5" fill="#FF9933" stroke="#FFFFFF" />
-            </svg>
-          </div>
+        <div className="flex items-center gap-2.5">
+          <img
+            src={irLogo}
+            alt="Indian Railways"
+            className="w-9 h-9 object-contain shrink-0"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = '/assets/indian-railways-logo.png';
+            }}
+          />
           <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-[13px] text-[#7F1418] tracking-wider uppercase font-display">
-                ABPS CONTROL
-              </span>
-              <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#FFF3E6] text-[#D96F13] border border-[#FFD9B3]">
-                v4.0
-              </span>
-            </div>
-            <p className="text-[10px] text-[#475467] font-semibold tracking-wide">
-              Delhi Division · 12K Engine
+            <span className="font-extrabold text-[13px] text-[#7F1418] tracking-wider uppercase font-display block leading-tight">
+              ABPS CONTROL
+            </span>
+            <p className="text-[10px] text-[#667085] font-semibold tracking-wide leading-tight mt-0.5">
+              Delhi Division
             </p>
           </div>
         </div>

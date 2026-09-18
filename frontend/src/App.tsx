@@ -23,6 +23,7 @@ import { DataQualityView } from './components/DataQualityView';
 import { ScenarioExplorerView } from './components/ScenarioExplorerView';
 import { ModelVersionsView } from './components/ModelVersionsView';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { PlanningCalendarProvider, usePlanningCalendar } from './context/PlanningCalendarContext';
 import {
   MetricsResponse,
   ScheduledTask,
@@ -34,7 +35,7 @@ import {
   apiClient,
 } from './api/client';
 
-export function App() {
+function AppContent() {
   const [activeView, setActiveView] = useState<ViewType>('dashboard');
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [metrics, setMetrics] = useState<MetricsResponse | null>(null);
@@ -44,8 +45,9 @@ export function App() {
   const [testStatus, setTestStatus] = useState<TestStatusResponse | null>(null);
   const [impact, setImpact] = useState<ImpactResponse | null>(null);
   const [trains, setTrains] = useState<TrainMovement[]>([]);
-  const [horizonDays, setHorizonDays] = useState<number>(7);
   const [loading, setLoading] = useState(true);
+
+  const { state: calendarState, horizonDays, setMode } = usePlanningCalendar();
 
   const fetchAllData = useCallback(async (showLoading = true, days = horizonDays) => {
     try {
@@ -96,19 +98,15 @@ export function App() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto max-h-screen">
-        {/* Top App Header */}
+        {/* Top App Header with Indian Railways Logo, Working Calendar & 24-Hr Live Clock */}
         <Header
           onToggleSidebar={() => setIsMobileNavOpen(!isMobileNavOpen)}
           onNavigate={(view: any) => setActiveView(view)}
           horizonDays={horizonDays}
-          onHorizonChange={(days) => {
-            setHorizonDays(days);
-            fetchAllData(false, days);
-          }}
         />
 
         {/* Dynamic Body Content */}
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 pt-5 pb-12 w-full max-w-[1720px] mx-auto">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 pt-4 pb-12 w-full max-w-[1720px] mx-auto">
           <ErrorBoundary key={activeView} fallbackTitle={`Error Loading ${activeView.replace(/_/g, ' ')}`}>
           {/* OPERATIONS */}
           {(activeView === 'dashboard' || activeView === 'command_center') && (
@@ -147,8 +145,9 @@ export function App() {
               sections={sections}
               loading={loading}
               onHorizonChange={(days) => {
-                setHorizonDays(days);
-                fetchAllData(false, days);
+                if (days >= 30) setMode('month');
+                else if (days <= 1) setMode('day');
+                else setMode('week');
               }}
             />
           )}
@@ -256,12 +255,20 @@ export function App() {
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-[#E6E6E6] py-3.5 px-6 text-center text-xs text-[#667085] bg-white flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>ABPS v4 — Railway Maintenance Decision-Support Control Centre (Delhi Division · SIMULATION / DEMO MODE)</span>
+        <footer className="border-t border-[#E6E6E6] py-3 px-6 text-center text-xs text-[#667085] bg-white flex flex-col sm:flex-row items-center justify-between gap-2 select-none">
+          <span>ABPS CONTROL — Indian Railways Automated Block Planning System (Delhi Division · SIMULATION MODE)</span>
           <span className="text-[11px] text-[#98A2B3]">Ministry of Railways · Smart India Hackathon 2026</span>
         </footer>
       </div>
     </div>
+  );
+}
+
+export function App() {
+  return (
+    <PlanningCalendarProvider>
+      <AppContent />
+    </PlanningCalendarProvider>
   );
 }
 

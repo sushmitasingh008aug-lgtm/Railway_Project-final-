@@ -192,8 +192,8 @@ export const GanttTab: React.FC<GanttTabProps> = ({
     return filteredTasks.slice(start, start + TABLE_PAGE_SIZE);
   }, [filteredTasks, tablePage]);
 
-  // Animated wait screen to prevent lagging perception while loading data
-  if (loading || !schedule || schedule.length === 0) {
+  // Animated wait screen while active loading is in progress
+  if (loading) {
     return (
       <div className="bg-white p-16 rounded-2xl border border-[#E6E6E6] text-center space-y-4 shadow-sm my-6 max-w-3xl mx-auto">
         <div className="w-14 h-14 rounded-2xl bg-[#FFF3E6] border border-[#FFD9B3] flex items-center justify-center text-[#D96F13] mx-auto animate-pulse">

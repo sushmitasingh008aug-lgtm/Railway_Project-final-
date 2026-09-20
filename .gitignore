@@ -31,9 +31,6 @@ backend/server
 server
 *.exe
 
-# Docker
-.dockerignore
-
 # Scratch / Local
 .freebuff/
 ARCHITECTURE.pdf

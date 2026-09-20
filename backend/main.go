@@ -1200,7 +1200,21 @@ func handleSubmitTask(c *fiber.Ctx) error {
 	return proxyHTTP(c, "/api/tasks/submit")
 }
 
+var (
+	testStatusMu       sync.Mutex
+	testStatusCache    fiber.Map
+	testStatusCachedAt time.Time
+)
+
 func handleGetTestsStatus(c *fiber.Ctx) error {
+	testStatusMu.Lock()
+	defer testStatusMu.Unlock()
+
+	// Return cached test run if less than 60 seconds old
+	if testStatusCache != nil && time.Since(testStatusCachedAt) < 60*time.Second {
+		return c.JSON(testStatusCache)
+	}
+
 	pythonPath, scriptPath := resolvePython()
 	// derive test suite from optimizer path
 	scriptPath = filepath.Join(filepath.Dir(scriptPath), "test_suite.py")
@@ -1226,13 +1240,17 @@ func handleGetTestsStatus(c *fiber.Ctx) error {
 		{"id": "3.2", "name": "Resource Saturation Check", "passed": true, "type": "CP-SAT", "details": "Physical machinery and department capacities strictly respected."},
 	}
 
-	return c.JSON(fiber.Map{
+	res := fiber.Map{
 		"status":      "success",
 		"all_passed":  allPassed,
 		"total_tests": len(testCases),
 		"test_cases":  testCases,
 		"raw_output":  string(output),
-	})
+	}
+	testStatusCache = res
+	testStatusCachedAt = time.Now()
+
+	return c.JSON(res)
 }
 
 // ---------------------------------------------------------------------------

@@ -86,8 +86,16 @@ def seed_all_12k():
             );
         """))
         # Check anomaly_scenario_instances columns
-        info = conn.execute(text("PRAGMA table_info(anomaly_scenario_instances)")).fetchall()
-        col_names = [r[1] for r in info]
+        try:
+            if 'postgresql' in str(engine.url):
+                res = conn.execute(text("SELECT column_name FROM information_schema.columns WHERE table_name='anomaly_scenario_instances'")).fetchall()
+                col_names = [r[0] for r in res]
+            else:
+                info = conn.execute(text("PRAGMA table_info(anomaly_scenario_instances)")).fetchall()
+                col_names = [r[1] for r in info]
+        except Exception:
+            col_names = []
+
         if 'severity' not in col_names:
             conn.execute(text("DROP TABLE IF EXISTS anomaly_scenario_instances;"))
             conn.execute(text("""
@@ -131,9 +139,13 @@ def seed_all_12k():
                 if mask.any():
                     df.loc[mask, 'status'] = 'PASS'
 
-            # Inspect destination table columns in SQLite to filter out unmapped CSV columns
-            tbl_info = conn.execute(text(f"PRAGMA table_info({table_name});")).fetchall()
-            valid_cols = set(r[1] for r in tbl_info)
+            # Inspect destination table columns to filter out unmapped CSV columns
+            if 'postgresql' in str(engine.url):
+                tbl_info = conn.execute(text(f"SELECT column_name FROM information_schema.columns WHERE table_name='{table_name}';")).fetchall()
+                valid_cols = set(r[0] for r in tbl_info)
+            else:
+                tbl_info = conn.execute(text(f"PRAGMA table_info({table_name});")).fetchall()
+                valid_cols = set(r[1] for r in tbl_info)
             if valid_cols:
                 cols_to_use = [c for c in df.columns if c in valid_cols]
                 df = df[cols_to_use]
@@ -184,14 +196,15 @@ def seed_all_12k():
         print(f"  ✓ [corridor_observations     ] <- 01_corridors.csv             ({len(df_cor_obs):,} rows)")
         print(f"  ✓ [section_observations      ] <- 02_sections.csv              ({len(df_sec_obs):,} rows)")
 
-    # Checkpoint WAL outside the transaction
-    try:
-        raw_conn = engine.raw_connection()
-        raw_conn.execute("PRAGMA wal_checkpoint(TRUNCATE);")
-        raw_conn.execute("PRAGMA optimize;")
-        raw_conn.close()
-    except Exception as e:
-        print(f"  (wal checkpoint info: {e})")
+    # Checkpoint WAL outside the transaction (SQLite only)
+    if 'sqlite' in str(engine.url):
+        try:
+            raw_conn = engine.raw_connection()
+            raw_conn.execute("PRAGMA wal_checkpoint(TRUNCATE);")
+            raw_conn.execute("PRAGMA optimize;")
+            raw_conn.close()
+        except Exception as e:
+            print(f"  (wal checkpoint info: {e})")
 
     elapsed = time.time() - start_time
     print("=" * 80)

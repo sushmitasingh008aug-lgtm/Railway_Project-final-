@@ -52,11 +52,10 @@ function AppContent() {
   const fetchAllData = useCallback(async (showLoading = true, days = horizonDays) => {
     try {
       if (showLoading) setLoading(true);
-      const [mRes, sRes, secRes, tRes, iRes, trRes, rRes] = await Promise.all([
+      const [mRes, sRes, secRes, iRes, trRes, rRes] = await Promise.all([
         apiClient.get<MetricsResponse>('/metrics').catch(() => null),
         apiClient.get<{ data: ScheduledTask[] }>('/schedule').catch(() => null),
         apiClient.get<{ data: Section[] }>('/sections').catch(() => null),
-        apiClient.get<TestStatusResponse>('/tests/status').catch(() => null),
         apiClient.get<ImpactResponse>(`/impact?horizon_days=${days}`).catch(() => null),
         apiClient.get<{ data: TrainMovement[] }>('/trains').catch(() => null),
         apiClient.get<{ data: SectionRisk[] }>('/sections/risk').catch(() => null),
@@ -65,16 +64,25 @@ function AppContent() {
       if (mRes) setMetrics(mRes.data);
       if (sRes) setSchedule(sRes.data.data || []);
       if (secRes) setSections(secRes.data.data || []);
-      if (tRes) setTestStatus(tRes.data);
       if (iRes) setImpact(iRes.data);
       if (trRes) setTrains(trRes.data.data || []);
       if (rRes) setSectionRisks(rRes.data.data || []);
+
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
     } finally {
       if (showLoading) setLoading(false);
     }
   }, [horizonDays]);
+
+  // Only fetch test suite when the user actually navigates to verification_suite or alerts
+  useEffect(() => {
+    if ((activeView === 'verification_suite' || activeView === 'alerts') && !testStatus) {
+      apiClient.get<TestStatusResponse>('/tests/status')
+        .then((res) => { if (res) setTestStatus(res.data); })
+        .catch(() => null);
+    }
+  }, [activeView, testStatus]);
 
   // Initial fetch
   useEffect(() => {

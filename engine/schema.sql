@@ -299,7 +299,7 @@ CREATE TABLE IF NOT EXISTS optimized_blocks (
 
 -- 15b. SCHEDULED_TASKS (Phase B buffer: task-level rows of the live plan).
 -- Single-live-version semantics like optimized_blocks: the optimizer rewrites
--- this table atomically with blocks + manifest. CSV is export artifact only;
+-- this table atomically with blocks + manifest. CSV is export artifact only,
 -- all APIs read this table (see ?version_id= pinning in both backends).
 CREATE TABLE IF NOT EXISTS scheduled_tasks (
     version_id VARCHAR(50),
@@ -468,13 +468,11 @@ CREATE INDEX IF NOT EXISTS idx_route_pts_sec ON route_station_points(section_id)
 CREATE INDEX IF NOT EXISTS idx_anomaly_inst_sec ON anomaly_scenario_instances(section_id);
 
 -- CANONICAL UPPERCASE GOVERNMENT VIEWS (Blueprint v2 Section 09)
--- Portable DROP+CREATE pattern (works on SQLite and PostgreSQL; neither
+-- Portable DROP+CREATE pattern (works on SQLite and PostgreSQL, neither
 -- supports CREATE VIEW IF NOT EXISTS).
 DROP VIEW IF EXISTS ASSET_MASTER;
 CREATE VIEW ASSET_MASTER AS SELECT * FROM assets;
-DROP VIEW IF EXISTS FAILURE_EVENT_HISTORY;
 -- (no view: name collides with failure_event_history table on both dialects)
-DROP VIEW IF EXISTS MAINTENANCE_TASKS;
 -- (no view: name collides with maintenance_tasks table on both dialects)
 DROP VIEW IF EXISTS TRAIN_OPERATION_HISTORY;
 CREATE VIEW TRAIN_OPERATION_HISTORY AS SELECT * FROM train_movements;

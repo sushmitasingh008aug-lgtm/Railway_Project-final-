@@ -39,17 +39,21 @@ try:
         print('⚠ schema.sql not found')
         raise SystemExit(0)
     ddl = open(schema_path).read()
-    with eng.begin() as conn:
-        for stmt in ddl.split(';'):
+    clean_ddl = '\n'.join(line for line in ddl.splitlines() if not line.strip().startswith('--'))
+    with eng.connect() as conn:
+        for stmt in clean_ddl.split(';'):
             s = stmt.strip()
             if s:
-                # Portable rewrites for Postgres (schema.sql targets SQLite):
-                # AUTOINCREMENT is SQLite-only (coverage_report.id).
                 s = s.replace('INTEGER PRIMARY KEY AUTOINCREMENT', 'SERIAL PRIMARY KEY')
-                conn.execute(text(s))
+                try:
+                    with conn.begin():
+                        conn.execute(text(s))
+                except Exception as ex:
+                    print(f'  (statement notice: {ex})')
         # Migrate: add geometry column if missing (for DB created before this patch)
         try:
-            conn.execute(text('ALTER TABLE sections ADD COLUMN IF NOT EXISTS geometry TEXT'))
+            with conn.begin():
+                conn.execute(text('ALTER TABLE sections ADD COLUMN IF NOT EXISTS geometry TEXT'))
         except Exception as e:
             print(f'  (migrate geometry column: {e})')
     print(f'✓ Schema ensured from {schema_path}')

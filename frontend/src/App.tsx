@@ -178,7 +178,11 @@ function AppContent() {
           )}
 
           {activeView === 'train_conflicts' && (
-            <TrainConflictsView />
+            <TrainConflictsView
+              sections={sections}
+              trains={trains}
+              schedule={schedule}
+            />
           )}
 
           {/* INTELLIGENCE */}

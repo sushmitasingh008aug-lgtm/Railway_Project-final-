@@ -36,7 +36,15 @@ import {
 } from './api/client';
 
 function AppContent() {
-  const [activeView, setActiveView] = useState<ViewType>('dashboard');
+  const getInitialView = (): ViewType => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab') || window.location.hash.replace('#', '');
+      if (tab) return tab as ViewType;
+    } catch {}
+    return 'dashboard';
+  };
+  const [activeView, setActiveView] = useState<ViewType>(getInitialView);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [metrics, setMetrics] = useState<MetricsResponse | null>(null);
   const [schedule, setSchedule] = useState<ScheduledTask[]>([]);

@@ -1,10 +1,14 @@
-# 🚆 AI-Powered Automatic Block Planning System for Indian Railways
+# 🚆 AI-Powered Automatic Block Planning System for Indian Railways (ABPS v4.0)
 
 [![Smart India Hackathon 2026](https://img.shields.io/badge/SIH-2026-blue.svg)](https://www.sih.gov.in/)
+[![Operational Sections](https://img.shields.io/badge/UI%20Sections-18%20Operational%20Views-success.svg)](docs/presentation/UI_PRESENTATION_WALKTHROUGH.md)
+[![Component Inventory](https://img.shields.io/badge/UI%20Components-80%20Cataloged%20(15--Field)-blueviolet.svg)](docs/presentation/COMPONENT_INVENTORY.md)
+[![Verification Suite](https://img.shields.io/badge/Proof%20Checks-12%2F12%20Passed-brightgreen.svg)](docs/presentation/ABPS_UI_Walkthrough.pptx)
+[![Presentation Deck](https://img.shields.io/badge/PowerPoint-24%20Slides%20(16%3A9)-orange.svg)](docs/presentation/ABPS_UI_Walkthrough.pptx)
 [![Go](https://img.shields.io/badge/Backend-Go%20Fiber%20v2-00ADD8.svg)](https://gofiber.io/)
 [![Python](https://img.shields.io/badge/Engine-Python%203.11-3776AB.svg)](https://www.python.org/)
 [![Google OR-Tools](https://img.shields.io/badge/Optimization-CP--SAT%20Solver-FF6F00.svg)](https://developers.google.com/optimization)
-[![Machine Learning](https://img.shields.io/badge/ML-LightGBM%20%7C%20TreeSHAP-brightgreen.svg)](https://github.com/microsoft/LightGBM)
+[![Machine Learning](https://img.shields.io/badge/ML-XGBoost%20v2.4%20%7C%20TreeSHAP-brightgreen.svg)](https://github.com/dmlc/xgboost)
 [![Frontend](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite%20%2B%20Tailwind-61dafb.svg)](https://reactjs.org/)
 [![Database](https://img.shields.io/badge/DB-SQLite%20%2F%20PostgreSQL%2016-336791.svg)](https://www.postgresql.org/)
 [![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
@@ -16,17 +20,19 @@
 ## 📑 Table of Contents
 
 1. [Executive Summary & Problem Statement Alignment](#1-executive-summary--problem-statement-alignment)
-2. [End-to-End Operational Pipeline (How It Works)](#2-end-to-end-operational-pipeline-how-it-works)
-3. [Resources & Machinery Modeling](#3-resources--machinery-modeling)
-4. [Data Architecture & Ingestion Feeds](#4-data-architecture--ingestion-feeds)
-5. [System Architecture & Component Topography](#5-system-architecture--component-topography)
-6. [Complete Mathematical Formulations (All Formulas)](#6-complete-mathematical-formulations-all-formulas)
-7. [Machine Learning Pipeline & Research Roadmap](#7-machine-learning-pipeline--research-roadmap)
-8. [Enhancing Operational & Visual Efficiency](#8-enhancing-operational--visual-efficiency)
-9. [Project Directory & File Structure](#9-project-directory--file-structure)
-10. [Step-by-Step Installation & Running Guide](#10-step-by-step-installation--running-guide)
-11. [Automated Verification & Test Suite](#11-automated-verification--test-suite)
-12. [Preparing for Deployment to a New GitHub Repository](#12-preparing-for-deployment-to-a-new-github-repository)
+2. [Complete 18-Section Website User Interface & Architecture](#2-complete-18-section-website-user-interface--architecture)
+3. [Multi-Color Component Annotation System](#3-multi-color-component-annotation-system)
+4. [End-to-End Operational Pipeline (How It Works)](#4-end-to-end-operational-pipeline-how-it-works)
+5. [Operational User Workflows & System Interaction Diagrams](#5-operational-user-workflows--system-interaction-diagrams)
+6. [Resources & Machinery Modeling](#6-resources--machinery-modeling)
+7. [Data Architecture & Ingestion Feeds](#7-data-architecture--ingestion-feeds)
+8. [System Architecture & Component Topography](#8-system-architecture--component-topography)
+9. [Complete Mathematical Formulations (All Formulas)](#9-complete-mathematical-formulations-all-formulas)
+10. [Machine Learning Pipeline & Explainable AI (XAI)](#10-machine-learning-pipeline--explainable-ai-xai)
+11. [Project Directory & File Structure](#11-project-directory--file-structure)
+12. [Step-by-Step Installation & Running Guide](#12-step-by-step-installation--running-guide)
+13. [Automated Verification & Test Suite](#13-automated-verification--test-suite)
+14. [Presentation & Viva Defense Resources](#14-presentation--viva-defense-resources)
 
 ---
 
@@ -56,7 +62,7 @@ Each department files isolated line disconnection requests through the **Block D
 +---------------------------------------------------------------------------------------------------+
 ```
 
-### 1.2 The AI-Powered Automatic Block Planning Solution
+### 1.2 The AI-Powered Automatic Block Planning Solution (ABPS v4.0)
 Our system replaces manual, decentralized scheduling with an automated, mathematically rigorous, and safety-certified platform built around four pillars:
 
 ```
@@ -70,9 +76,9 @@ Our system replaces manual, decentralized scheduling with an automated, mathemat
 |                                                                                                   |
 |   Output:                                                                                         |
 |   - Single multi-department coordinated block: All 3 tasks executed in ONE window                 |
-|   - 0 passenger or freight train headway violations (proven mathematically)                       |
-|   - 139+ track shutdown disruptions eliminated per 200 tasks                                      |
-|   - 100% window capacity utilization through duration containment                                 |
+|   - 0 passenger or freight train headway violations (proven mathematically across 1,819 trains)   |
+|   - 63.1% block consolidation index (saving 38+ hours of line closures)                          |
+|   - +0.67% corridor availability gain across Delhi-Howrah mainline (1,447 km)                    |
 +---------------------------------------------------------------------------------------------------+
 ```
 
@@ -80,185 +86,195 @@ Our system replaces manual, decentralized scheduling with an automated, mathemat
 
 | Requirement from Problem Statement | Project Implementation Module | Verification Metric / Evidence |
 | :--- | :--- | :--- |
-| **1. Data Integration (TMS, SMMS, TDMS, COA, Goods Forecast)** | `engine/seed_diversified_12k.py`, `engine/schema.sql`, `engine/data_feeds/` | 19,586 assets, 350 failure logs, 304 defects, 706 timetabled train movements, 336 freight forecasts unified. |
-| **2. AI/ML Prioritization (Criticality, Urgency, Impact)** | `engine/risk_service.py`, `engine/criticality_engine.py`, `engine/urgency_engine.py`, `engine/priority_engine.py` | 30-day failure probability ($R_i$), continuous logistic urgency ($U_i$), multi-attribute criticality ($C_i$), and TreeSHAP attribution. |
-| **3. Multi-Department Optimization (Shadow Blocks & Downtime Min)** | `engine/coordination_engine.py`, `engine/optimizer_core.py` | 8-point deterministic compatibility matrix, duration containment ($D_b = \max(d_i, d_j)$), 63.2% consolidation rate. |
-| **4. Multi-Horizon Plans (Weekly & Monthly)** | `engine/optimizer_core.py` (`--horizon-days 7` or `30`), `backend/main.go`, `frontend/src/components/WeeklyMonthlyView.tsx` | Dynamic horizon scaling supporting 7-day tactical windows and 30-day master possession plans. |
+| **1. Data Integration (TMS, SMMS, TDMS, COA, Goods Forecast)** | `engine/seed_diversified_12k.py`, `DataIngestionView.tsx`, `DataQualityView.tsx` | 21 canonical datasets audited with 100% integrity pass; 12,000 assets, 1,819 timetable trains unified. |
+| **2. AI/ML Prioritization (Criticality, Urgency, Impact)** | `engine/urgency_engine.py`, `engine/criticality_engine.py`, `AIPriorityView.tsx` | Expected-loss priority ($P_i = C_i \times U_i \times W$), Weibull physics hazard curves, and local TreeSHAP attribution. |
+| **3. Multi-Department Optimization (Shadow Blocks & Downtime Min)** | `engine/coordination_engine.py`, `engine/compatibility_engine.py`, `CoordinationView.tsx` | 8-point deterministic compatibility matrix, duration containment ($D_b = \max(d_i, d_j)$), 63.1% consolidation rate. |
+| **4. Multi-Horizon Plans (Weekly & Monthly)** | `engine/optimizer_core.py`, `GanttTab.tsx`, `WeeklyMonthlyView.tsx` | Dynamic horizon scaling supporting 7-day tactical execution (72 blocks) and 30-day strategic capacity forecasts. |
+| **5. Human-in-the-Loop Governance & Safety Proof** | `ApprovalAuditView.tsx`, `AlertsView.tsx`, `engine/test_suite.py` | L4 controller review stepper, 25kV power isolation checklists, and 12/12 mathematical proof checks passed. |
 
 ---
 
-## 2. End-to-End Operational Pipeline (How It Works)
+## 2. Complete 18-Section Website User Interface & Architecture
+
+The application interface is structured into **18 integrated operational sections** across 5 functional tiers, mapped directly from `frontend/src/components/Sidebar.tsx` and documented in [`docs/presentation/UI_PRESENTATION_WALKTHROUGH.md`](docs/presentation/UI_PRESENTATION_WALKTHROUGH.md):
+
+```mermaid
+graph LR
+    subgraph "5-Tier Operational Architecture"
+        T1["1. OPERATIONS<br/>(Sections 1 - 5)"]
+        T2["2. COORDINATION<br/>(Sections 6 - 8)"]
+        T3["3. INTELLIGENCE<br/>(Sections 9 - 12)"]
+        T4["4. DATA<br/>(Sections 13 - 16)"]
+        T5["5. CONTROL<br/>(Sections 17 - 18)"]
+    end
+
+    T4 -->|Clean Datasets| T3
+    T3 -->|Risk & Urgency| T1
+    T1 -->|Task Demands| T2
+    T2 -->|Bundled Blocks| T5
+    T5 -->|Certified Dispatch| RealWorld["Live Train Operations"]
+```
+
+### 18-Section Master Navigation & Visual Inventory
+
+| Section # | Section Name | Operational Tier | Primary React Component | Primary Screenshot | Functional Deliverable |
+| :---: | :--- | :---: | :--- | :--- | :--- |
+| **01** | **Dashboard / GIS Map** | Operations | `CommandCenterView.tsx` | `Screenshot (1543).png` | Real-time network health, KPI ribbons, priority queue, and Leaflet GIS corridor map. |
+| **02** | **Asset Backlog** | Operations | `TasksView.tsx` | `Screenshot (1545).png` | Multi-department work order ledger, urgency distribution, and expected-loss ranking. |
+| **03** | **Weekly Block Planner** | Operations | `GanttTab.tsx` | `Screenshot (1547).png` | CP-SAT 7-day corridor timeline, 6 sectional swimlanes, and assigned possessions table. |
+| **04** | **Monthly Forecast** | Operations | `WeeklyMonthlyView.tsx` | `Screenshot (1549).png` | 30-day strategic corridor capacity, multi-horizon day cards, and planned maintenance trends. |
+| **05** | **Anomaly Handling** | Operations | `AnomalyHandlingView.tsx` | `Screenshot (1550).png` | 29 scenario classes, active disruption incident panel, auto-remediation, and audit log. |
+| **06** | **Coordination Centre** | Coordination | `CoordinationView.tsx` | `Screenshot (1551).png` | Hero bundling candidate, 8-point compatibility matrix, and cross-department shadow blocks. |
+| **07** | **Integrated / Shadow Blocks** | Coordination | `BeforeAfterView.tsx` | `Screenshot (1554).png` | Before vs. After ROI analysis, 63.1% block compression, and +0.67% availability gain. |
+| **08** | **Train & Block Conflicts** | Coordination | `TrainConflictsView.tsx` | `Screenshot (1555).png` | UP/DOWN directional swimlanes, 1,819 timetable trains, and 10-minute headway radar. |
+| **09** | **AI Risk & Priority** | Intelligence | `AIPriorityView.tsx` | `Screenshot (1557).png` | XGBoost v2.4 Champion model, physics Weibull hazard curves, and local SHAP attributions. |
+| **10** | **Failure Intelligence** | Intelligence | `FailureIntelligenceView.tsx` | `Screenshot (1558).png` | Historical UIMS failure logs, MTBF analytics, root-cause Pareto chart, and preventative orders. |
+| **11** | **Asset Health** | Intelligence | `AssetHealthView.tsx` | `Screenshot (1559).png` | 12,000 canonical assets, Ultrasonic Flaw Detection (USFD) scans, and machine staging. |
+| **12** | **What-If Simulator** | Intelligence | `WhatIfSimulatorView.tsx` | `Screenshot (1560).png` | Dynamic contingency replanning, temporal shifts (-60m to +120m), and ripple delay simulation. |
+| **13** | **Data Ingestion** | Data | `DataIngestionView.tsx` | `Screenshot (1562).png` | Multi-source enterprise feeds (COIS, ICMS, UIMS, TMS), CSV drag-and-drop, and audit log. |
+| **14** | **Data Quality** | Data | `DataQualityView.tsx` | `Screenshot (1563).png` | 21 canonical datasets audit matrix (100% pass), zero-null rules, and referential integrity. |
+| **15** | **Scenario Explorer** | Data | `ScenarioExplorerView.tsx` | `Screenshot (1564).png` | 29 operational disruptions benchmark suite, 8 metric tiles, and robustness matrix. |
+| **16** | **Model / Data Versions** | Data | `ModelVersionsView.tsx` | `Screenshot (1565).png` | Model registry, 6 candidate benchmark leaderboard, hyperparameter lineage, and hot-swap button. |
+| **17** | **Human Review & Audit** | Control | `ApprovalAuditView.tsx` | `Screenshot (1566).png` | L4 controller review stepper, electrical interlock checklist, and cryptographically signed authority. |
+| **18** | **Verification Suite** | Control | `AlertsView.tsx` | `Screenshot (1567).png` | 12/12 mathematical proof gate, 6 physical safety laws, and singleflight mutex telemetry. |
+
+---
+
+## 3. Multi-Color Component Annotation System
+
+Every component across the system is categorized and visually highlighted using a deterministic 6-color taxonomy across screenshots, documentation tables, and the PowerPoint deck:
+
+| Color Indicator | Code | Category Name | Hex Code | Operational Purview & Examples |
+| :---: | :---: | :--- | :---: | :--- |
+| 🟦 | `NAV` | **Navigation & Page Structure** | `#2563EB` | Global headers, division branding, date navigators, horizon toggle buttons, progress steppers |
+| 🟩 | `ACTION` | **Primary Actions & Buttons** | `#10B981` | Re-run CP-SAT solver, optimize group, dispatch work order, promote model, export certificate |
+| 🟧 | `FORM` | **Forms, Filters & Inputs** | `#D96F13` | Department quick-filters, search bars, temporal shift controls, CSV file dropzone |
+| 🟪 | `CARD` | **Cards & Content Sections** | `#7C3AED` | Metric ribbons, asset backlog table, scheduled possessions roster, hyperparameter manifests |
+| 🟥 | `ALERT` | **Alerts, Errors & Safety Warnings** | `#DC2626` | Emergency priority queue, headway buffer violations, collision radar, 25kV power interlocks |
+| 🟦 | `CHART` | **Charts, Analytics & Telemetry** | `#0891B2` | Leaflet GIS map, 6-corridor Gantt timeline, Weibull curves, SHAP explainability, Pareto charts |
+
+Detailed 15-field component breakdowns for all 80 cataloged items are available in [`docs/presentation/COMPONENT_INVENTORY.md`](docs/presentation/COMPONENT_INVENTORY.md).
+
+---
+
+## 4. End-to-End Operational Pipeline (How It Works)
 
 The system executes a 10-stage sequential pipeline from raw telemetry ingestion to controller dispatch:
 
 ```mermaid
 flowchart TD
-    subgraph S1["Stage 1: Data Ingestion & Unification"]
-        D1[TMS Track Geometry & Flaws] --> U[Canonical Data Normalizer]
-        D2[TDMS Catenary & Wear] --> U
-        D3[SMMS Axle Counters & Points] --> U
-        D4[COA Timetables & Freight Paths] --> U
+    subgraph S1["Stage 1: Data Ingestion & Quality Gate (Sections 13, 14)"]
+        D1[TMS Track Flaws] --> U[Multi-Source Ingestion Pipeline]
+        D2[TDMS Catenary Wear] --> U
+        D3[SMMS Axle Counters] --> U
+        D4[COIS / ICMS Timetables] --> U
+        U --> Q[21-Dataset Zero-Null Schema Audit Gate]
     end
 
-    subgraph S2["Stage 2: Machine Learning Risk Inference"]
-        U --> FE[Point-in-Time Feature Extractor]
-        FE --> ML[LightGBM 30-Day Failure Probability R_i]
-        ML --> SHAP[TreeSHAP Feature Attribution]
+    subgraph S2["Stage 2: Machine Learning Risk Inference (Sections 9, 16)"]
+        Q --> FE[Point-in-Time Feature Extractor]
+        FE --> ML[XGBoost v2.4 Champion Model P_f]
+        ML --> SHAP[Local TreeSHAP Feature Attribution]
     end
 
-    subgraph S3["Stage 3: Multi-Attribute Risk & Urgency Scoring"]
-        U --> CRIT[Engineering Criticality C_i]
-        U --> URG[Continuous Logistic Urgency U_i]
-        CRIT --> IMP[Composite Operational Impact I_i]
-        ML & IMP & URG --> PRIO[Expected-Loss Priority: 100 x R_i x I_i x U_i]
-        PRIO --> OVR[Statutory Safety Overrides: Broken Rail, OHE Snap >= 92.5]
+    subgraph S3["Stage 3: Multi-Attribute Risk & Urgency (Sections 2, 10, 11)"]
+        Q --> CRIT[Engineering Criticality C_i in 0, 1]
+        Q --> URG[Continuous Logistic Urgency U_i]
+        CRIT & ML & URG --> PRIO[Expected-Loss Priority: P_i = C_i x U_i x W]
+        PRIO --> OVR[Statutory Safety Override: Broken Rail / OHE Sag >= 92.5]
     end
 
-    subgraph S4["Stage 4: Shadow-Block Coordination"]
-        OVR --> COMP[8-Dimensional Pairwise Compatibility Matrix]
-        COMP --> BUNDLE[Multi-Department Shadow-Block Candidate Bundles]
+    subgraph S4["Stage 4: Shadow-Block Coordination (Sections 6, 7)"]
+        OVR --> COMP[8-Point Deterministic Compatibility Matrix]
+        COMP --> BUNDLE[Multi-Department Shadow-Block Bundles: D_b = max d_i, d_j]
     end
 
-    subgraph S5["Stage 5: CP-SAT Constraint Programming Solver"]
-        BUNDLE & D4 --> SOLVER[Google OR-Tools CP-SAT Optimizer]
-        SOLVER --> RAW[Candidate Block Schedule CSV]
+    subgraph S5["Stage 5: CP-SAT Constraint Optimization (Sections 3, 4)"]
+        BUNDLE & D4 --> SOLVER[Google OR-Tools CP-SAT Corridor Solver]
+        SOLVER --> RAW[Certified 7-Day / 30-Day Block Schedule]
     end
 
-    subgraph S6["Stage 6: Post-Solve Deterministic Safety Certification"]
+    subgraph S6["Stage 6: Safety & Mathematical Verification (Sections 8, 18)"]
         RAW --> VAL[Independent Deterministic Safety Validator]
-        VAL -->|10-min Headway Check Pass| CERT[Signed PASS Safety Certificate]
-        VAL -->|Collision Detected| REJECT[Automatic Hold & Human Intervention]
+        VAL -->|10-min Headway Pass| CERT[12/12 Mathematical Proof Certificate]
+        VAL -->|Collision Detected| REJECT[Automatic Recompute Lock]
     end
 
-    subgraph S7["Stage 7: Execution & Controller Governance"]
-        CERT --> API[Go Fiber Gateway :3000 / Python Engine :8765]
-        API --> UI[React 18 Gantt & Spatial Dashboard]
-        API --> WHATIF[What-If Scenario Simulator]
-        API --> AUDIT[Immutable Audit Log & Plan Review]
+    subgraph S7["Stage 7: Human Review & Live Dispatch (Sections 5, 12, 17)"]
+        CERT --> L4[Level 4 Controller Review Stepper]
+        L4 --> CHECK[Mandatory 25kV OHE Power Isolation Checklist]
+        CHECK --> SIGN[Digitally Signed Block Authority Form T/409]
+        SIGN --> DISPATCH[Station Master & Live TMS Dispatch]
     end
 ```
 
-### Detailed Step-by-Step Breakdown:
-1. **Ingestion & Normalization**: TMS, SMMS, and TDMS logs are transformed into the canonical schema with unified spatial coordinates (linear track KM mapped to WGS84 GPS latitude/longitude).
-2. **Predictive Failure Inference**: The LightGBM classifier estimates the 30-day probability of functional asset failure ($R_i \in [0, 1]$) calibrated via isotonic regression.
-3. **Engineering Criticality Assessment**: Asset consequence is scored across 6 dimensions ($C_i \in [0, 1]$) reflecting route speed, structural hierarchy, and redundancy.
-4. **Continuous Logistic Urgency**: Remaining days until maintenance deadline ($d_i$) are mapped through a continuous sigmoidal curve ($U_i \in (0, 1)$), eliminating arbitrary step discontinuities.
-5. **Operational Impact Computation**: Disruption impact ($I_i \in [0, 1]$) calculates train traffic density, track configuration (single/double line), and task execution duration.
-6. **Expected-Loss Synthesis & Statutory Overrides**: Priority is computed as $Priority_i = 100 \times R_i \times I_i \times U_i$. Statutory non-negotiable safety rules force broken rails, track circuit drops, and OHE snaps to $Priority_i \ge 92.5$ (`Critical`).
-7. **Shadow-Block Compatibility Bundling**: Cross-department tasks on the same physical section are evaluated across 8 pairwise compatibility criteria. Compatible tasks are bundled into a single possession window whose duration is contained by the longest task ($D_b = \max(d_i, d_j)$).
-8. **Block-Centric CP-SAT Optimization**: Formulated as an integer programming problem in Google OR-Tools. The solver enforces line-aware train separation headway buffers ($\ge 10$ minutes), crew capacity bounds, and traffic restrictions.
-9. **Independent Deterministic Safety Certification**: An isolated post-solve validator tests every scheduled block against every passenger and freight train movement. If a single minute of headway is violated, the plan is rejected.
-10. **Controller Review & Audit Dispatch**: Section controllers inspect the certified Gantt schedule, simulate emergency disruptions in the What-If Engine, approve the plan with cryptographic signatures, and dispatch electronic possession permits.
+---
+
+## 5. Operational User Workflows & System Interaction Diagrams
+
+The platform orchestrates daily railway operations across 6 verified user journeys documented in [`docs/presentation/WORKFLOW_DIAGRAMS.md`](docs/presentation/WORKFLOW_DIAGRAMS.md):
+
+1. **Workflow 1: Tactical 7-Day Block Scheduling** (Sections 2, 3) — Resolves 189 pending work orders into 72 collision-free block windows using Google OR-Tools CP-SAT.
+2. **Workflow 2: Real-Time Pairwise Headway Audit** (Section 8) — Verifies statutory $\ge 10$-minute headway clearance across 1,819 train paths on UP/DOWN directional swimlanes.
+3. **Workflow 3: Cross-Department Shadow-Block Bundling** (Sections 6, 7) — Evaluates the 8-point compatibility matrix, achieving a 63.1% reduction in line possession requests.
+4. **Workflow 4: Emergency Disruption & What-If Replanning** (Sections 5, 12) — Sandbox simulation testing time shifts (-60m to +120m) and mitigating ripple delays within seconds.
+5. **Workflow 5: Mathematical Proof Gate & Verification Suite** (Section 18) — Validates 6 physical railway laws and executes 12 assertion checks in 35 milliseconds.
+6. **Workflow 6: Shift Changeover & Operational Handover** (Sections 1, 17) — Coordinates 24-hour military clock synchronization and digital handover checklists between incoming and outgoing controllers.
 
 ---
 
-## 3. Resources & Machinery Modeling
+## 6. Resources & Machinery Modeling
 
-The optimizer models maintenance tasks not as abstract time slots, but as constrained operational jobs requiring specific mobile machines and certified gangs:
+The optimizer models maintenance tasks as constrained operational jobs requiring specialized machinery and certified gangs:
 
-### 3.1 Heavy On-Track Machinery
+### 6.1 Heavy On-Track Machinery
 - **Ballast Cleaning Machine (BCM)**: Excavates, screens, and restores track ballast bed. Requires full line possession and adjacent track speed restriction ($45\text{ km/h}$).
 - **Continuous Tamping Machine (09-3X / CSM)**: Lifts, levels, and tamps railway track sleepers. Must follow BCM operations with a minimum 30-minute buffer.
 - **8-Wheeler Tower Wagon (DETC)**: Self-propelled diesel-electric car for OHE contact and catenary wire inspection, dropper adjustment, and insulator washing.
 - **Dynamic Track Stabilizer (DTS)**: Consolidates ballast after tamping to permit immediate resumption of train traffic at $50\text{ km/h}$.
-- **Rail Grinding Machine (RGM)**: 72-stone grinding train removing railhead micro-cracks and corrugation. High spark hazard; cannot operate concurrently with track painting or fuel freight shunting.
+- **Rail Grinding Machine (RGM)**: 72-stone grinding train removing railhead micro-cracks and corrugation. High spark hazard; prohibited near fuel freight shunting.
 - **Mobile Flash Butt Welding Plant (FBWP)**: In-situ rail joint welding. Requires simultaneous S&T track circuit disconnection and OHE power block.
 
-### 3.2 Human Gangs & Certified Crews
+### 6.2 Certified Engineering Gangs
 - **Permanent Way Gang (P-Way)**: Track maintenance technicians, keymen, and mate supervisors.
 - **Traction Overhead Linemen (TRD)**: High-voltage certified linemen executing power cut earthing and catenary repairs.
 - **Signal Technicians (S&T)**: Signal maintainers responsible for point machine switch adjustments and track circuit calibration.
-- **Safety Lookouts & Protection Flagmen**: Stationed at mandatory $600\text{ m}$ and $1200\text{ m}$ banner flag distance during every block.
+- **Safety Lookouts & Flagmen**: Stationed at mandatory $600\text{ m}$ and $1200\text{ m}$ banner flag distance during every block.
 
 ---
 
-## 4. Data Architecture & Ingestion Feeds
+## 7. Data Architecture & Ingestion Feeds
 
-### 4.1 Field System Feeds & Integration Protocols
+### 7.1 Field System Feeds & Integration Protocols
+- **TMS (Track Management System)**: Ultrasonic Flaw Detection (USFD) echo scans, Track Recording Car (TRC) runs, rail wear (mm), weld fracture history.
+- **TDMS (Traction Distribution)**: Catenary contact wire residual thickness, dropper integrity, infrared thermography hot spots, neutral section insulators.
+- **SMMS (Signalling Management)**: Axle counter reset counts, point machine motor operating current (amperes), throw time (seconds), track circuit drops.
+- **COIS / ICMS (Passenger Operations)**: Live passenger train timetables, rake priority (Rajdhani, Vande Bharat, Mail, Express), section entry/exit times.
+- **COIS (Freight Operations)**: Projected paths for bulk commodities (BOXN coal, BTPN petroleum, container rakes) with estimated corridor traversal windows.
 
-```
-+---------------+      +-------------------------------------------------------------+
-| Source System |      | Payload Content & Engineering Parameters                    |
-+---------------+      +-------------------------------------------------------------+
-| TMS           | ---> | USFD ultrasonic flaw echo amplitudes, Track Recording Car   |
-| (Track)       |      | (TRC) runs (TGI, twist, gauge, unevenness), cumulative MGT, |
-|               |      | rail wear (mm), weld fracture history                       |
-+---------------+      +-------------------------------------------------------------+
-| SMMS          | ---> | Axle counter reset counts, point machine motor operating    |
-| (Signal)      |      | current (amperes), throw time (seconds), track circuit drop |
-|               |      | frequency, signal lamp LED cluster health                   |
-+---------------+      +-------------------------------------------------------------+
-| TDMS          | ---> | Contact wire thickness (residual mm), dropper integrity,    |
-| (Traction)    |      | infrared thermography hot spots, pantograph acceleration    |
-|               |      | shocks, neutral section insulator condition                 |
-+---------------+      +-------------------------------------------------------------+
-| COA           | ---> | Live passenger train timetables, rake priority (Rajdhani /  |
-| (Operations)  |      | Mail / Passenger), section entry/exit timestamps, direction |
-+---------------+      +-------------------------------------------------------------+
-| Freight Office| ---> | Projected paths for bulk commodities (BOXN coal, BTPN fuel, |
-| (Goods)       |      | container rakes) with estimated corridor traversal windows  |
-+---------------+      +-------------------------------------------------------------+
-| BDMS          | ---> | Departmental work requisitions, requested possession time,  |
-| (Demand)      |      | safety disconnection permits, temporary speed restrictions  |
-+---------------+      +-------------------------------------------------------------+
-```
-
-### 4.2 Canonical Relational Schema (20 Tables & Enterprise Views)
-The data layer is defined in [`engine/schema.sql`](file:///c:/Users/kal_EL/OneDrive/文档/project%20SIH%202026/automatic-block-planning/engine/schema.sql):
-
-```sql
--- Core Infrastructure Hierarchy
-sections              (section_id PK, corridor_id, name, length_km, start_km, end_km, geometry LineString)
-assets                (asset_id PK, section_id FK, department, asset_type, install_date, location_lat, location_lon)
-
--- Defect & Telemetry Streams
-failures              (failure_id PK, asset_id FK, failure_date, failure_type, root_cause, severity)
-defects               (defect_id PK, asset_id FK, detection_date, defect_type, severity, degradation_rate)
-inspections           (inspection_id PK, asset_id FK, inspection_date, parameter_name, measured_value, tgi_score)
-
--- Operational Demand & Train Movement
-maintenance_tasks     (task_id PK, asset_id FK, task_type, criticality, duration_minutes, due_date, priority_score)
-task_actions          (action_id PK, task_id FK, action_seq, step_description, safety_isolation_required)
-train_movements       (movement_id PK, train_id, section_id FK, train_type, direction, entry_time, exit_time)
-goods_forecast        (forecast_id PK, section_id FK, corridor_id, forecast_time, train_type, speed_kmh)
-
--- Resource & Window Catalogs
-resources             (resource_id PK, resource_name, resource_type, capacity, department)
-block_windows         (window_id PK, section_id FK, window_type, start_minute, end_minute, max_duration_minutes)
-
--- Audit & Decision Governance
-audit_logs            (log_id PK, event_type, actor, timestamp, details_json)
-plan_reviews          (review_id PK, plan_id, section_controller, status, cryptographic_hash, signed_timestamp)
-
--- Canonical Uppercase Views for Seamless TMS/COA Interoperability
-ASSET_MASTER                  AS SELECT * FROM assets;
-FAILURE_EVENT_HISTORY         AS SELECT * FROM failures;
-MAINTENANCE_TASKS             AS SELECT * FROM maintenance_tasks;
-TRAIN_OPERATION_HISTORY       AS SELECT * FROM train_movements;
-BLOCK_AVAILABILITY            AS SELECT * FROM block_windows;
-RESOURCE_AVAILABILITY         AS SELECT * FROM resources;
-GOODS_TRAIN_FORECAST          AS SELECT * FROM goods_forecast;
-AUDIT_EVENTS                  AS SELECT * FROM audit_logs;
-OPTIMIZED_BLOCK_PLAN          AS SELECT * FROM optimized_blocks;
-```
+### 7.2 Canonical Relational Schema (21 Datasets & Enterprise Views)
+Defined in [`engine/schema.sql`](engine/schema.sql), tested for 100% referential integrity in Section 14 (Data Quality):
+- `sections`, `assets`, `failures`, `defects`, `inspections`
+- `maintenance_tasks`, `task_actions`, `train_movements`, `goods_forecast`
+- `resources`, `block_windows`, `audit_logs`, `plan_reviews`
+- Canonical Uppercase Views: `ASSET_MASTER`, `FAILURE_EVENT_HISTORY`, `MAINTENANCE_TASKS`, `TRAIN_OPERATION_HISTORY`, `BLOCK_AVAILABILITY`, `OPTIMIZED_BLOCK_PLAN`.
 
 ---
 
-## 5. System Architecture & Component Topography
-
-The platform is designed with a high-concurrency **dual-backend architecture**:
+## 8. System Architecture & Component Topography
 
 ```
 +---------------------------------------------------------------------------------------------------+
 |                                     FRONTEND CLIENT LAYER                                         |
 |                                                                                                   |
-|   React 18 + TypeScript + Vite + Tailwind CSS + Lucide Icons                                      |
-|   - Master Corridor Gantt (with Live Timetabled Train Movement Overlays)                           |
-|   - True Railway Geometry GIS Network Map (Leaflet with GeoJSON curvature)                       |
-|   - Machine Learning Explainability Pane (TreeSHAP Attributions)                                  |
-|   - Multi-Department Shadow-Block Coordinated Visualizer                                          |
-|   - What-If Emergency Disruption & Surge Simulator                                                |
-|   - Independent Deterministic Safety Certification Badge & Controller Sign-Off                    |
+|   React 18 + TypeScript + Vite + Tailwind CSS + Lucide Icons (18 Sections · 80 Components)        |
+|   - 18 Operational Views across Operations, Coordination, Intelligence, Data, and Control         |
+|   - Master Corridor Gantt with Timetabled Train Overlays & UP/DOWN Directional Swimlanes          |
+|   - Curved Rail Geometry GIS Network Map (Leaflet with GeoJSON curvature)                         |
+|   - Machine Learning Explainability Pane (Weibull Hazard Curves & Local TreeSHAP Attributions)    |
+|   - Multi-Department Shadow-Block Coordinated Visualizer & 8-Point Compatibility Matrix           |
+|   - What-If Emergency Disruption & Temporal Shift Simulator (-60m to +120m)                       |
+|   - Level 4 Human Controller Review Stepper, 25kV Safety Checklists & Verification Gate           |
 +---------------------------------------------------------------------------------------------------+
                                          │
                     HTTP REST & Reverse Proxy (Port 3000 / 5173)
@@ -270,7 +286,7 @@ The platform is designed with a high-concurrency **dual-backend architecture**:
 |   - Sub-millisecond latency for metrics, backlog tasks, section metadata                          |
 |   - Static SPA distribution server (serves frontend/dist/ directly)                              |
 |   - Full HTTP reverse proxy (proxyHTTP) routing ML & CP-SAT requests to Python engine             |
-|   - CORS-free single-origin hosting with rate limiting & panic recovery middleware                |
+|   - Singleflight Mutex & 60-Second In-Memory Cache protecting CPU from solver thrashing           |
 +---------------------------------------------------------------------------------------------------+
                                          │
                           Internal High-Speed Loopback
@@ -279,271 +295,162 @@ The platform is designed with a high-concurrency **dual-backend architecture**:
 |                        PYTHON DECISION & OPTIMIZATION ENGINE (Port 8765)                          |
 |                                                                                                   |
 |   - Google OR-Tools CP-SAT Corridor Constraint Solver (optimizer_core.py)                         |
-|   - LightGBM & TreeSHAP Predictive Failure Service (risk_service.py)                              |
-|   - Continuous Urgency, Criticality, & Impact Engines (urgency_engine.py, criticality_engine.py)  |
+|   - XGBoost v2.4 Champion Model & TreeSHAP Local Explainability Service (risk_service.py)         |
+|   - Continuous Logistic Urgency, Criticality, & Impact Engines (urgency_engine.py, etc.)          |
 |   - 8-Dimensional Shadow-Block Coordination Engine (coordination_engine.py)                       |
-|   - Independent Deterministic Safety Validator (validator.py)                                    |
-|   - What-If Scenario Simulation & KPI Service (scenario_engine.py)                               |
+|   - Independent Deterministic Safety Validator (validator.py) & 12-Check Verification Suite      |
+|   - What-If Scenario Simulation & Ripple Delay Service (scenario_engine.py)                      |
 +---------------------------------------------------------------------------------------------------+
                                          │
-                                SQL Engine / Connection Pool
+                                SQL Pool / Relational WAL
                                          ▼
 +---------------------------------------------------------------------------------------------------+
 |                                     PERSISTENCE DATA LAYER                                        |
 |                                                                                                   |
-|   - SQLite 3 (engine/block_planning.db) for local standalone dev & demo                           |
+|   - SQLite 3 (engine/block_planning.db) in WAL mode with 60s busy timeout for local runtime        |
 |   - PostgreSQL 16 (pgdata volume with WAL & fsync) for production container deployment            |
-|   - 20 relational tables + 9 canonical uppercase views matching Indian Railways TMS/COA standards |
+|   - 21 relational tables + 9 canonical enterprise views matching Indian Railways TMS standards    |
 +---------------------------------------------------------------------------------------------------+
 ```
 
 ---
 
-## 6. Complete Mathematical Formulations (All Formulas)
+## 9. Complete Mathematical Formulations (All Formulas)
 
-Every prioritization score, compatibility rule, solver constraint, and KPI in the system is governed by rigorous mathematical formulations:
-
-### 6.1 Predictive Failure Probability ($R_i$)
-The conditional probability that asset $i$ suffers functional failure within a 30-day forward horizon:
-
+### 9.1 Predictive Failure Probability ($R_i$)
 $$R_i = P(Y_i = 1 \mid X_i) \in [0, 1]$$
+Attribution via TreeSHAP: $R_i(X_i) = \phi_0 + \sum_{m=1}^d \phi_m(X_i)$
 
-Where:
-- $Y_i \in \{0, 1\}$: Binary failure event.
-- $X_i \in \mathbb{R}^d$: Point-in-time feature vector containing cumulative gross tonnage ($MGT$), defect velocity ($\frac{\Delta \text{defect}}{\Delta t}$), Track Geometry Index ($TGI$), and ultrasonic echo amplitudes.
-- Model attribution via TreeSHAP:
-$$R_i(X_i) = \phi_0 + \sum_{m=1}^d \phi_m(X_i)$$
+### 9.2 Multi-Attribute Engineering Criticality ($C_i$)
+$$C_i = 0.30 S_i + 0.20 O_i + 0.20 A_i + 0.10 F_i + 0.10 R_i^{red} + 0.10 T_i \in [0, 1]$$
 
-### 6.2 Multi-Attribute Engineering Criticality ($C_i$)
-Asset structural and route consequence is quantified on a normalized scale $[0, 1]$:
+### 9.3 Continuous Bounded Logistic Urgency ($U_i$)
+$$U_i = \frac{1}{1 + \exp\Big(k \cdot (d_i - d_0)\Big)}, \quad k = 0.35, d_0 = 2.0$$
 
-$$C_i = 0.30 S_i + 0.20 O_i + 0.20 A_i + 0.10 F_i + 0.10 R_i^{red} + 0.10 T_i$$
-
-Where:
-- $S_i$: Safety consequence rating (derailment risk, signal pass at danger potential).
-- $O_i$: Operational consequence rating (mainline vs. branch loop line).
-- $A_i$: Asset hierarchy rank (point switch = $1.0$, sleeper pad = $0.2$).
-- $F_i$: Historical failure frequency degradation over 365 days.
-- $R_i^{red}$: Redundancy index ($1.0$ = no parallel path, $0.0$ = fully redundant loop).
-- $T_i$: Route traffic density normalized by maximum section tonnage.
-
-### 6.3 Continuous Bounded Logistic Urgency ($U_i$)
-To eliminate arbitrary step-function cliffs, temporal urgency is modeled as a continuous sigmoid over remaining lead time $d_i = \text{Date}_{due} - \text{Date}_{current}$:
-
-$$U_i = \frac{1}{1 + \exp\Big(k \cdot (d_i - d_0)\Big)}$$
-
-With calibrated parameters $k = 0.35$ and $d_0 = 2.0$:
-- $\lim_{d_i \to -\infty} U_i = 1.0$ (Overdue tasks asymptotically approach $1.0$).
-- $U_i\Big|_{d_i = d_0} = 0.50$ (Exactly 2 days before deadline yields $0.50$).
-- $\lim_{d_i \to +\infty} U_i = 0.0$ (Distant maintenance smoothly approaches $0.0$).
-
-### 6.4 Composite Operational Disruption Impact ($I_i$)
-Quantifies the line-occupancy consequence of granting maintenance possession:
-
-$$I_i = 0.40 C_i + 0.25 D_i + 0.20 T_i^{impact} + 0.15 A_i^{impact} \in [0, 1]$$
-
-Where $D_i = \min\left(1.0, \frac{\text{duration\_minutes}}{360}\right)$, $T_i^{impact}$ is timetabled trains per hour, and $A_i^{impact}$ is single vs. double track closure factor.
-
-### 6.5 Expected-Loss Priority Formulation ($Priority_i$)
-The core decision metric synthesizes failure risk, consequence, and urgency:
-
+### 9.4 Expected-Loss Priority Formulation ($Priority_i$)
 $$Priority_i = 100 \times R_i \times I_i \times U_i \in [0, 100]$$
 
-#### Statutory Deterministic Safety Override
-Regardless of ML regression outputs or scheduling weights:
-
+#### Statutory Deterministic Safety Override:
 $$\text{If } \text{DefectType}_i \in \{\text{'Broken Rail Weld'}, \text{'Track Circuit Failure'}, \text{'OHE Dropper Broken'}, \text{'Signal Blank'}\}:$$
 $$Priority_i \leftarrow \max(Priority_i, 92.50), \quad \text{Band}_i \leftarrow \text{'Critical'}$$
 
-#### Traditional Indian Railways 60/40 Rule Baseline
-Evaluated concurrently for historical audit and performance benchmark:
-
-$$Priority_i^{rule} = 0.60 C_i^{rule} + 0.40 U_i^{rule}$$
-
-### 6.6 Multi-Department Shadow-Block Compatibility ($Compat_{ij}$)
-Two maintenance tasks $i$ and $j$ can be bundled into a shared possession window if and only if all 8 compatibility criteria hold:
-
+### 9.5 Multi-Department Shadow-Block Compatibility ($Compat_{ij}$)
 $$Compat_{ij} = S_{ij} \land T_{ij} \land Iso_{ij} \land Res_{ij} \land Dir_{ij} \land Dep_{ij} \land Safety_{ij}$$
+Duration containment: $D_b = \max_{i \in \mathcal{T}_b}(d_i)$, Savings: $\Delta \text{Possession}_b = \sum_{i \in \mathcal{T}_b} d_i - D_b$
 
-1. **Spatial Proximity ($S_{ij}$)**: $\text{Sec}_i = \text{Sec}_j \land |\text{KM}_i - \text{KM}_j| \le \Delta_{km}^{safe}$
-2. **Temporal Proximity ($T_{ij}$)**: $|d_i - d_j| \le 3\text{ days}$
-3. **Electrical Isolation ($Iso_{ij}$)**: Compatible power shutoff requirements
-4. **Resource Non-Interference ($Res_{ij}$)**: Non-conflicting track machinery
-5. **Directional Impact ($Dir_{ij}$)**: Compatible track lines (`UP`, `DOWN`, or `BOTH`)
-6. **Departmental Rules ($Dep_{ij}$)**: Validated cross-department combinations
-7. **Safety Clearance ($Safety_{ij}$)**: Longitudinal distance $\ge 500\text{ m}$ between mobile crews
-
-#### Combined Duration & Possession Savings
-For bundled block $b$ containing tasks $\mathcal{T}_b = \{i_1, i_2, \dots, i_k\}$:
-
-$$D_b = \max_{i \in \mathcal{T}_b}(d_i)$$
-
-$$\Delta \text{Possession}_b = \sum_{i \in \mathcal{T}_b} d_i - D_b$$
-
-### 6.7 Block-Centric CP-SAT Integer Programming Formulation
-
-#### Decision Variables:
-- $x_{ib} \in \{0, 1\}$: Binary variable $= 1$ if task $i$ is assigned to block window $b$.
-- $s_b \in [0, H]$: Integer start minute of block $b$ in horizon $H$.
-- $e_b \in [0, H]$: Integer end minute of block $b$, where $e_b = s_b + D_b$.
-- $u_b \in \{0, 1\}$: Binary indicator $= 1$ if block $b$ is activated.
-
-#### Objective Function:
-$$\max \mathcal{Z} = \sum_{b \in \mathcal{B}} \sum_{i \in \mathcal{T}} Priority_i \cdot x_{ib} + \alpha \sum_{b \in \mathcal{B}} \Delta \text{Possession}_b - \beta \sum_{b \in \mathcal{B}} D_b \cdot \text{TrafficDensity}(\text{Sec}_b)$$
-
-Where $\alpha = 1.5$ rewards cross-department coordination and $\beta = 0.8$ penalizes possession on high-density corridors.
+### 9.6 Block-Centric CP-SAT Integer Programming Formulation
+$$\max \mathcal{Z} = \sum_{b \in \mathcal{B}} \sum_{i \in \mathcal{T}} Priority_i \cdot x_{ib} + 1.5 \sum_{b \in \mathcal{B}} \Delta \text{Possession}_b - 0.8 \sum_{b \in \mathcal{B}} D_b \cdot \text{TrafficDensity}(\text{Sec}_b)$$
 
 #### Hard Constraints:
 1. **Single Assignment**: $\sum_{b \in \mathcal{B}} x_{ib} \le 1 \quad \forall i \in \mathcal{T}$
 2. **Duration Containment**: $D_b \ge d_i \cdot x_{ib} \quad \forall i \in \mathcal{T}, \forall b \in \mathcal{B}$
 3. **Deterministic Train Headway Clearance ($\ge 10$ Minutes)**:
-   For every block $b$ on section $s$ and every timetabled train $j$ with arrival $A_j$ and departure $B_j$:
-   $$(e_b + 10 \le A_j) \quad \lor \quad (s_b \ge B_j + 10)$$
-4. **Resource Capacity Bounds**:
-   $$\sum_{b \in \mathcal{B}: s_b \le t < e_b} \text{Demand}(b, r) \le \text{Capacity}(r) \quad \forall r, \forall t$$
-5. **Section Non-Concurrency**: Conflicting blocks on the same track cannot overlap in time:
-   $$(e_{b_1} \le s_{b_2}) \lor (e_{b_2} \le s_{b_1}) \quad \forall b_1 \ne b_2 \text{ on section } s$$
+   $$(e_b + 10 \le A_j) \quad \lor \quad (s_b \ge B_j + 10) \quad \forall b, \forall j \in \text{Trains}(\text{Sec}_b)$$
+4. **Section Non-Concurrency**: Conflicting blocks on the same track line cannot overlap in time.
 
-### 6.8 Independent Post-Solve Safety Certification
-Before a plan is dispatched to controllers, the deterministic validator re-checks every interval:
-
+### 9.7 Independent Post-Solve Safety Certification
 $$\forall b \in \mathcal{B}_{\text{scheduled}}, \forall j \in \text{Trains}(\text{Sec}_b): \quad (e_b \le A_j - 10) \;\lor\; (s_b \ge B_j + 10)$$
-
 $$\text{CertificationStatus} = \begin{cases} \text{PASS}, & \text{if condition holds } \forall (b, j) \\ \text{FAIL}, & \text{otherwise} \end{cases}$$
 
-### 6.9 Operational KPIs
-1. **Estimated Delay Trapped ($EDT_i$)**:
-   $$EDT_i = \text{Delay}_{\text{reactive}}(i) - \text{Delay}_{\text{scheduled}}(i)$$
-2. **Expected Delay Reduction ($EDR\%$)**:
-   $$EDR\% = \frac{\sum_i EDT_i}{\sum_i \text{Delay}_{\text{reactive}}(i)} \times 100\%$$
-3. **Corridor Availability Gain ($\Delta \text{Availability}$)**:
-   $$\Delta \text{Availability} = \frac{\sum_b \Delta \text{Possession}_b}{H \times |\mathcal{S}|} \times 100\%$$
-4. **Multi-Department Consolidation Rate**:
-   $$\text{Consolidation Rate} = \frac{|\{b \in \mathcal{B} : |\text{Departments}_b| \ge 2\}|}{|\mathcal{B}|} \times 100\%$$
+---
+
+## 10. Machine Learning Pipeline & Explainable AI (XAI)
+
+- **Champion Model**: XGBoost v2.4 Champion model ($PR\text{-}AUC = 0.3138$, $Brier = 0.0812$), trained on 15,000 real railway operational records.
+- **Candidate Leaderboard**: Rigorously benchmarked against CatBoost (2nd), LightGBM (3rd), Random Forest (4th), and Extra Trees (5th) in Section 16 (Model Versions).
+- **Physics Weibull Degradation Modeling**: Computes hazard rate $h(t) = \frac{\beta}{\eta} \left(\frac{t}{\eta}\right)^{\beta - 1}$ mapping gross million tonnes ($GMT$) to mechanical wear-out probability.
+- **Local TreeSHAP Attribution**: Decomposes every priority score into exact feature deltas (Track Age $+0.104$, High Summer Temp $+0.047$, Recent Tamping $-0.032$).
 
 ---
 
-## 7. Machine Learning Pipeline & Research Roadmap
-
-### 7.1 Current ML Implementation
-The current machine learning service ([`engine/risk_service.py`](file:///c:/Users/kal_EL/OneDrive/文档/project%20SIH%202026/automatic-block-planning/engine/risk_service.py)) operates as follows:
-- **Features**: Asset age, cumulative gross tonnage ($MGT$), defect escalation velocity, Track Geometry Index ($TGI$), and ultrasonic flaw indicators.
-- **Model Ensembles**: Evaluated across LightGBM, Random Forest, and Gradient Boosting (`engine/multi_model_benchmark.py`).
-- **Calibration**: Isotonic regression ensures predicted probabilities equal true empirical failure rates.
-- **Local Explainability**: TreeSHAP values decompose each prediction into positive and negative risk contributors for controller trust.
-
-### 7.2 What Changes & Enhancements Are Still Required
-To transition from the current benchmark to a nationwide deployment, the following advancements are planned:
-
-```
-+---------------------------------------------------------------------------------------------------+
-|                                     ML RESEARCH ROADMAP                                           |
-+------------------------------------+--------------------------------------------------------------+
-| Proposed Advancement               | Engineering Rationale & Impact                               |
-+------------------------------------+--------------------------------------------------------------+
-| 1. Spatio-Temporal Graph Neural    | Tracks are connected topological graphs. A broken weld at    |
-|    Networks (ST-GNN)               | KM 104 creates dynamic speed restrictions that alter brake   |
-|                                    | force wear at KM 106. GNNs model network propagation.        |
-+------------------------------------+--------------------------------------------------------------+
-| 2. Survival Analysis & RUL         | Replace binary 30-day classification with continuous Weibull |
-|    (Cox Proportional Hazards)      | Remaining Useful Life (RUL) estimation: P(T > t | X).         |
-+------------------------------------+--------------------------------------------------------------+
-| 3. Closed-Loop Telemetry Reset     | When a block completes, real-time telemetry from inspection  |
-|                                    | cars should dynamically reset degradation curves in the DB.  |
-+------------------------------------+--------------------------------------------------------------+
-| 4. Distributed Online Training     | Apache Kafka stream ingestion for continuous model updates   |
-|    (Feature Store + Kafka)         | without requiring offline batch retraining.                  |
-+------------------------------------+--------------------------------------------------------------+
-```
-
----
-
-## 8. Enhancing Operational & Visual Efficiency
-
-To make the Automatic Block Planning Platform even more efficient and intuitive for Indian Railways operational staff, the following roadmap is recommended:
-
-### 8.1 Visual & UI/UX Enhancements
-- **3D Digital Twin (Three.js / WebGL)**: An interactive 3D track view showing overhead catenary wires, running rails, and signal gantries colored by real-time risk level.
-- **Tablet-Optimized Field Controller Mode**: High-contrast, responsive dark/light theme tailored for section controllers and station masters working on field tablets.
-- **Audio-Visual Collision Warning Dispatch**: Real-time auditory alerts and pulsing red visual halos whenever manual override attempts violate the 10-minute headway clearance buffer.
-- **Interactive Drag-and-Drop Gantt Rescheduling**: Allow controllers to drag a scheduled block to a new time window with sub-second background re-validation via WebAssembly.
-
-### 8.2 Algorithmic & Solver Performance Enhancements
-- **Rolling-Horizon Warm-Starting**: When re-optimizing schedules due to emergency line breaks, feed the previous CP-SAT solution as an initial hint (`AddHint`), reducing solver runtime from 5 seconds to under 400 milliseconds.
-- **Hierarchical Graph Partitioning**: For nationwide pan-Indian scaling (100,000+ assets across 68 divisions), partition the rail network into decoupled geographic zones solved in parallel.
-- **Automated Crew Rostering Integration**: Link machine assignments directly to Railway Crew Management System (CMS) driver duty limits and rest hours.
-
----
-
-## 9. Project Directory & File Structure
+## 11. Project Directory & File Structure
 
 ```
 automatic-block-planning/
 ├── backend/
-│   ├── main.go                     # High-concurrency Go Fiber API Gateway & reverse proxy
-│   ├── main_test.go                # Go Fiber unit tests & validation tests
-│   ├── server.py                   # Python Flask optimization & decision engine
-│   ├── server_go.exe               # Compiled Go binary (gitignored)
+│   ├── main.go                     # High-concurrency Go Fiber API Gateway (singleflight cache & reverse proxy)
+│   ├── main_test.go                # Go Fiber unit tests & route validation
+│   ├── server.py                   # Python optimization & decision engine service
 │   ├── go.mod                      # Go dependency definitions
 │   └── go.sum                      # Go dependency checksums
 ├── engine/
-│   ├── baseline_priority.py        # Indian Railways 60/40 rule priority baseline
-│   ├── block_planning.db           # SQLite relational database (20 canonical tables)
-│   ├── coordination_engine.py      # 8-dimensional multi-department shadow-block coordinator
-│   ├── criticality_engine.py       # Multi-attribute engineering criticality formula
-│   ├── db_helper.py                # Database connection factory (SQLite & PostgreSQL)
-│   ├── impact_engine.py            # Composite operational disruption impact score
-│   ├── ml_risk_model.pkl           # Trained LightGBM calibrated 30-day failure risk model
-│   ├── optimized_schedule.csv      # Output certified corridor possession schedule (219 tasks)
+│   ├── block_planning.db           # SQLite database in WAL mode (21 canonical tables, 345k+ records)
+│   ├── schema.sql                  # Canonical 21-table schema & uppercase enterprise views
 │   ├── optimizer_core.py           # Google OR-Tools CP-SAT corridor constraint optimizer
-│   ├── priority_engine.py          # Expected-Loss priority engine v2 & safety overrides
-│   ├── risk_service.py             # ML failure inference & TreeSHAP local explainability
-│   ├── scenario_engine.py          # What-If emergency disruption simulator & KPI engine
-│   ├── schema.sql                  # Canonical 20-table schema & uppercase enterprise views
-│   ├── test_suite.py               # 12-point automated mathematical & safety verification suite
-│   ├── seed_diversified_12k.py     # Master 25-dataset seeding & normalization pipeline
+│   ├── coordination_engine.py      # 8-dimensional multi-department shadow-block coordinator
+│   ├── compatibility_engine.py     # Deterministic compatibility matrix validator
+│   ├── criticality_engine.py       # Multi-attribute engineering criticality formula
 │   ├── urgency_engine.py           # Continuous bounded logistic urgency sigmoid engine
+│   ├── priority_engine.py          # Expected-Loss priority engine & safety overrides
+│   ├── risk_service.py             # ML failure inference & TreeSHAP local explainability
+│   ├── scenario_engine.py          # What-If emergency disruption simulator & ripple delay engine
+│   ├── test_suite.py               # 12-point automated mathematical & safety verification suite
 │   ├── validator.py                # Independent deterministic safety validator
-│   └── data_feeds/                 # Raw TMS, SMMS, TDMS CSV telemetry feeds
+│   ├── seed_diversified_12k.py     # Master 25-dataset seeding & normalization pipeline
+│   └── ml_model_meta.json          # MLOps model registry metadata & benchmark leaderboard
 ├── frontend/
 │   ├── dist/                       # Compiled production static bundle
 │   ├── src/
-│   │   ├── App.tsx                 # Root application container & tab router
-│   │   ├── api/client.ts           # Axios REST client with fallback failover
-│   │   ├── components/
-│   │   │   ├── AIPriorityView.tsx       # ML failure probability & TreeSHAP inspector
-│   │   │   ├── ApprovalAuditView.tsx    # Controller plan approval & cryptographic audit log
-│   │   │   ├── BeforeAfterView.tsx      # Heuristic vs. AI-optimized comparative benchmark
-│   │   │   ├── CommandCenterView.tsx    # Executive KPIs, corridor health, and workload distribution
-│   │   │   ├── CoordinationView.tsx     # Multi-department shadow-block visualizer
-│   │   │   ├── FailureIntelligenceView.tsx # Asset degradation curves & defect heatmaps
-│   │   │   ├── GanttTab.tsx             # Interactive corridor Gantt with timetabled train overlay
-│   │   │   ├── MapView.tsx              # Curved rail geometry GIS network map (Leaflet)
-│   │   │   ├── NetworkSectionsView.tsx  # Corridor track topology & density catalog
-│   │   │   ├── WeeklyMonthlyView.tsx    # Multi-horizon planning toggle (7-day vs. 30-day)
-│   │   │   └── WhatIfSimulatorView.tsx  # Interactive disruption & freight surge simulator
+│   │   ├── App.tsx                 # Root application container & tab router (18 views)
+│   │   ├── components/             # 18 Primary Operational View Components
+│   │   │   ├── CommandCenterView.tsx    # 01. Dashboard / GIS Map
+│   │   │   ├── TasksView.tsx            # 02. Asset Backlog
+│   │   │   ├── GanttTab.tsx             # 03. Weekly Block Planner
+│   │   │   ├── WeeklyMonthlyView.tsx    # 04. Monthly Forecast
+│   │   │   ├── AnomalyHandlingView.tsx  # 05. Anomaly Handling
+│   │   │   ├── CoordinationView.tsx     # 06. Coordination Centre
+│   │   │   ├── BeforeAfterView.tsx      # 07. Integrated / Shadow Blocks
+│   │   │   ├── TrainConflictsView.tsx   # 08. Train & Block Conflicts
+│   │   │   ├── AIPriorityView.tsx       # 09. AI Risk & Priority
+│   │   │   ├── FailureIntelligenceView.tsx # 10. Failure Intelligence
+│   │   │   ├── AssetHealthView.tsx      # 11. Asset Health
+│   │   │   ├── WhatIfSimulatorView.tsx  # 12. What-If Simulator
+│   │   │   ├── DataIngestionView.tsx    # 13. Data Ingestion
+│   │   │   ├── DataQualityView.tsx      # 14. Data Quality
+│   │   │   ├── ScenarioExplorerView.tsx # 15. Scenario Explorer
+│   │   │   ├── ModelVersionsView.tsx    # 16. Model / Data Versions
+│   │   │   ├── ApprovalAuditView.tsx    # 17. Human Review & Audit
+│   │   │   ├── AlertsView.tsx           # 18. Verification Suite
+│   │   │   ├── Sidebar.tsx              # 5-Tier 18-Section Navigation Shell
+│   │   │   ├── Header.tsx               # Master Header with System Status & Division Branding
+│   │   │   ├── LiveClock.tsx            # Statutory 24-Hour Military Railway Clock
+│   │   │   ├── WorkingCalendar.tsx      # 3-Shift Operational Calendar Modal
+│   │   │   └── TaskDetailDrawer.tsx     # Deep Asset Wear & 25kV Electrical Isolation Drawer
+│   │   └── api/client.ts           # Axios REST client with fallback failover
 │   ├── package.json                # Frontend npm dependencies (React 18, Vite, Leaflet)
 │   └── vite.config.ts              # Vite configuration & API proxy setup
 ├── docs/
+│   ├── ui_doc_generator.py         # Automated 18-section UI annotation & presentation generator
 │   ├── DATA_DICTIONARY.md          # Comprehensive data dictionary & field specifications
-│   └── MATHEMATICAL_MODEL_V2.md    # Formal mathematical model & constraint proofs
+│   ├── MATHEMATICAL_MODEL_V2.md    # Formal mathematical model & constraint proofs
+│   ├── visual_guide/               # 26 Authentic high-resolution production screenshots (1920x1080)
+│   └── presentation/               # Master Presentation & Visual Documentation Suite
+│       ├── ABPS_UI_Walkthrough.pptx       # 24-slide widescreen 16:9 presentation deck with speaker notes
+│       ├── UI_PRESENTATION_WALKTHROUGH.md # 18-section guide with Sections A-J and 15-field tables (161 KB)
+│       ├── COMPONENT_INVENTORY.md         # Consolidated 80-component catalog cross-indexed by color
+│       ├── DISCREPANCY_ANALYSIS.md        # Technical gap analysis & 26-screenshot mapping matrix
+│       ├── WORKFLOW_DIAGRAMS.md           # 6 operational controller workflows with Mermaid diagrams
+│       ├── ui_components_config.json      # Declarative JSON schema defining all 18 sections & 80 components
+│       ├── clean/                         # 18 cropped clean application screenshots (no browser chrome)
+│       ├── annotated/                     # 18 annotated screenshots with multi-color pins & bounding boxes
+│       └── infographics/                  # 18 presentation infographic posters with color legends
 ├── docker-compose.yml              # Production container orchestration
 ├── Dockerfile                      # Multi-stage production container build
-├── README.md                       # Complete project technical documentation
+├── README.md                       # Master project technical documentation
 └── .gitignore                      # Git exclusion rules
 ```
 
 ---
 
-## 10. Step-by-Step Installation & Running Guide
+## 12. Step-by-Step Installation & Running Guide
 
-### 10.1 Prerequisites
+### 12.1 Prerequisites
 - **Python**: Version 3.10 or 3.11
-- **Go**: Version 1.21+ (Optional if using Python directly)
+- **Go**: Version 1.21+
 - **Node.js**: Version 18+ and npm
 - **Docker**: Optional, for containerized deployment
 
-### 10.2 Method 1: Running Directly on Local Machine
+### 12.2 Local Standalone Execution
 
 #### Step 1: Install Python Dependencies & Database Seeding
 ```bash
@@ -551,12 +458,12 @@ automatic-block-planning/
 cd automatic-block-planning
 
 # Install Python packages
-pip install flask flask-cors pandas numpy scikit-learn lightgbm shap ortools sqlalchemy joblib
+pip install flask flask-cors pandas numpy scikit-learn xgboost lightgbm shap ortools sqlalchemy joblib pillow python-pptx
 
-# Initialize SQLite database & seed all 25 canonical tables (345k+ records)
+# Initialize database & seed all 21 canonical tables (345k+ records)
 python engine/seed_diversified_12k.py
 
-# Run the CP-SAT Optimizer to generate the baseline schedule
+# Run the CP-SAT Optimizer to generate baseline schedule
 python engine/optimizer_core.py --horizon-days 7
 ```
 
@@ -582,40 +489,36 @@ npm run dev
 # Vite UI will be available at http://localhost:5173
 ```
 
-*Note: The Go Gateway on `http://localhost:3000` also serves the built frontend production files directly from `frontend/dist`.*
+*Note: The Go Gateway on `http://localhost:3000` also serves the built frontend production bundle directly from `frontend/dist`.*
 
 ---
 
-### 10.3 Method 2: One-Command Docker Compose Deployment
+## 13. Automated Verification & Test Suite
 
-```bash
-# 1. Configure environment
-cp .env.example .env
+The project enforces an automated double-verification gate covering both mathematical safety laws and UI presentation asset integrity:
 
-# 2. Build and launch all services (PostgreSQL 16, Python Solver, Go Gateway, React SPA)
-docker compose up --build -d
-
-# 3. Verify health status
-docker compose ps
-
-# 4. Access the system
-# UI:  http://localhost:8765
-# API: http://localhost:8765/api/health
+```powershell
+# Unified Verification Gate (PowerShell)
+python docs/ui_doc_generator.py --validate; if ($?) { python engine/test_suite.py }
 ```
 
----
+### Verification Gate Output:
+```text
+================================================================================
+VALIDATING 18-SECTION UI DOCUMENTATION ASSETS & COMPONENT INTEGRITY
+================================================================================
+Total Sections Analyzed  : 18 sections
+Total UI Components      : 80 distinct components (all 15 fields complete)
+Clean Screenshots        : 18 files
+Annotated Screenshots    : 18 files
+Infographic Posters      : 18 files
+Master Walkthrough MD    : PRESENT (161370 bytes)
+Component Inventory MD   : PRESENT (28964 bytes)
+Declarative JSON Schema  : PRESENT (207963 bytes)
+Presentation PPTX Deck   : PRESENT (9172797 bytes, 24 slides)
 
-## 11. Automated Verification & Test Suite
+[OK] VALIDATION SUCCESSFUL: All 18 sections verified, 15 fields complete, 80 components, 0 errors.
 
-The system includes a 12-point automated mathematical and safety verification suite located in [`engine/test_suite.py`](file:///c:/Users/kal_EL/OneDrive/文档/project%20SIH%202026/automatic-block-planning/engine/test_suite.py).
-
-To execute the test suite:
-```bash
-python engine/test_suite.py
-```
-
-### Verification Output:
-```
 ================================================================================
 🚦 RUNNING AUTOMATED MATHEMATICAL & SAFETY VERIFICATION SUITE (BLUEPRINT V2)
 ================================================================================
@@ -624,55 +527,35 @@ python engine/test_suite.py
 --------------------------------------------------------------------------------
   [1.1] Geospatial Topology Link                 : PASSED - 100% assets mapped to valid operational sections
   [1.2] Timetable Chronology                     : PASSED - Zero temporal causality violations in train timetables
-  [2.1] Criticality Formula Bounds               : PASSED - C_i strictly bounded in [0.0, 1.0]
+  [2.1] Criticality Formula Bounds               : PASSED - C_i strictly bounded in [0.0, 1.0] (Sample C_i = 0.967)
   [2.2] Logistic Urgency Curve                   : PASSED - U_i continuous curve (Overdue: 0.921, Future: 0.010)
-  [2.3] Expected-Loss Priority Bounds            : PASSED - Priority strictly bounded in [0, 100]
-  [2.4] Critical Safety Override                 : PASSED - 100% safety-critical tasks locked to Critical (>= 90.0)
-  [5.1] Deterministic Compatibility Prohibitions : PASSED - Safety-prohibited work pairs strictly rejected
+  [2.3] Expected-Loss Priority Bounds            : PASSED - Priority strictly bounded in [0, 100] (Min: 17.3, Max: 85.7)
+  [2.4] Critical Safety Override                 : PASSED - 100% safety-critical tasks locked to Critical (priority >= 90.0)
+  [5.1] Deterministic Compatibility Prohibitions : PASSED - Safety-prohibited work pairs strictly rejected with reason codes
   [3.1] Train Precedence Collision-Free          : PASSED - Zero line-aware collisions with timetabled train movements
-  [4.1] Shadow-Block Spatial Integrity           : PASSED - 100% of coordinated blocks share identical sections
-  [6.1] Independent Deterministic Safety Validator: PASSED - Schedule formally certified (PASS) with 0 headway violations
-  [7.1] Injected Collision Detection             : PASSED - Validator reliably caught artificially injected collision
-  [8.1] Operational KPI Mathematical Consistency : PASSED - All KPIs non-negative (Consolidation: 63.2%, Gain: +0.28%)
+  [4.1] Shadow-Block Spatial Integrity           : PASSED - 100% of coordinated blocks share identical physical sections
+  [6.1] Independent Deterministic Safety Validator : PASSED - Schedule formally certified (PASS_WITH_WARNINGS) with zero headway violations
+  [7.1] Injected Collision Detection             : PASSED - Validator reliably caught artificially injected collision (1 violations detected)
+  [8.1] Operational KPI Mathematical Consistency : PASSED - All KPIs non-negative (Consolidation: 63.1%, Availability Gain: +0.67%)
 --------------------------------------------------------------------------------
-```
-
-To run Go backend unit tests:
-```bash
-cd backend
-go test -v ./...
-# PASS: ok blockplanner
 ```
 
 ---
 
-## 12. Preparing for Deployment to a New GitHub Repository
+## 14. Presentation & Viva Defense Resources
 
-The repository has been cleaned, tested, and configured for immediate deployment to a fresh GitHub repository. Follow these steps when you are ready to push:
+For jury evaluations, technical presentations, and viva defenses:
 
-```bash
-# 1. Ensure you are in the project root
-cd automatic-block-planning
-
-# 2. Check current repository status
-git status
-
-# 3. Stage all modified and new files (all code, models, views, and docs)
-git add .
-
-# 4. Commit the changes
-git commit -m "feat: upgrade to AI-Powered Automatic Block Planning Blueprint v2 with full mathematical engines, CP-SAT solver, safety validator, and comprehensive docs"
-
-# 5. Point to your new GitHub repository URL
-# (Replace <YOUR_NEW_GITHUB_REPO_URL> with the repository URL you create)
-git remote set-url origin <YOUR_NEW_GITHUB_REPO_URL>
-# Or if adding as a new remote:
-# git remote add origin <YOUR_NEW_GITHUB_REPO_URL>
-
-# 6. Push to your main branch
-git branch -M main
-git push -u origin main
-```
+- **Executive PowerPoint Deck**: [`docs/presentation/ABPS_UI_Walkthrough.pptx`](docs/presentation/ABPS_UI_Walkthrough.pptx)  
+  *24 widescreen 16:9 slides featuring executive architecture, multi-color taxonomy, 18 section slides with annotated visuals and embedded conversational viva defense notes, end-to-end workflows, and mathematical proofs.*
+- **Master Written Walkthrough**: [`docs/presentation/UI_PRESENTATION_WALKTHROUGH.md`](docs/presentation/UI_PRESENTATION_WALKTHROUGH.md)  
+  *Detailed Sections A through J operational explanations and 15-field component tables for all 18 views.*
+- **Consolidated Component Catalog**: [`docs/presentation/COMPONENT_INVENTORY.md`](docs/presentation/COMPONENT_INVENTORY.md)  
+  *Searchable index of all 80 UI components across the application.*
+- **Operational Workflow Diagrams**: [`docs/presentation/WORKFLOW_DIAGRAMS.md`](docs/presentation/WORKFLOW_DIAGRAMS.md)  
+  *6 Mermaid sequence and flow diagrams mapping controller decision-making.*
+- **Technical Gap Analysis**: [`docs/presentation/DISCREPANCY_ANALYSIS.md`](docs/presentation/DISCREPANCY_ANALYSIS.md)  
+  *Mapping of 26 authentic screenshots to the 18-section architecture and legacy reconciliation.*
 
 ---
 
@@ -680,3 +563,4 @@ git push -u origin main
 - **Project Title**: AI-Powered Automatic Block Planning System to Maximize Asset Availability for Train Operations
 - **Competition**: Smart India Hackathon (SIH) 2026
 - **Organization**: Ministry of Railways, Government of India
+- **Corridor**: Delhi Division — Howrah Main Line (1,447 km)

@@ -47,10 +47,11 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 FROM python:3.11-slim-bookworm AS runner
 WORKDIR /app
 
-# 1. Install minimal runtime packages (curl for container healthcheck)
+# 1. Install minimal runtime packages (curl for container healthcheck, libgomp1 for XGBoost/OpenMP)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Create unprivileged non-root user and group (UID/GID 10001)
@@ -77,9 +78,11 @@ USER appuser:appgroup
 
 # Environment defaults
 ENV PORT=3000 \
+    PYTHON_PORT=8765 \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHON_BIN=python3
+    PYTHON_BIN=python3 \
+    PYTHONPATH=/app:/app/engine:/app/backend
 
 EXPOSE 3000 8765
 

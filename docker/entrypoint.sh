@@ -148,7 +148,16 @@ if [ "$1" = "./block_planner" ] || [ "$1" = "block_planner" ]; then
   echo "→ Starting Python ML & Solver engine on http://127.0.0.1:8765..."
   PORT=8765 python3 backend/server.py &
   PYTHON_PID=$!
-  echo "✓ Python solver engine running (PID $PYTHON_PID)"
+  echo "✓ Python solver engine launched (PID $PYTHON_PID)"
+
+  # Await Python engine readiness so initial Go proxies succeed immediately
+  for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+    if curl -s -f http://127.0.0.1:8765/health >/dev/null 2>&1; then
+      echo "✓ Python solver engine is ready on :8765"
+      break
+    fi
+    sleep 1
+  done
 
   cleanup() {
     echo "Shutting down services..."

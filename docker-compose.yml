@@ -51,9 +51,11 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgrespassword}@postgres:5432/${POSTGRES_DB:-block_planning}?sslmode=disable
       POSTGRES_URI: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgrespassword}@postgres:5432/${POSTGRES_DB:-block_planning}?sslmode=disable
       PORT: ${PORT:-3000}
+      PYTHON_PORT: ${PYTHON_PORT:-8765}
       HORIZON_DAYS: ${HORIZON_DAYS:-7}
       PYTHON_BIN: python3
       PYTHONUNBUFFERED: 1
+      PYTHONPATH: /app:/app/engine:/app/backend
     depends_on:
       postgres:
         condition: service_healthy

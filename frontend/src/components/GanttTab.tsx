@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { ScheduledTask, Section, TrainMovement, apiClient } from '../api/client';
-import { Play, RefreshCw, CheckCircle2, Clock, Layers, RotateCw, X, ChevronLeft, ChevronRight, Search, Filter } from 'lucide-react';
+import { ScheduledTask, Section, TrainMovement, apiClient, CandidateBlockOption } from '../api/client';
+import { Play, RefreshCw, CheckCircle2, Clock, Layers, RotateCw, X, ChevronLeft, ChevronRight, Search, Filter, FileCheck2, Send, CalendarRange } from 'lucide-react';
 
 interface GanttTabProps {
   schedule?: ScheduledTask[];
@@ -8,6 +8,8 @@ interface GanttTabProps {
   sections?: Section[];
   loading?: boolean;
   onRefreshSchedule: () => void;
+  onNavigate?: (view: any) => void;
+  onOpenTaskGenerator?: (assetId?: string | null) => void;
 }
 
 const HORIZON_OPTIONS = [
@@ -28,6 +30,8 @@ export const GanttTab: React.FC<GanttTabProps> = ({
   sections = [],
   loading = false,
   onRefreshSchedule,
+  onNavigate,
+  onOpenTaskGenerator,
 }) => {
   const [optimizing, setOptimizing] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -37,6 +41,10 @@ export const GanttTab: React.FC<GanttTabProps> = ({
   const [horizonDays, setHorizonDays] = useState(7);
   const [selectedDay, setSelectedDay] = useState<number | 'all'>('all');
   const [selectedBlockModal, setSelectedBlockModal] = useState<ScheduledTask | null>(null);
+  const [alternativeWindows, setAlternativeWindows] = useState<CandidateBlockOption[] | null>(null);
+  const [loadingAlternatives, setLoadingAlternatives] = useState(false);
+  const [unallocatedTasks, setUnallocatedTasks] = useState<any[]>([]);
+  const [requestingBlockId, setRequestingBlockId] = useState<string | null>(null);
 
   // Pagination for section lanes & table to prevent DOM freeze with 1200+ sections
   const [lanePage, setLanePage] = useState(1);
@@ -139,6 +147,66 @@ export const GanttTab: React.FC<GanttTabProps> = ({
       } else {
         setNotification('Failed to start optimizer: ' + (err.response?.data?.message || err.message));
       }
+    }
+  };
+
+  // Load backlog tasks that do not yet have an allocated block window
+  useEffect(() => {
+    let cancelled = false;
+    async function loadUnallocated() {
+      try {
+        const res = await apiClient.get<any>('/tasks?limit=50');
+        if (cancelled || !res.data?.data) return;
+        const scheduledIds = new Set(schedule.map((t) => t.task_id));
+        const pending = (Array.isArray(res.data.data) ? res.data.data : [])
+          .filter((t: any) => t?.task_id && !scheduledIds.has(t.task_id))
+          .slice(0, 5);
+        setUnallocatedTasks(pending);
+      } catch {
+        if (!cancelled) setUnallocatedTasks([]);
+      }
+    }
+    loadUnallocated();
+    return () => { cancelled = true; };
+  }, [schedule]);
+
+  const handleRequestBlock = async (taskId: string) => {
+    setRequestingBlockId(taskId);
+    try {
+      const res = await apiClient.post(`/tasks/${taskId}/request-block`, {});
+      setNotification(
+        res.data?.message ||
+        `Block request submitted for ${taskId}. Candidate windows are being evaluated.`
+      );
+      setUnallocatedTasks((prev) => prev.filter((t) => t.task_id !== taskId));
+    } catch (err: any) {
+      const reason =
+        err.response?.data?.message ||
+        err.response?.data?.reason ||
+        err.message ||
+        'Block request failed.';
+      setNotification(`Block request for ${taskId} could not be scheduled. Reason: ${reason}`);
+    } finally {
+      setRequestingBlockId(null);
+    }
+  };
+
+  const handleViewAlternatives = async (task: ScheduledTask) => {
+    setSelectedBlockModal(task);
+    setLoadingAlternatives(true);
+    setAlternativeWindows(null);
+    try {
+      const res = await apiClient.get<any>(`/tasks/${task.task_id}/block-options`);
+      const options = res.data?.data || res.data?.block_options || res.data?.alternative_windows || [];
+      setAlternativeWindows(Array.isArray(options) ? options : []);
+    } catch (err: any) {
+      setAlternativeWindows([]);
+      setNotification(
+        'Could not load alternative windows: ' +
+          (err.response?.data?.message || err.message || 'unknown error')
+      );
+    } finally {
+      setLoadingAlternatives(false);
     }
   };
 
@@ -284,6 +352,60 @@ export const GanttTab: React.FC<GanttTabProps> = ({
         <div className="p-4 rounded-xl bg-[#F6FEF9] border border-[#A6F4C5] text-[#0F7644] text-xs font-bold flex items-center gap-2 shadow-sm">
           <CheckCircle2 className="w-4 h-4 shrink-0 text-[#12B76A]" />
           <span>{notification}</span>
+        </div>
+      )}
+
+      {/* Tasks without an allocated block window — REQUEST BLOCK actions */}
+      {unallocatedTasks.length > 0 && (
+        <div className="bg-white border border-[#E6E6E6] rounded-2xl p-5 shadow-sm space-y-3">
+          <div className="flex items-center justify-between border-b border-[#F2F4F7] pb-2.5">
+            <h3 className="text-xs font-bold text-[#1F2937] uppercase tracking-wider flex items-center gap-2">
+              <Send className="w-4 h-4 text-[#D92D20]" />
+              <span>Tasks Pending Block Allocation ({unallocatedTasks.length})</span>
+            </h3>
+            <span className="text-[10.5px] font-bold px-2 py-0.5 rounded bg-[#FFF4ED] text-[#D92D20] border border-[#FECDCA]">
+              Block Status: NOT ALLOCATED
+            </span>
+          </div>
+          <div className="space-y-2">
+            {unallocatedTasks.map((t) => (
+              <div
+                key={t.task_id}
+                className="p-3 rounded-xl border border-[#E6E6E6] bg-[#FAFAF9] flex flex-wrap items-center justify-between gap-2 text-xs"
+              >
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-mono font-bold text-[#1F2937]">{t.task_id}</span>
+                    <span className="px-1.5 py-0.2 rounded text-[9.5px] font-bold bg-[#F2F4F7] text-[#344054]">
+                      {t.department}
+                    </span>
+                    <span className="text-[#667085]">{t.asset_id} · {t.section_id}</span>
+                  </div>
+                  <p className="text-[11px] text-[#667085] mt-0.5">
+                    {t.task_type} · Priority {Number(t.priority_score || 0).toFixed(1)} · {t.duration_minutes}m
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  {onOpenTaskGenerator && (
+                    <button
+                      onClick={() => onOpenTaskGenerator(t.asset_id)}
+                      className="px-2.5 py-1.5 rounded-lg border border-[#D0D5DD] bg-white text-[#344054] font-bold text-[10.5px] hover:bg-[#F7F7F5] transition"
+                    >
+                      Open in Task Generator
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleRequestBlock(t.task_id)}
+                    disabled={requestingBlockId === t.task_id}
+                    className="px-3 py-1.5 rounded-lg bg-[#7F1418] hover:bg-[#651013] text-white font-bold text-[10.5px] transition disabled:opacity-50 flex items-center gap-1.5"
+                  >
+                    <CalendarRange className="w-3.5 h-3.5 text-[#FF9933]" />
+                    <span>{requestingBlockId === t.task_id ? 'Requesting...' : 'REQUEST BLOCK'}</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -525,6 +647,8 @@ export const GanttTab: React.FC<GanttTabProps> = ({
                 <th className="py-2.5 px-3 font-bold">Start Time</th>
                 <th className="py-2.5 px-3 font-bold">End Time</th>
                 <th className="py-2.5 px-3 font-bold">Line</th>
+                <th className="py-2.5 px-3 font-bold">Block Status</th>
+                <th className="py-2.5 px-3 font-bold text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E6E6E6]">
@@ -566,6 +690,34 @@ export const GanttTab: React.FC<GanttTabProps> = ({
                       <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#F1F5F9] text-[#475467]">
                         {t.affects_line || 'BOTH'}
                       </span>
+                    </td>
+                    <td className="py-2.5 px-3">
+                      <span className="px-2 py-0.5 rounded text-[9.5px] font-bold bg-[#ECFDF3] text-[#027A48] border border-[#A6F4C5]">
+                        RECOMMENDED
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 text-right" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                        <button
+                          onClick={() => setSelectedBlockModal(t)}
+                          className="px-2 py-1 rounded-md bg-[#F7F7F5] border border-[#E6E6E6] text-[10px] font-bold text-[#344054] hover:bg-[#FFF3E6] hover:text-[#B85C00] transition"
+                        >
+                          VIEW BLOCK
+                        </button>
+                        <button
+                          onClick={() => handleViewAlternatives(t)}
+                          className="px-2 py-1 rounded-md bg-[#F7F7F5] border border-[#E6E6E6] text-[10px] font-bold text-[#344054] hover:bg-[#FFF3E6] hover:text-[#B85C00] transition"
+                        >
+                          VIEW ALTERNATIVES
+                        </button>
+                        <button
+                          onClick={() => onNavigate && onNavigate('approvals_audit')}
+                          className="px-2 py-1 rounded-md bg-[#7F1418] text-white text-[10px] font-bold hover:bg-[#651013] transition flex items-center gap-1"
+                        >
+                          <FileCheck2 className="w-3 h-3 text-[#FF9933]" />
+                          <span>REQUEST APPROVAL</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -663,9 +815,75 @@ export const GanttTab: React.FC<GanttTabProps> = ({
               </div>
             </div>
 
-            <div className="pt-2 flex justify-end">
+            {/* Alternative Candidate Windows */}
+            {loadingAlternatives && (
+              <div className="p-3 bg-[#F7F7F5] border border-[#E6E6E6] rounded-xl text-xs text-[#667085] font-semibold animate-pulse">
+                Loading candidate block windows...
+              </div>
+            )}
+            {!loadingAlternatives && alternativeWindows && alternativeWindows.length > 0 && (
+              <div>
+                <h4 className="text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
+                  Alternative Windows Evaluated
+                </h4>
+                <div className="space-y-1.5">
+                  {alternativeWindows.map((win, idx) => (
+                    <div
+                      key={idx}
+                      className={`p-2 rounded-lg border text-[11px] flex items-center justify-between ${
+                        win.status === 'SELECTED'
+                          ? 'bg-[#F0FDF4] border-[#86EFAC]'
+                          : 'bg-[#FAFAF9] border-[#E6E6E6]'
+                      }`}
+                    >
+                      <div>
+                        <span className="font-mono font-bold text-[#1F2937]">
+                          {win.start_time} – {win.end_time}
+                        </span>
+                        <span className="text-[#667085] ml-2">({win.duration_minutes}m)</span>
+                        {win.conflict_reason && (
+                          <p className="text-[10px] text-[#D92D20] font-medium mt-0.5">
+                            {win.conflict_reason}
+                          </p>
+                        )}
+                      </div>
+                      <span
+                        className={`text-[9.5px] font-bold px-2 py-0.5 rounded ${
+                          win.status === 'SELECTED'
+                            ? 'bg-[#12B76A] text-white'
+                            : 'bg-red-50 text-red-700 border border-red-200'
+                        }`}
+                      >
+                        {win.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {!loadingAlternatives && alternativeWindows && alternativeWindows.length === 0 && (
+              <div className="p-3 bg-[#FFFBF0] border border-[#FEDF89] rounded-xl text-[11px] text-[#B54708] font-semibold">
+                No valid block window found. Reason: all eligible windows contain train, resource, or dependency conflicts.
+              </div>
+            )}
+
+            <div className="pt-2 flex justify-end gap-2">
               <button
-                onClick={() => setSelectedBlockModal(null)}
+                onClick={() => {
+                  setSelectedBlockModal(null);
+                  setAlternativeWindows(null);
+                  if (onNavigate) onNavigate('approvals_audit');
+                }}
+                className="px-4 py-2 bg-[#7F1418] hover:bg-[#651013] text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5"
+              >
+                <FileCheck2 className="w-3.5 h-3.5 text-[#FF9933]" />
+                <span>REQUEST APPROVAL</span>
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedBlockModal(null);
+                  setAlternativeWindows(null);
+                }}
                 className="px-4 py-2 bg-[#F7F7F5] hover:bg-[#EAEAEA] text-[#1F2937] text-xs font-bold rounded-xl transition"
               >
                 Close Explanation

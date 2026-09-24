@@ -40,6 +40,7 @@ interface MapViewProps {
   activeLayer?: MapLayerType;
   onLayerChange?: (layer: MapLayerType) => void;
   compact?: boolean;
+  onCreateTaskForAsset?: (assetId: string) => void;
 }
 
 const ZONE_COLORS: Record<string, string> = {
@@ -71,6 +72,7 @@ export const MapView: React.FC<MapViewProps> = ({
   activeLayer,
   onLayerChange,
   compact = false,
+  onCreateTaskForAsset,
 }) => {
   const [internalLayer, setInternalLayer] = useState<MapLayerType>('all');
   const currentLayer = activeLayer || internalLayer;
@@ -507,6 +509,18 @@ export const MapView: React.FC<MapViewProps> = ({
                       <div className="text-[11px] text-gray-500">
                         Last Inspected: {asset.lastInspection}
                       </div>
+                      {onCreateTaskForAsset && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onCreateTaskForAsset(asset.id);
+                          }}
+                          className="mt-1 px-2 py-1 bg-[#7F1418] hover:bg-[#651013] text-white text-[10px] font-bold rounded-md transition"
+                        >
+                          CREATE MAINTENANCE TASK
+                        </button>
+                      )}
                     </div>
                   </Tooltip>
                 </CircleMarker>

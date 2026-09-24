@@ -333,22 +333,6 @@ export interface EvaluationReport {
   };
 }
 
-export interface WhatIfResult {
-  status: string;
-  simulation: {
-    target_block_id: string;
-    section_id: string;
-    original_window: string;
-    shifted_window: string;
-    shift_applied_minutes: number;
-    train_conflicts_detected: number;
-    conflicting_trains: Array<{ train_id: string; train_name: string; overlap_minutes: number }>;
-    peak_window_violation: boolean;
-    feasible: boolean;
-    recommendation: string;
-  };
-}
-
 export interface ScheduleVersion {
   version_id: string;
   created_at: string;
@@ -385,36 +369,12 @@ export interface SectionRisk {
 
 // ── ABPS v4 Domain Interfaces ──
 
-export interface AnomalyScenario {
-  anomaly_scenario: string;
-  department: string;
-  recommended_task_types: string[];
-  recommended_actions: string[];
-  planning_handling: string;
-}
-
 export interface CoverageMetric {
   dataset: string;
   metric: string;
   value: string;
   goal: string;
   status: 'PASS' | 'WARN' | 'FAIL';
-}
-
-export interface AnomalyCoverageResponse {
-  status: string;
-  summary: {
-    total_scenarios: number;
-    asset_types: number;
-    failure_types: number;
-    task_types: number;
-    action_types: number;
-    block_types: number;
-    dependency_types: number;
-    maintenance_outcomes: number;
-    audit_event_types: number;
-  };
-  metrics: CoverageMetric[];
 }
 
 export interface AssetItem {
@@ -588,3 +548,110 @@ export interface PaginatedResponse<T> {
   total_pages?: number;
   data: T[];
 }
+
+// ── Task Generator & Block Allocation Interfaces (ABPS v4.0) ──
+
+export interface TaskGeneratorRequest {
+  department: 'Engineering' | 'Traction' | 'S&T';
+  asset_id: string;
+  task_type: string;
+  task_description?: string;
+  defect_code?: string;
+  maintenance_objective?: string;
+  duration_minutes: number;
+  earliest_start?: string;
+  latest_finish?: string;
+  affects_line: 'UP' | 'DOWN' | 'BOTH' | 'LOOP / SIDING' | 'COMMON';
+  block_requirement: 'Traffic Block' | 'Power Block' | 'Traffic + Power Block' | 'Engineering Block' | 'S&T Block' | 'Integrated Block';
+  isolation_requirement: string;
+  required_resources?: string[];
+  action_stages?: string[];
+  dependency_task_id?: string;
+  dependency_lag_minutes?: number;
+  remarks?: string;
+}
+
+export interface CandidateBlockOption {
+  block_id: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  duration_minutes: number;
+  section_id: string;
+  line: string;
+  block_type: string;
+  status: 'FEASIBLE' | 'CONFLICT' | 'SELECTED' | 'REJECTED';
+  conflict_reason?: string | null;
+  validation_summary: {
+    train_conflict_count: number;
+    resource_conflict_count: number;
+    dependency_status: 'PASS' | 'FAIL';
+    isolation_status: 'PASS' | 'FAIL';
+    compatibility_status: 'PASS' | 'FAIL';
+    block_containment_status: 'PASS' | 'FAIL';
+  };
+}
+
+export interface CoordinationCandidate {
+  task_id: string;
+  department: string;
+  task_type: string;
+  priority_score: number;
+  is_compatible: boolean;
+  reason: string;
+}
+
+export interface TaskGenerationResponse {
+  status: string;
+  task: {
+    task_id: string;
+    department: string;
+    asset_id: string;
+    asset_type: string;
+    section_id: string;
+    corridor_id: string;
+    station_from?: string;
+    station_to?: string;
+    chainage_km?: number;
+    location_lat?: number;
+    location_lon?: number;
+    task_type: string;
+    criticality: string;
+    duration_minutes: number;
+    status: string;
+    affects_line: string;
+    block_requirement: string;
+    isolation_requirement: string;
+    due_date: string;
+  };
+  risk: {
+    probability_30d: number;
+    criticality_score: number;
+    operational_impact: number;
+    urgency_score: number;
+    priority_score: number;
+    priority_band: string;
+    safety_override: boolean;
+    shap_explanation?: {
+      top_positive: Array<{ feature: string; contribution: number }>;
+      top_negative: Array<{ feature: string; contribution: number }>;
+    };
+  };
+  block_request?: {
+    status: string;
+    block_id: string | null;
+  };
+  block_recommendation?: CandidateBlockOption;
+  alternative_windows: CandidateBlockOption[];
+  coordination_candidates: CoordinationCandidate[];
+  validator_result?: {
+    validation_status: string;
+    is_certified: boolean;
+    violations_count: number;
+    warnings_count: number;
+    hard_violations: any[];
+    warnings: string[];
+    checks_passed?: string[];
+  };
+}
+

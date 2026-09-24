@@ -10,18 +10,16 @@ import { GanttTab } from './components/GanttTab';
 import { BeforeAfterView } from './components/BeforeAfterView';
 import { WeeklyMonthlyView } from './components/WeeklyMonthlyView';
 import { FailureIntelligenceView } from './components/FailureIntelligenceView';
-import { WhatIfSimulatorView } from './components/WhatIfSimulatorView';
 import { ApprovalAuditView } from './components/ApprovalAuditView';
 import { SubmitTab } from './components/SubmitTab';
 import { MapView } from './components/MapView';
 import { AlertsView } from './components/AlertsView';
-import { AnomalyHandlingView } from './components/AnomalyHandlingView';
 import { TrainConflictsView } from './components/TrainConflictsView';
 import { AssetHealthView } from './components/AssetHealthView';
 import { DataIngestionView } from './components/DataIngestionView';
 import { DataQualityView } from './components/DataQualityView';
-import { ScenarioExplorerView } from './components/ScenarioExplorerView';
 import { ModelVersionsView } from './components/ModelVersionsView';
+import { TaskGeneratorView } from './components/TaskGeneratorView';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PlanningCalendarProvider, usePlanningCalendar } from './context/PlanningCalendarContext';
 import {
@@ -45,6 +43,7 @@ function AppContent() {
     return 'dashboard';
   };
   const [activeView, setActiveView] = useState<ViewType>(getInitialView);
+  const [taskGenAssetId, setTaskGenAssetId] = useState<string | null>(null);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [metrics, setMetrics] = useState<MetricsResponse | null>(null);
   const [schedule, setSchedule] = useState<ScheduledTask[]>([]);
@@ -102,12 +101,24 @@ function AppContent() {
     fetchAllData(false);
   }, [activeView, fetchAllData]);
 
+  // Plain navigation (clears any pre-selected Task Generator asset)
+  const navigateTo = useCallback((view: ViewType) => {
+    if (view === 'task_generator') setTaskGenAssetId(null);
+    setActiveView(view);
+  }, []);
+
+  // Open Task Generator, optionally pre-populated with an asset context
+  const openTaskGenerator = useCallback((assetId?: string | null) => {
+    setTaskGenAssetId(assetId ?? null);
+    setActiveView('task_generator');
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#1F2937] flex flex-row font-sans antialiased">
       {/* Left Sidebar (Desktop fixed + Mobile off-canvas drawer) */}
       <Sidebar
         activeView={activeView}
-        setActiveView={setActiveView}
+        setActiveView={navigateTo}
         isOpenMobile={isMobileNavOpen}
         onCloseMobile={() => setIsMobileNavOpen(false)}
       />
@@ -117,7 +128,7 @@ function AppContent() {
         {/* Top App Header with Indian Railways Logo, Working Calendar & 24-Hr Live Clock */}
         <Header
           onToggleSidebar={() => setIsMobileNavOpen(!isMobileNavOpen)}
-          onNavigate={(view: any) => setActiveView(view)}
+          onNavigate={(view: any) => navigateTo(view)}
           horizonDays={horizonDays}
         />
 
@@ -134,7 +145,8 @@ function AppContent() {
               sectionRisks={sectionRisks}
               trains={trains}
               loading={loading}
-              onNavigate={setActiveView}
+              onNavigate={navigateTo}
+              onOpenTaskGenerator={openTaskGenerator}
             />
           )}
 
@@ -142,6 +154,14 @@ function AppContent() {
             <TasksView
               schedule={schedule}
               sections={sections}
+              onOpenTaskGenerator={openTaskGenerator}
+            />
+          )}
+
+          {activeView === 'task_generator' && (
+            <TaskGeneratorView
+              initialAssetId={taskGenAssetId}
+              onNavigate={(view) => navigateTo(view as ViewType)}
             />
           )}
 
@@ -152,6 +172,8 @@ function AppContent() {
               sections={sections}
               loading={loading}
               onRefreshSchedule={() => fetchAllData(false)}
+              onNavigate={navigateTo}
+              onOpenTaskGenerator={openTaskGenerator}
             />
           )}
 
@@ -168,20 +190,16 @@ function AppContent() {
             />
           )}
 
-          {activeView === 'anomaly_handling' && (
-            <AnomalyHandlingView />
-          )}
-
           {/* COORDINATION */}
           {activeView === 'coordination' && (
             <CoordinationView
-              onNavigate={setActiveView}
+              onNavigate={navigateTo}
             />
           )}
 
           {(activeView === 'shadow_blocks' || activeView === 'before_after') && (
             <BeforeAfterView
-              onNavigate={setActiveView}
+              onNavigate={navigateTo}
             />
           )}
 
@@ -205,11 +223,7 @@ function AppContent() {
           )}
 
           {activeView === 'asset_health' && (
-            <AssetHealthView />
-          )}
-
-          {activeView === 'what_if' && (
-            <WhatIfSimulatorView />
+            <AssetHealthView onOpenTaskGenerator={openTaskGenerator} />
           )}
 
           {/* DATA */}
@@ -219,12 +233,6 @@ function AppContent() {
 
           {activeView === 'data_quality' && (
             <DataQualityView />
-          )}
-
-          {activeView === 'scenario_explorer' && (
-            <ScenarioExplorerView
-              onNavigate={(view) => setActiveView(view as ViewType)}
-            />
           )}
 
           {activeView === 'model_versions' && (
@@ -252,7 +260,7 @@ function AppContent() {
               sectionRisks={sectionRisks}
               sections={sections}
               schedule={schedule}
-              onNavigate={setActiveView}
+              onNavigate={navigateTo}
             />
           )}
 
@@ -260,7 +268,7 @@ function AppContent() {
             <SubmitTab
               sections={sections}
               onSubmissionSuccess={() => fetchAllData(false)}
-              onNavigate={setActiveView}
+              onNavigate={navigateTo}
             />
           )}
 
@@ -269,6 +277,7 @@ function AppContent() {
               sections={sections}
               schedule={schedule}
               trains={trains}
+              onCreateTaskForAsset={openTaskGenerator}
             />
           )}
           </ErrorBoundary>

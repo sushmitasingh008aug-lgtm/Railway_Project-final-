@@ -61,7 +61,7 @@ type ScheduledTask struct {
 }
 
 func proxyHTTP(c *fiber.Ctx, path string) error {
-	client := http.Client{Timeout: 15 * time.Second}
+	client := http.Client{Timeout: 45 * time.Second}
 	reqURL := "http://127.0.0.1:8765" + path
 	qs := c.Request().URI().QueryString()
 	if len(qs) > 0 {
@@ -271,7 +271,23 @@ func main() {
 	api.Get("/sections/risk", handleGetSectionsRisk)
 	api.Get("/tasks/:task_id/compatibility", handleGetTaskCompatibility)
 	api.Get("/tasks/:task_id/dependencies", handleGetTaskDependencies)
+	api.Get("/tasks/:task_id/risk", func(c *fiber.Ctx) error {
+		return proxyHTTP(c, c.Path())
+	})
+	api.Get("/tasks/:task_id/block-options", func(c *fiber.Ctx) error {
+		return proxyHTTP(c, c.Path())
+	})
+	api.Post("/tasks/:task_id/request-block", func(c *fiber.Ctx) error {
+		return proxyHTTP(c, c.Path())
+	})
+	api.Post("/tasks/:task_id/schedule", func(c *fiber.Ctx) error {
+		return proxyHTTP(c, c.Path())
+	})
+	api.Post("/tasks/generate", func(c *fiber.Ctx) error {
+		return proxyHTTP(c, "/api/tasks/generate")
+	})
 	api.Get("/actions/:task_id", handleGetTaskActions)
+	api.Get("/tasks/:task_id/actions", handleGetTaskActions)
 	api.Get("/dashboard/summary", handleGetDashboardSummary)
 	api.Get("/audit", handleGetAudit)
 	api.Get("/anomalies/catalog", handleGetAnomaliesCatalog)

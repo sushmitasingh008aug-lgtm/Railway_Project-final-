@@ -10,13 +10,11 @@ import {
   GitCompare,
   CalendarDays,
   AlertOctagon,
-  AlertTriangle,
-  SlidersHorizontal,
+  Wrench,
   FileCheck2,
   ShieldCheck,
   UploadCloud,
   Database,
-  Compass,
   GitBranch,
   Activity,
   X
@@ -26,9 +24,9 @@ export type ViewType =
   // OPERATIONS
   | 'dashboard'
   | 'asset_backlog'
+  | 'task_generator'
   | 'weekly_planner'
   | 'monthly_forecast'
-  | 'anomaly_handling'
   // COORDINATION
   | 'coordination'
   | 'shadow_blocks'
@@ -37,11 +35,9 @@ export type ViewType =
   | 'ai_priority'
   | 'failure_intelligence'
   | 'asset_health'
-  | 'what_if'
   // DATA
   | 'data_ingestion'
   | 'data_quality'
-  | 'scenario_explorer'
   | 'model_versions'
   // CONTROL
   | 'approvals_audit'
@@ -77,9 +73,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       items: [
         { id: 'dashboard' as ViewType, legacyId: 'command_center' as ViewType, label: '1. Dashboard / GIS Map', icon: LayoutDashboard },
         { id: 'asset_backlog' as ViewType, legacyId: 'maintenance_tasks' as ViewType, label: '2. Asset Backlog', icon: ListTodo },
-        { id: 'weekly_planner' as ViewType, legacyId: 'block_planner' as ViewType, label: '3. Weekly Block Planner', icon: CalendarRange },
-        { id: 'monthly_forecast' as ViewType, legacyId: 'weekly_monthly' as ViewType, label: '4. Monthly Forecast', icon: CalendarDays },
-        { id: 'anomaly_handling' as ViewType, label: '5. Anomaly Handling', icon: AlertTriangle, badge: 'v4' },
+        { id: 'task_generator' as ViewType, label: '3. Task Generator', icon: Wrench, badge: 'v4' },
+        { id: 'weekly_planner' as ViewType, legacyId: 'block_planner' as ViewType, label: '4. Weekly Block Planner', icon: CalendarRange },
+        { id: 'monthly_forecast' as ViewType, legacyId: 'weekly_monthly' as ViewType, label: '5. Monthly Forecast', icon: CalendarDays },
       ],
     },
     {
@@ -96,23 +92,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'ai_priority' as ViewType, label: '9. AI Risk & Priority', icon: BrainCircuit },
         { id: 'failure_intelligence' as ViewType, label: '10. Failure Intelligence', icon: AlertOctagon },
         { id: 'asset_health' as ViewType, legacyId: 'network_sections' as ViewType, label: '11. Asset Health', icon: Activity },
-        { id: 'what_if' as ViewType, label: '12. What-If Simulator', icon: SlidersHorizontal },
       ],
     },
     {
       heading: 'DATA',
       items: [
-        { id: 'data_ingestion' as ViewType, label: '13. Data Ingestion', icon: UploadCloud, badge: 'v4' },
-        { id: 'data_quality' as ViewType, label: '14. Data Quality', icon: Database, badge: 'v4' },
-        { id: 'scenario_explorer' as ViewType, label: '15. Scenario Explorer', icon: Compass, badge: 'v4' },
-        { id: 'model_versions' as ViewType, label: '16. Model / Data Versions', icon: GitBranch, badge: 'v4' },
+        { id: 'data_ingestion' as ViewType, label: '12. Data Ingestion', icon: UploadCloud, badge: 'v4' },
+        { id: 'data_quality' as ViewType, label: '13. Data Quality', icon: Database, badge: 'v4' },
+        { id: 'model_versions' as ViewType, label: '14. Model / Data Versions', icon: GitBranch, badge: 'v4' },
       ],
     },
     {
       heading: 'CONTROL',
       items: [
-        { id: 'approvals_audit' as ViewType, label: '17. Human Review & Audit', icon: FileCheck2 },
-        { id: 'verification_suite' as ViewType, legacyId: 'alerts' as ViewType, label: '18. Verification Suite', icon: ShieldCheck },
+        { id: 'approvals_audit' as ViewType, label: '15. Human Review & Audit', icon: FileCheck2 },
+        { id: 'verification_suite' as ViewType, legacyId: 'alerts' as ViewType, label: '16. Verification Suite', icon: ShieldCheck },
       ],
     },
   ];

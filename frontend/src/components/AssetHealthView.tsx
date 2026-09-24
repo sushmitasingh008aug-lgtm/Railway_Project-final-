@@ -15,7 +15,11 @@ import {
 import { apiClient, AssetItem, PaginatedResponse } from '../api/client';
 import { AssetDetailDrawer } from './AssetDetailDrawer';
 
-export const AssetHealthView: React.FC = () => {
+interface AssetHealthViewProps {
+  onOpenTaskGenerator?: (assetId?: string | null) => void;
+}
+
+export const AssetHealthView: React.FC<AssetHealthViewProps> = ({ onOpenTaskGenerator }) => {
   const [assets, setAssets] = useState<AssetItem[]>([]);
   const [total, setTotal] = useState(12000);
   const [page, setPage] = useState(1);
@@ -252,6 +256,10 @@ export const AssetHealthView: React.FC = () => {
       <AssetDetailDrawer
         assetId={selectedAssetId}
         onClose={() => setSelectedAssetId(null)}
+        onCreateTask={(assetId) => {
+          setSelectedAssetId(null);
+          if (onOpenTaskGenerator) onOpenTaskGenerator(assetId);
+        }}
       />
     </div>
   );

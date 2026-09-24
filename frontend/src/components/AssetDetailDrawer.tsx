@@ -17,9 +17,10 @@ import { apiClient, AssetItem } from '../api/client';
 interface AssetDetailDrawerProps {
   assetId: string | null;
   onClose: () => void;
+  onCreateTask?: (assetId: string) => void;
 }
 
-export const AssetDetailDrawer: React.FC<AssetDetailDrawerProps> = ({ assetId, onClose }) => {
+export const AssetDetailDrawer: React.FC<AssetDetailDrawerProps> = ({ assetId, onClose, onCreateTask }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'history' | 'impact' | 'ai' | 'planning'>('overview');
   const [asset, setAsset] = useState<AssetItem | null>(null);
   const [history, setHistory] = useState<any>(null);
@@ -71,12 +72,23 @@ export const AssetDetailDrawer: React.FC<AssetDetailDrawerProps> = ({ assetId, o
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-[#667085] hover:bg-[#F7F7F5] hover:text-[#1F2937]"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {onCreateTask && (
+              <button
+                onClick={() => onCreateTask(assetId)}
+                className="px-3 py-1.5 bg-[#7F1418] hover:bg-[#651013] text-white text-[11px] font-bold rounded-lg transition flex items-center gap-1.5"
+              >
+                <Wrench className="w-3.5 h-3.5 text-[#FF9933]" />
+                <span>CREATE MAINTENANCE TASK</span>
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-[#667085] hover:bg-[#F7F7F5] hover:text-[#1F2937]"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* 5 Tabs Navigation */}

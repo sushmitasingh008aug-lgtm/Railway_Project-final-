@@ -6,9 +6,10 @@ import { TaskDetailDrawer } from './TaskDetailDrawer';
 interface TasksViewProps {
   schedule?: ScheduledTask[];
   sections?: Section[];
+  onOpenTaskGenerator?: (assetId?: string | null) => void;
 }
 
-export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = [] }) => {
+export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = [], onOpenTaskGenerator }) => {
   const [tasks, setTasks] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -104,6 +105,16 @@ export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = 
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          {onOpenTaskGenerator && (
+            <button
+              onClick={() => onOpenTaskGenerator(null)}
+              className="px-3.5 py-1.5 bg-[#7F1418] hover:bg-[#651013] text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5"
+            >
+              <Wrench className="w-3.5 h-3.5 text-[#FF9933]" />
+              <span>+ CREATE MAINTENANCE TASK</span>
+            </button>
+          )}
+
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-[#667085] absolute left-3 top-3" />
             <input
@@ -334,6 +345,15 @@ export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = 
           setDrawerTaskId(null);
           setDrawerTaskData(null);
         }}
+        onCreateTaskForAsset={
+          onOpenTaskGenerator
+            ? (assetId) => {
+                setDrawerTaskId(null);
+                setDrawerTaskData(null);
+                onOpenTaskGenerator(assetId);
+              }
+            : undefined
+        }
       />
     </div>
   );

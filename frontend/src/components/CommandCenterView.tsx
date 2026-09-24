@@ -36,6 +36,7 @@ interface CommandCenterProps {
   trains?: TrainMovement[];
   loading: boolean;
   onNavigate: (view: ViewType) => void;
+  onOpenTaskGenerator?: (assetId?: string | null) => void;
 }
 
 export const CommandCenterView: React.FC<CommandCenterProps> = ({
@@ -47,8 +48,10 @@ export const CommandCenterView: React.FC<CommandCenterProps> = ({
   trains = [],
   loading,
   onNavigate,
+  onOpenTaskGenerator,
 }) => {
   const [summaryData, setSummaryData] = useState<any>(null);
+  const [recentRequests, setRecentRequests] = useState<any[]>([]);
   const [selectedTask, setSelectedTask] = useState<ScheduledTask | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [mapLayer, setMapLayer] = useState<'all' | 'assets' | 'failures' | 'blocks' | 'trains'>('all');
@@ -64,6 +67,25 @@ export const CommandCenterView: React.FC<CommandCenterProps> = ({
     }
     loadSummary();
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadRecentRequests() {
+      try {
+        const res = await apiClient.get<any>('/tasks?limit=6');
+        if (!cancelled && res.data?.data) {
+          setRecentRequests(Array.isArray(res.data.data) ? res.data.data.slice(0, 6) : []);
+        }
+      } catch {
+        if (!cancelled) setRecentRequests([]);
+      }
+    }
+    loadRecentRequests();
+    return () => { cancelled = true; };
+  }, []);
+
+  const scheduledTaskIds = new Set(schedule.map((t) => t.task_id));
+  const getBlockStatus = (taskId: string) => (scheduledTaskIds.has(taskId) ? 'ALLOCATED' : 'NOT ALLOCATED');
 
   const criticalTasks = schedule.filter(t => t.criticality === 'Critical');
   const coordinatedTasks = schedule.filter(t => t.combined_group_id && t.combined_group_id.length > 0);
@@ -131,6 +153,14 @@ export const CommandCenterView: React.FC<CommandCenterProps> = ({
             {calendarState.horizonDays} {calendarState.horizonDays === 1 ? 'Day' : 'Days'}
           </span>
         </div>
+
+        <button
+          onClick={() => onOpenTaskGenerator && onOpenTaskGenerator(null)}
+          className="px-4 py-2 bg-[#7F1418] hover:bg-[#651013] text-white text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-1.5"
+        >
+          <Wrench className="w-3.5 h-3.5 text-[#FF9933]" />
+          <span>+ CREATE MAINTENANCE TASK</span>
+        </button>
       </div>
 
       {/* 1. Top KPI Operational Bar (Section 4 Layout) */}
@@ -188,16 +218,16 @@ export const CommandCenterView: React.FC<CommandCenterProps> = ({
         </div>
       </div>
 
-      {/* 2. Middle Row: 3 Columns (Anomaly/Task Queue | KPI & Availability | AI Action Feed) */}
+      {/* 2. Middle Row: 3 Columns (Recent Task Requests | KPI & Availability | AI Action Feed) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left Column: Anomaly & Task Backlog Queue (4 cols) */}
+        {/* Left Column: Recent Task Requests (4 cols) */}
         <div className="lg:col-span-4 bg-white border border-[#E6E6E6] rounded-xl p-4 shadow-sm flex flex-col justify-between">
           <div className="space-y-3">
             <div className="flex items-center justify-between border-b border-[#F2F4F7] pb-2.5">
               <div className="flex items-center gap-1.5">
                 <Flame className="w-4 h-4 text-[#D92D20]" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#1F2937]">
-                  Anomaly & Maintenance Queue
+                  Recent Task Requests
                 </h3>
               </div>
               <button
@@ -208,41 +238,79 @@ export const CommandCenterView: React.FC<CommandCenterProps> = ({
               </button>
             </div>
 
-            <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
-              {schedule.slice(0, 5).map((t) => (
-                <div
-                  key={t.task_id}
-                  onClick={() => {
-                    setSelectedTask(t);
-                    setSelectedTaskId(t.task_id);
-                  }}
-                  className="p-3 rounded-lg border border-[#E6E6E6] hover:border-[#D96F13] bg-[#FAFAF9] hover:bg-[#FFF9F2] cursor-pointer transition text-xs space-y-1"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#1F2937] truncate">{t.task_type}</span>
-                    <span className={`px-1.5 py-0.2 rounded text-[9.5px] font-bold ${
-                      t.criticality === 'Critical'
-                        ? 'bg-[#FFF4ED] text-[#D92D20] border border-[#FECDCA]'
-                        : 'bg-[#F2F4F7] text-[#344054]'
-                    }`}>
-                      {t.criticality}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-[#667085]">
-                    <span>{t.section_id} · {t.department}</span>
-                    <span className="font-bold text-[#7F1418]">Score: {t.priority_score.toFixed(1)}</span>
-                  </div>
-                </div>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-[11px] text-[#1F2937]">
+                <thead className="uppercase text-[9.5px] tracking-wider text-[#667085] border-b border-[#F2F4F7]">
+                  <tr>
+                    <th className="py-1.5 pr-2 font-bold">Task ID</th>
+                    <th className="py-1.5 pr-2 font-bold">Dept</th>
+                    <th className="py-1.5 pr-2 font-bold">Asset</th>
+                    <th className="py-1.5 pr-2 font-bold">Section</th>
+                    <th className="py-1.5 pr-2 font-bold">Priority</th>
+                    <th className="py-1.5 font-bold">Block Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#F2F4F7]">
+                  {(recentRequests.length > 0 ? recentRequests : schedule.slice(0, 5)).map((t: any) => {
+                    const blockStatus = getBlockStatus(t.task_id);
+                    return (
+                      <tr
+                        key={t.task_id}
+                        onClick={() => {
+                          if (t.start_minute !== undefined) {
+                            setSelectedTask(t);
+                            setSelectedTaskId(t.task_id);
+                          }
+                        }}
+                        className={`transition ${
+                          t.start_minute !== undefined
+                            ? 'hover:bg-[#FFF9F2] cursor-pointer'
+                            : 'hover:bg-[#F9FAFB]'
+                        }`}
+                      >
+                        <td className="py-2 pr-2 font-mono font-bold text-[#1F2937]">{t.task_id}</td>
+                        <td className="py-2 pr-2">
+                          <span className="px-1.5 py-0.2 rounded text-[9.5px] font-bold bg-[#F2F4F7] text-[#344054]">
+                            {t.department}
+                          </span>
+                        </td>
+                        <td className="py-2 pr-2 font-mono text-[#667085]">{t.asset_id}</td>
+                        <td className="py-2 pr-2 text-[#475467]">{t.section_id}</td>
+                        <td className="py-2 pr-2 font-mono font-extrabold text-[#7F1418]">
+                          {Number(t.priority_score || 0).toFixed(1)}
+                        </td>
+                        <td className="py-2">
+                          <span
+                            className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${
+                              blockStatus === 'ALLOCATED'
+                                ? 'bg-[#ECFDF3] text-[#027A48] border border-[#A6F4C5]'
+                                : 'bg-[#FFF4ED] text-[#D92D20] border border-[#FECDCA]'
+                            }`}
+                          >
+                            {blockStatus}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {(recentRequests.length === 0 && schedule.length === 0) && (
+                    <tr>
+                      <td colSpan={6} className="py-6 text-center text-[#667085]">
+                        No recent task requests.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
 
           <button
-            onClick={() => onNavigate('anomaly_handling')}
+            onClick={() => onOpenTaskGenerator && onOpenTaskGenerator(null)}
             className="w-full mt-3 py-2 bg-[#FFF4ED] border border-[#FECDCA] text-[#D92D20] text-xs font-bold rounded-lg hover:bg-[#FFE8E5] transition flex items-center justify-center gap-1.5"
           >
-            <AlertTriangle className="w-3.5 h-3.5" />
-            <span>Open Anomaly Handling Console (29 Scenarios)</span>
+            <Wrench className="w-3.5 h-3.5" />
+            <span>+ CREATE MAINTENANCE TASK</span>
           </button>
         </div>
 
@@ -306,10 +374,10 @@ export const CommandCenterView: React.FC<CommandCenterProps> = ({
           </div>
 
           <button
-            onClick={() => onNavigate('what_if')}
+            onClick={() => onNavigate('weekly_planner')}
             className="w-full mt-3 py-2 bg-[#F7F7F5] border border-[#E6E6E6] text-[#344054] text-xs font-bold rounded-lg hover:bg-[#EAEAEA] transition flex items-center justify-center gap-1.5"
           >
-            <span>Launch What-If Simulator & Replanner</span>
+            <span>Open Weekly Block Planner</span>
             <ArrowRight className="w-3.5 h-3.5 text-[#D96F13]" />
           </button>
         </div>
@@ -415,6 +483,7 @@ export const CommandCenterView: React.FC<CommandCenterProps> = ({
             activeLayer={mapLayer}
             onLayerChange={setMapLayer}
             compact={true}
+            onCreateTaskForAsset={(assetId) => onOpenTaskGenerator && onOpenTaskGenerator(assetId)}
           />
         </div>
       </div>
@@ -454,6 +523,15 @@ export const CommandCenterView: React.FC<CommandCenterProps> = ({
           setSelectedTask(null);
           setSelectedTaskId(null);
         }}
+        onCreateTaskForAsset={
+          onOpenTaskGenerator
+            ? (assetId) => {
+                setSelectedTask(null);
+                setSelectedTaskId(null);
+                onOpenTaskGenerator(assetId);
+              }
+            : undefined
+        }
       />
     </div>
   );

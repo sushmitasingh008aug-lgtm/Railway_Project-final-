@@ -17,9 +17,10 @@ interface TaskDetailDrawerProps {
   taskId: string | null;
   taskData?: any;
   onClose: () => void;
+  onCreateTaskForAsset?: (assetId: string) => void;
 }
 
-export const TaskDetailDrawer: React.FC<TaskDetailDrawerProps> = ({ taskId, taskData, onClose }) => {
+export const TaskDetailDrawer: React.FC<TaskDetailDrawerProps> = ({ taskId, taskData, onClose, onCreateTaskForAsset }) => {
   const [activeTab, setActiveTab] = useState<'details' | 'actions' | 'dependencies' | 'compatibility'>('details');
   const [actions, setActions] = useState<TaskAction[]>([]);
   const [dependencies, setDependencies] = useState<TaskDependency[]>([]);
@@ -74,9 +75,20 @@ export const TaskDetailDrawer: React.FC<TaskDetailDrawerProps> = ({ taskId, task
             </div>
           </div>
 
-          <button onClick={onClose} className="p-1.5 rounded-lg text-[#667085] hover:bg-[#F7F7F5] hover:text-[#1F2937]">
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {onCreateTaskForAsset && taskData?.asset_id && (
+              <button
+                onClick={() => onCreateTaskForAsset(taskData.asset_id)}
+                className="px-2.5 py-1.5 bg-[#7F1418] hover:bg-[#651013] text-white text-[10.5px] font-bold rounded-lg transition flex items-center gap-1.5"
+              >
+                <Wrench className="w-3 h-3 text-[#FF9933]" />
+                <span>CREATE MAINTENANCE TASK</span>
+              </button>
+            )}
+            <button onClick={onClose} className="p-1.5 rounded-lg text-[#667085] hover:bg-[#F7F7F5] hover:text-[#1F2937]">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}

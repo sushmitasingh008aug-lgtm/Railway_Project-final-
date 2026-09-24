@@ -64,7 +64,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 # 4. Copy application files, static binary, and frontend assets with non-root ownership
 COPY --link --chown=10001:10001 engine/ ./engine/
-COPY --link --chown=10001:10001 backend/go.mod backend/go.sum ./backend/
+COPY --link --chown=10001:10001 backend/ ./backend/
 COPY --link --chown=10001:10001 --from=go-builder /app/block_planner ./block_planner
 COPY --link --chown=10001:10001 --from=frontend-builder /app/frontend/dist ./frontend/dist
 COPY --link --chown=10001:10001 --chmod=755 docker/entrypoint.sh /entrypoint.sh
@@ -81,7 +81,7 @@ ENV PORT=3000 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHON_BIN=python3
 
-EXPOSE 3000
+EXPOSE 3000 8765
 
 # Container healthcheck
 HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \

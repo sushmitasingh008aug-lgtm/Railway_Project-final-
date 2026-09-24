@@ -46,6 +46,7 @@ services:
     restart: unless-stopped
     ports:
       - "${PORT:-3000}:${PORT:-3000}"
+      - "${PYTHON_PORT:-8765}:8765"
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgrespassword}@postgres:5432/${POSTGRES_DB:-block_planning}?sslmode=disable
       POSTGRES_URI: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgrespassword}@postgres:5432/${POSTGRES_DB:-block_planning}?sslmode=disable

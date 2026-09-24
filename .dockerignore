@@ -26,6 +26,8 @@ frontend/coverage/
 # Backend build artifacts and local caches
 backend/server
 backend/server.exe
+backend/server_go.exe
+backend/*.exe
 backend/block_planner
 backend/.air/
 backend/tmp/

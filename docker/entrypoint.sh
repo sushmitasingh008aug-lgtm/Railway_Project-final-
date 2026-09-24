@@ -142,6 +142,22 @@ else
 fi
 
 # Handle Go vs Python CMD — entrypoint always execs "$@"
-# Dockerfile CMD ["./block_planner"], but allow manual `docker run ... python backend/server.py` for debugging
+# When running block_planner, launch Python backend on 127.0.0.1:8765 in background
+# to handle CP-SAT solver, task generation, TreeSHAP explainability, and ML requests.
+if [ "$1" = "./block_planner" ] || [ "$1" = "block_planner" ]; then
+  echo "→ Starting Python ML & Solver engine on http://127.0.0.1:8765..."
+  PORT=8765 python3 backend/server.py &
+  PYTHON_PID=$!
+  echo "✓ Python solver engine running (PID $PYTHON_PID)"
+
+  cleanup() {
+    echo "Shutting down services..."
+    if [ -n "$PYTHON_PID" ]; then
+      kill "$PYTHON_PID" 2>/dev/null || true
+    fi
+  }
+  trap cleanup EXIT TERM INT
+fi
+
 echo "→ Starting: $@"
 exec "$@"

@@ -1,7 +1,7 @@
 # 🚆 AI-Powered Automatic Block Planning System for Indian Railways (ABPS v4.0)
 
 [![Smart India Hackathon 2026](https://img.shields.io/badge/SIH-2026-blue.svg)](https://www.sih.gov.in/)
-[![Operational Sections](https://img.shields.io/badge/UI%20Sections-18%20Operational%20Views-success.svg)](docs/presentation/UI_PRESENTATION_WALKTHROUGH.md)
+[![Operational Sections](https://img.shields.io/badge/UI%20Sections-16%20Operational%20Sections-success.svg)](docs/presentation/UI_PRESENTATION_WALKTHROUGH.md)
 [![Component Inventory](https://img.shields.io/badge/UI%20Components-80%20Cataloged%20(15--Field)-blueviolet.svg)](docs/presentation/COMPONENT_INVENTORY.md)
 [![Verification Suite](https://img.shields.io/badge/Proof%20Checks-12%2F12%20Passed-brightgreen.svg)](docs/presentation/ABPS_UI_Walkthrough.pptx)
 [![Presentation Deck](https://img.shields.io/badge/PowerPoint-24%20Slides%20(16%3A9)-orange.svg)](docs/presentation/ABPS_UI_Walkthrough.pptx)
@@ -20,7 +20,7 @@
 ## 📑 Table of Contents
 
 1. [Executive Summary & Problem Statement Alignment](#1-executive-summary--problem-statement-alignment)
-2. [Complete 18-Section Website User Interface & Architecture](#2-complete-18-section-website-user-interface--architecture)
+2. [Complete 16-Section Operational User Interface & Architecture](#2-complete-16-section-operational-user-interface--architecture)
 3. [Multi-Color Component Annotation System](#3-multi-color-component-annotation-system)
 4. [End-to-End Operational Pipeline (How It Works)](#4-end-to-end-operational-pipeline-how-it-works)
 5. [Operational User Workflows & System Interaction Diagrams](#5-operational-user-workflows--system-interaction-diagrams)
@@ -94,18 +94,18 @@ Our system replaces manual, decentralized scheduling with an automated, mathemat
 
 ---
 
-## 2. Complete 18-Section Website User Interface & Architecture
+## 2. Complete 16-Section Operational User Interface & Architecture
 
-The application interface is structured into **18 integrated operational sections** across 5 functional tiers, mapped directly from `frontend/src/components/Sidebar.tsx` and documented in [`docs/presentation/UI_PRESENTATION_WALKTHROUGH.md`](docs/presentation/UI_PRESENTATION_WALKTHROUGH.md):
+The application interface is structured into **16 integrated operational sections** across 5 functional tiers, mapped directly from `frontend/src/components/Sidebar.tsx`:
 
 ```mermaid
 graph LR
     subgraph "5-Tier Operational Architecture"
         T1["1. OPERATIONS<br/>(Sections 1 - 5)"]
         T2["2. COORDINATION<br/>(Sections 6 - 8)"]
-        T3["3. INTELLIGENCE<br/>(Sections 9 - 12)"]
-        T4["4. DATA<br/>(Sections 13 - 16)"]
-        T5["5. CONTROL<br/>(Sections 17 - 18)"]
+        T3["3. INTELLIGENCE<br/>(Sections 9 - 11)"]
+        T4["4. DATA<br/>(Sections 12 - 14)"]
+        T5["5. CONTROL<br/>(Sections 15 - 16)"]
     end
 
     T4 -->|Clean Datasets| T3
@@ -115,28 +115,26 @@ graph LR
     T5 -->|Certified Dispatch| RealWorld["Live Train Operations"]
 ```
 
-### 18-Section Master Navigation & Visual Inventory
+### 16-Section Master Navigation & Operational Inventory
 
-| Section # | Section Name | Operational Tier | Primary React Component | Primary Screenshot | Functional Deliverable |
-| :---: | :--- | :---: | :--- | :--- | :--- |
-| **01** | **Dashboard / GIS Map** | Operations | `CommandCenterView.tsx` | `Screenshot (1543).png` | Real-time network health, KPI ribbons, priority queue, and Leaflet GIS corridor map. |
-| **02** | **Asset Backlog** | Operations | `TasksView.tsx` | `Screenshot (1545).png` | Multi-department work order ledger, urgency distribution, and expected-loss ranking. |
-| **03** | **Weekly Block Planner** | Operations | `GanttTab.tsx` | `Screenshot (1547).png` | CP-SAT 7-day corridor timeline, 6 sectional swimlanes, and assigned possessions table. |
-| **04** | **Monthly Forecast** | Operations | `WeeklyMonthlyView.tsx` | `Screenshot (1549).png` | 30-day strategic corridor capacity, multi-horizon day cards, and planned maintenance trends. |
-| **05** | **Anomaly Handling** | Operations | `AnomalyHandlingView.tsx` | `Screenshot (1550).png` | 29 scenario classes, active disruption incident panel, auto-remediation, and audit log. |
-| **06** | **Coordination Centre** | Coordination | `CoordinationView.tsx` | `Screenshot (1551).png` | Hero bundling candidate, 8-point compatibility matrix, and cross-department shadow blocks. |
-| **07** | **Integrated / Shadow Blocks** | Coordination | `BeforeAfterView.tsx` | `Screenshot (1554).png` | Before vs. After ROI analysis, 63.1% block compression, and +0.67% availability gain. |
-| **08** | **Train & Block Conflicts** | Coordination | `TrainConflictsView.tsx` | `Screenshot (1555).png` | UP/DOWN directional swimlanes, 1,819 timetable trains, and 10-minute headway radar. |
-| **09** | **AI Risk & Priority** | Intelligence | `AIPriorityView.tsx` | `Screenshot (1557).png` | XGBoost v2.4 Champion model, physics Weibull hazard curves, and local SHAP attributions. |
-| **10** | **Failure Intelligence** | Intelligence | `FailureIntelligenceView.tsx` | `Screenshot (1558).png` | Historical UIMS failure logs, MTBF analytics, root-cause Pareto chart, and preventative orders. |
-| **11** | **Asset Health** | Intelligence | `AssetHealthView.tsx` | `Screenshot (1559).png` | 12,000 canonical assets, Ultrasonic Flaw Detection (USFD) scans, and machine staging. |
-| **12** | **What-If Simulator** | Intelligence | `WhatIfSimulatorView.tsx` | `Screenshot (1560).png` | Dynamic contingency replanning, temporal shifts (-60m to +120m), and ripple delay simulation. |
-| **13** | **Data Ingestion** | Data | `DataIngestionView.tsx` | `Screenshot (1562).png` | Multi-source enterprise feeds (COIS, ICMS, UIMS, TMS), CSV drag-and-drop, and audit log. |
-| **14** | **Data Quality** | Data | `DataQualityView.tsx` | `Screenshot (1563).png` | 21 canonical datasets audit matrix (100% pass), zero-null rules, and referential integrity. |
-| **15** | **Scenario Explorer** | Data | `ScenarioExplorerView.tsx` | `Screenshot (1564).png` | 29 operational disruptions benchmark suite, 8 metric tiles, and robustness matrix. |
-| **16** | **Model / Data Versions** | Data | `ModelVersionsView.tsx` | `Screenshot (1565).png` | Model registry, 6 candidate benchmark leaderboard, hyperparameter lineage, and hot-swap button. |
-| **17** | **Human Review & Audit** | Control | `ApprovalAuditView.tsx` | `Screenshot (1566).png` | L4 controller review stepper, electrical interlock checklist, and cryptographically signed authority. |
-| **18** | **Verification Suite** | Control | `AlertsView.tsx` | `Screenshot (1567).png` | 12/12 mathematical proof gate, 6 physical safety laws, and singleflight mutex telemetry. |
+| Section # | Section Name | Operational Tier | Primary React Component | Functional Deliverable |
+| :---: | :--- | :---: | :--- | :--- |
+| **01** | **Dashboard / GIS Map** | Operations | `CommandCenterView.tsx` | Real-time network health, KPI ribbons, priority queue, and Leaflet GIS corridor map with interactive route switcher. |
+| **02** | **Asset Backlog** | Operations | `TasksView.tsx` | Multi-department work order ledger, urgency distribution, expected-loss ranking, and direct deep-link to Task Generator. |
+| **03** | **Task Generator** | Operations | `TaskGeneratorView.tsx` `[v4]` | Multi-department work order authoring (Engineering, TRD, S&T), asset master lookup, GIS locator, 8-stage action breakdown, isolation & machinery checklists, TreeSHAP preview, target completion date picker with quick presets (`Today`, `+1d`, `+3d`, `+7d`), preferred slot (`NIGHT`, `DAY_OFFPEAK`, `ANY`), and forward to CP-SAT solver. |
+| **04** | **Weekly Block Planner** | Operations | `GanttTab.tsx` | CP-SAT 7-day corridor timeline, 6 sectional swimlanes, assigned possessions table, and live re-optimization trigger. |
+| **05** | **Monthly Forecast** | Operations | `WeeklyMonthlyView.tsx` | 30-day strategic corridor capacity, multi-horizon day cards, and planned maintenance trends. |
+| **06** | **Coordination Centre** | Coordination | `CoordinationView.tsx` | Hero bundling candidate, 8-point compatibility matrix, and cross-department shadow blocks. |
+| **07** | **Integrated / Shadow Blocks** | Coordination | `BeforeAfterView.tsx` | Before vs. After ROI analysis, 63.1% block compression, and +0.67% availability gain. |
+| **08** | **Train & Block Conflicts** | Coordination | `TrainConflictsView.tsx` `[v4]` | UP/DOWN directional swimlanes, 1,819 timetable trains, and 10-minute headway radar. |
+| **09** | **AI Risk & Priority** | Intelligence | `AIPriorityView.tsx` | XGBoost v2.4 Champion model, physics Weibull hazard curves, and local SHAP attributions. |
+| **10** | **Failure Intelligence** | Intelligence | `FailureIntelligenceView.tsx` | Historical UIMS failure logs, MTBF analytics, root-cause Pareto chart, and preventative orders. |
+| **11** | **Asset Health** | Intelligence | `AssetHealthView.tsx` | 12,000 canonical assets, Ultrasonic Flaw Detection (USFD) scans, and machine staging. |
+| **12** | **Data Ingestion** | Data | `DataIngestionView.tsx` `[v4]` | Multi-source enterprise feeds (COIS, ICMS, UIMS, TMS), CSV drag-and-drop, and audit log. |
+| **13** | **Data Quality** | Data | `DataQualityView.tsx` `[v4]` | 21 canonical datasets audit matrix (100% pass), zero-null rules, and referential integrity. |
+| **14** | **Model / Data Versions** | Data | `ModelVersionsView.tsx` `[v4]` | Model registry, 6 candidate benchmark leaderboard, hyperparameter lineage, and hot-swap button. |
+| **15** | **Human Review & Audit** | Control | `ApprovalAuditView.tsx` | L4 controller review stepper, electrical interlock checklist, and cryptographically signed authority Form T/409. |
+| **16** | **Verification Suite** | Control | `AlertsView.tsx` | 12/12 mathematical proof gate, 6 physical safety laws, and singleflight mutex telemetry. |
 
 ---
 
@@ -163,7 +161,7 @@ The system executes a 10-stage sequential pipeline from raw telemetry ingestion 
 
 ```mermaid
 flowchart TD
-    subgraph S1["Stage 1: Data Ingestion & Quality Gate (Sections 13, 14)"]
+    subgraph S1["Stage 1: Data Ingestion & Quality Gate (Sections 12, 13)"]
         D1[TMS Track Flaws] --> U[Multi-Source Ingestion Pipeline]
         D2[TDMS Catenary Wear] --> U
         D3[SMMS Axle Counters] --> U
@@ -171,15 +169,15 @@ flowchart TD
         U --> Q[21-Dataset Zero-Null Schema Audit Gate]
     end
 
-    subgraph S2["Stage 2: Machine Learning Risk Inference (Sections 9, 16)"]
+    subgraph S2["Stage 2: Machine Learning Risk Inference (Sections 9, 14)"]
         Q --> FE[Point-in-Time Feature Extractor]
         FE --> ML[XGBoost v2.4 Champion Model P_f]
         ML --> SHAP[Local TreeSHAP Feature Attribution]
     end
 
-    subgraph S3["Stage 3: Multi-Attribute Risk & Urgency (Sections 2, 10, 11)"]
+    subgraph S3["Stage 3: Multi-Attribute Risk, Task Generation & Urgency (Sections 2, 3, 10, 11)"]
         Q --> CRIT[Engineering Criticality C_i in 0, 1]
-        Q --> URG[Continuous Logistic Urgency U_i]
+        Q --> URG[Continuous Logistic Urgency U_i with Target Date d_i]
         CRIT & ML & URG --> PRIO[Expected-Loss Priority: P_i = C_i x U_i x W]
         PRIO --> OVR[Statutory Safety Override: Broken Rail / OHE Sag >= 92.5]
     end
@@ -189,18 +187,18 @@ flowchart TD
         COMP --> BUNDLE[Multi-Department Shadow-Block Bundles: D_b = max d_i, d_j]
     end
 
-    subgraph S5["Stage 5: CP-SAT Constraint Optimization (Sections 3, 4)"]
+    subgraph S5["Stage 5: CP-SAT Constraint Optimization (Sections 4, 5)"]
         BUNDLE & D4 --> SOLVER[Google OR-Tools CP-SAT Corridor Solver]
         SOLVER --> RAW[Certified 7-Day / 30-Day Block Schedule]
     end
 
-    subgraph S6["Stage 6: Safety & Mathematical Verification (Sections 8, 18)"]
+    subgraph S6["Stage 6: Safety & Mathematical Verification (Sections 8, 16)"]
         RAW --> VAL[Independent Deterministic Safety Validator]
         VAL -->|10-min Headway Pass| CERT[12/12 Mathematical Proof Certificate]
         VAL -->|Collision Detected| REJECT[Automatic Recompute Lock]
     end
 
-    subgraph S7["Stage 7: Human Review & Live Dispatch (Sections 5, 12, 17)"]
+    subgraph S7["Stage 7: Human Review & Live Dispatch (Section 15)"]
         CERT --> L4[Level 4 Controller Review Stepper]
         L4 --> CHECK[Mandatory 25kV OHE Power Isolation Checklist]
         CHECK --> SIGN[Digitally Signed Block Authority Form T/409]
@@ -214,12 +212,12 @@ flowchart TD
 
 The platform orchestrates daily railway operations across 6 verified user journeys documented in [`docs/presentation/WORKFLOW_DIAGRAMS.md`](docs/presentation/WORKFLOW_DIAGRAMS.md):
 
-1. **Workflow 1: Tactical 7-Day Block Scheduling** (Sections 2, 3) — Resolves 189 pending work orders into 72 collision-free block windows using Google OR-Tools CP-SAT.
+1. **Workflow 1: Tactical 7-Day Block Scheduling** (Sections 2, 4) — Resolves pending work orders into 72 collision-free block windows using Google OR-Tools CP-SAT.
 2. **Workflow 2: Real-Time Pairwise Headway Audit** (Section 8) — Verifies statutory $\ge 10$-minute headway clearance across 1,819 train paths on UP/DOWN directional swimlanes.
 3. **Workflow 3: Cross-Department Shadow-Block Bundling** (Sections 6, 7) — Evaluates the 8-point compatibility matrix, achieving a 63.1% reduction in line possession requests.
-4. **Workflow 4: Emergency Disruption & What-If Replanning** (Sections 5, 12) — Sandbox simulation testing time shifts (-60m to +120m) and mitigating ripple delays within seconds.
-5. **Workflow 5: Mathematical Proof Gate & Verification Suite** (Section 18) — Validates 6 physical railway laws and executes 12 assertion checks in 35 milliseconds.
-6. **Workflow 6: Shift Changeover & Operational Handover** (Sections 1, 17) — Coordinates 24-hour military clock synchronization and digital handover checklists between incoming and outgoing controllers.
+4. **Workflow 4: Dynamic Task Generation & Target Completion Date Scheduling** (Section 3) — Interactive multi-department work order authoring with GIS coordinate mapping, relative presets (`Today`, `+1d`, `+3d`, `+7d`), preferred slot (`NIGHT`, `DAY_OFFPEAK`, `ANY`), and automated CP-SAT optimization penalties.
+5. **Workflow 5: Mathematical Proof Gate & Verification Suite** (Section 16) — Validates 6 physical railway laws and executes 12 assertion checks in 35 milliseconds.
+6. **Workflow 6: Shift Changeover & Operational Handover** (Sections 1, 15) — Coordinates 24-hour military clock synchronization and digital handover checklists between incoming and outgoing controllers.
 
 ---
 
@@ -267,13 +265,14 @@ Defined in [`engine/schema.sql`](engine/schema.sql), tested for 100% referential
 +---------------------------------------------------------------------------------------------------+
 |                                     FRONTEND CLIENT LAYER                                         |
 |                                                                                                   |
-|   React 18 + TypeScript + Vite + Tailwind CSS + Lucide Icons (18 Sections · 80 Components)        |
-|   - 18 Operational Views across Operations, Coordination, Intelligence, Data, and Control         |
+|   React 18 + TypeScript + Vite + Tailwind CSS + Lucide Icons (16 Operational Sections)            |
+|   - 16 Operational Views across Operations, Coordination, Intelligence, Data, and Control         |
 |   - Master Corridor Gantt with Timetabled Train Overlays & UP/DOWN Directional Swimlanes          |
 |   - Curved Rail Geometry GIS Network Map (Leaflet with GeoJSON curvature)                         |
+|   - Dynamic Task Generator with Target Completion Date Picker & Relative Presets (+1d, +3d, +7d)  |
 |   - Machine Learning Explainability Pane (Weibull Hazard Curves & Local TreeSHAP Attributions)    |
 |   - Multi-Department Shadow-Block Coordinated Visualizer & 8-Point Compatibility Matrix           |
-|   - What-If Emergency Disruption & Temporal Shift Simulator (-60m to +120m)                       |
+|   - Train & Block Conflict Radar with 10-Minute Headway Detection                                 |
 |   - Level 4 Human Controller Review Stepper, 25kV Safety Checklists & Verification Gate           |
 +---------------------------------------------------------------------------------------------------+
                                          │
@@ -282,10 +281,11 @@ Defined in [`engine/schema.sql`](engine/schema.sql), tested for 100% referential
 +---------------------------------------------------------------------------------------------------+
 |                                 GO FIBER API GATEWAY (Port 3000)                                  |
 |                                                                                                   |
-|   - Compiled Native Binary: server_go.exe                                                         |
+|   - Compiled Native Binary: server_go.exe (Cross-platform Linux / Windows)                        |
 |   - Sub-millisecond latency for metrics, backlog tasks, section metadata                          |
-|   - Static SPA distribution server (serves frontend/dist/ directly)                              |
-|   - Full HTTP reverse proxy (proxyHTTP) routing ML & CP-SAT requests to Python engine             |
+|   - Dual API route aliases (/api/tasks/:id/actions & /api/actions/:id) for action retrieval        |
+|   - Static SPA distribution server (serves frontend/dist/ directly)                               |
+|   - Full HTTP reverse proxy with 45-second timeout routing ML & CP-SAT requests to Python engine  |
 |   - Singleflight Mutex & 60-Second In-Memory Cache protecting CPU from solver thrashing           |
 +---------------------------------------------------------------------------------------------------+
                                          │
@@ -295,11 +295,11 @@ Defined in [`engine/schema.sql`](engine/schema.sql), tested for 100% referential
 |                        PYTHON DECISION & OPTIMIZATION ENGINE (Port 8765)                          |
 |                                                                                                   |
 |   - Google OR-Tools CP-SAT Corridor Constraint Solver (optimizer_core.py)                         |
+|   - Target Completion Date & Traffic Slot Optimization Penalty Formulation                        |
 |   - XGBoost v2.4 Champion Model & TreeSHAP Local Explainability Service (risk_service.py)         |
 |   - Continuous Logistic Urgency, Criticality, & Impact Engines (urgency_engine.py, etc.)          |
 |   - 8-Dimensional Shadow-Block Coordination Engine (coordination_engine.py)                       |
 |   - Independent Deterministic Safety Validator (validator.py) & 12-Check Verification Suite      |
-|   - What-If Scenario Simulation & Ripple Delay Service (scenario_engine.py)                      |
 +---------------------------------------------------------------------------------------------------+
                                          │
                                 SQL Pool / Relational WAL
@@ -352,12 +352,20 @@ $$\max \mathcal{Z} = \sum_{b \in \mathcal{B}} \sum_{i \in \mathcal{T}} Priority_
 $$\forall b \in \mathcal{B}_{\text{scheduled}}, \forall j \in \text{Trains}(\text{Sec}_b): \quad (e_b \le A_j - 10) \;\lor\; (s_b \ge B_j + 10)$$
 $$\text{CertificationStatus} = \begin{cases} \text{PASS}, & \text{if condition holds } \forall (b, j) \\ \text{FAIL}, & \text{otherwise} \end{cases}$$
 
+### 9.8 Target Completion Date & Traffic Slot Urgency Dynamics
+When a maintenance task is authored via the Task Generator with a target completion date $T_{\text{due}}$ and preferred traffic slot $S_{\text{pref}} \in \{\text{'NIGHT'}, \text{'DAY\_OFFPEAK'}, \text{'ANY'}\}$:
+- **Temporal Lead Time Delta**:
+  $$d_i = \text{Date}_{\text{plan}} - T_{\text{due}}$$
+  Tasks scheduled past their target completion deadline ($d_i > 0$) incur exponential urgency escalation $U_i \to 1.0$, ensuring immediate solver assignment priority, while future tasks ($d_i < 0$) scale smoothly along the logistic curve.
+- **Traffic Slot Preference Optimization**:
+  $$\text{SlotPenalty}(b, S_{\text{pref}}) = \begin{cases} 0, & \text{if } S_{\text{pref}} = \text{'ANY'} \lor \text{SlotType}(b) = S_{\text{pref}} \\ \lambda_{\text{slot}} \cdot Priority_i, & \text{otherwise} \quad (\lambda_{\text{slot}} = 0.25) \end{cases}$$
+
 ---
 
 ## 10. Machine Learning Pipeline & Explainable AI (XAI)
 
 - **Champion Model**: XGBoost v2.4 Champion model ($PR\text{-}AUC = 0.3138$, $Brier = 0.0812$), trained on 15,000 real railway operational records.
-- **Candidate Leaderboard**: Rigorously benchmarked against CatBoost (2nd), LightGBM (3rd), Random Forest (4th), and Extra Trees (5th) in Section 16 (Model Versions).
+- **Candidate Leaderboard**: Rigorously benchmarked against CatBoost (2nd), LightGBM (3rd), Random Forest (4th), and Extra Trees (5th) in Section 14 (Model Versions).
 - **Physics Weibull Degradation Modeling**: Computes hazard rate $h(t) = \frac{\beta}{\eta} \left(\frac{t}{\eta}\right)^{\beta - 1}$ mapping gross million tonnes ($GMT$) to mechanical wear-out probability.
 - **Local TreeSHAP Attribution**: Decomposes every priority score into exact feature deltas (Track Age $+0.104$, High Summer Temp $+0.047$, Recent Tamping $-0.032$).
 
@@ -369,13 +377,16 @@ $$\text{CertificationStatus} = \begin{cases} \text{PASS}, & \text{if condition h
 automatic-block-planning/
 ├── backend/
 │   ├── main.go                     # High-concurrency Go Fiber API Gateway (singleflight cache & reverse proxy)
-│   ├── main_test.go                # Go Fiber unit tests & route validation
-│   ├── server.py                   # Python optimization & decision engine service
+│   ├── main_test.go                # Go Fiber unit tests & 12/12 Blueprint v2 safety proof validations
+│   ├── server.py                   # Python optimization & decision engine service (Flask REST API on :8765)
 │   ├── go.mod                      # Go dependency definitions
 │   └── go.sum                      # Go dependency checksums
+├── docker/
+│   └── entrypoint.sh               # Dual-service orchestrator (background Python solver + foreground Go gateway)
 ├── engine/
 │   ├── block_planning.db           # SQLite database in WAL mode (21 canonical tables, 345k+ records)
 │   ├── schema.sql                  # Canonical 21-table schema & uppercase enterprise views
+│   ├── requirements.runtime.txt    # Production runtime Python dependencies (Flask, OR-Tools, XGBoost, SHAP)
 │   ├── optimizer_core.py           # Google OR-Tools CP-SAT corridor constraint optimizer
 │   ├── coordination_engine.py      # 8-dimensional multi-department shadow-block coordinator
 │   ├── compatibility_engine.py     # Deterministic compatibility matrix validator
@@ -383,7 +394,6 @@ automatic-block-planning/
 │   ├── urgency_engine.py           # Continuous bounded logistic urgency sigmoid engine
 │   ├── priority_engine.py          # Expected-Loss priority engine & safety overrides
 │   ├── risk_service.py             # ML failure inference & TreeSHAP local explainability
-│   ├── scenario_engine.py          # What-If emergency disruption simulator & ripple delay engine
 │   ├── test_suite.py               # 12-point automated mathematical & safety verification suite
 │   ├── validator.py                # Independent deterministic safety validator
 │   ├── seed_diversified_12k.py     # Master 25-dataset seeding & normalization pipeline
@@ -391,27 +401,25 @@ automatic-block-planning/
 ├── frontend/
 │   ├── dist/                       # Compiled production static bundle
 │   ├── src/
-│   │   ├── App.tsx                 # Root application container & tab router (18 views)
-│   │   ├── components/             # 18 Primary Operational View Components
+│   │   ├── App.tsx                 # Root application container & tab router (16 operational views)
+│   │   ├── components/             # 16 Primary Operational View Components
 │   │   │   ├── CommandCenterView.tsx    # 01. Dashboard / GIS Map
 │   │   │   ├── TasksView.tsx            # 02. Asset Backlog
-│   │   │   ├── GanttTab.tsx             # 03. Weekly Block Planner
-│   │   │   ├── WeeklyMonthlyView.tsx    # 04. Monthly Forecast
-│   │   │   ├── AnomalyHandlingView.tsx  # 05. Anomaly Handling
+│   │   │   ├── TaskGeneratorView.tsx    # 03. Task Generator (Target Date Picker & Presets) [v4]
+│   │   │   ├── GanttTab.tsx             # 04. Weekly Block Planner
+│   │   │   ├── WeeklyMonthlyView.tsx    # 05. Monthly Forecast
 │   │   │   ├── CoordinationView.tsx     # 06. Coordination Centre
 │   │   │   ├── BeforeAfterView.tsx      # 07. Integrated / Shadow Blocks
-│   │   │   ├── TrainConflictsView.tsx   # 08. Train & Block Conflicts
+│   │   │   ├── TrainConflictsView.tsx   # 08. Train & Block Conflicts [v4]
 │   │   │   ├── AIPriorityView.tsx       # 09. AI Risk & Priority
 │   │   │   ├── FailureIntelligenceView.tsx # 10. Failure Intelligence
 │   │   │   ├── AssetHealthView.tsx      # 11. Asset Health
-│   │   │   ├── WhatIfSimulatorView.tsx  # 12. What-If Simulator
-│   │   │   ├── DataIngestionView.tsx    # 13. Data Ingestion
-│   │   │   ├── DataQualityView.tsx      # 14. Data Quality
-│   │   │   ├── ScenarioExplorerView.tsx # 15. Scenario Explorer
-│   │   │   ├── ModelVersionsView.tsx    # 16. Model / Data Versions
-│   │   │   ├── ApprovalAuditView.tsx    # 17. Human Review & Audit
-│   │   │   ├── AlertsView.tsx           # 18. Verification Suite
-│   │   │   ├── Sidebar.tsx              # 5-Tier 18-Section Navigation Shell
+│   │   │   ├── DataIngestionView.tsx    # 12. Data Ingestion [v4]
+│   │   │   ├── DataQualityView.tsx      # 13. Data Quality [v4]
+│   │   │   ├── ModelVersionsView.tsx    # 14. Model / Data Versions [v4]
+│   │   │   ├── ApprovalAuditView.tsx    # 15. Human Review & Audit
+│   │   │   ├── AlertsView.tsx           # 16. Verification Suite
+│   │   │   ├── Sidebar.tsx              # 5-Tier 16-Section Navigation Shell
 │   │   │   ├── Header.tsx               # Master Header with System Status & Division Branding
 │   │   │   ├── LiveClock.tsx            # Statutory 24-Hour Military Railway Clock
 │   │   │   ├── WorkingCalendar.tsx      # 3-Shift Operational Calendar Modal
@@ -420,22 +428,22 @@ automatic-block-planning/
 │   ├── package.json                # Frontend npm dependencies (React 18, Vite, Leaflet)
 │   └── vite.config.ts              # Vite configuration & API proxy setup
 ├── docs/
-│   ├── ui_doc_generator.py         # Automated 18-section UI annotation & presentation generator
+│   ├── ui_doc_generator.py         # Automated UI annotation & presentation generator
 │   ├── DATA_DICTIONARY.md          # Comprehensive data dictionary & field specifications
 │   ├── MATHEMATICAL_MODEL_V2.md    # Formal mathematical model & constraint proofs
 │   ├── visual_guide/               # 26 Authentic high-resolution production screenshots (1920x1080)
 │   └── presentation/               # Master Presentation & Visual Documentation Suite
 │       ├── ABPS_UI_Walkthrough.pptx       # 24-slide widescreen 16:9 presentation deck with speaker notes
-│       ├── UI_PRESENTATION_WALKTHROUGH.md # 18-section guide with Sections A-J and 15-field tables (161 KB)
+│       ├── UI_PRESENTATION_WALKTHROUGH.md # Comprehensive guide with 15-field component tables
 │       ├── COMPONENT_INVENTORY.md         # Consolidated 80-component catalog cross-indexed by color
 │       ├── DISCREPANCY_ANALYSIS.md        # Technical gap analysis & 26-screenshot mapping matrix
 │       ├── WORKFLOW_DIAGRAMS.md           # 6 operational controller workflows with Mermaid diagrams
-│       ├── ui_components_config.json      # Declarative JSON schema defining all 18 sections & 80 components
-│       ├── clean/                         # 18 cropped clean application screenshots (no browser chrome)
-│       ├── annotated/                     # 18 annotated screenshots with multi-color pins & bounding boxes
-│       └── infographics/                  # 18 presentation infographic posters with color legends
-├── docker-compose.yml              # Production container orchestration
-├── Dockerfile                      # Multi-stage production container build
+│       ├── ui_components_config.json      # Declarative JSON schema defining all components
+│       ├── clean/                         # Cropped clean application screenshots
+│       ├── annotated/                     # Annotated screenshots with multi-color pins & bounding boxes
+│       └── infographics/                  # Presentation infographic posters with color legends
+├── docker-compose.yml              # Production container orchestration (Ports 3000 & 8765)
+├── Dockerfile                      # Multi-stage production container build (Vite + Go + Python 3.11)
 ├── README.md                       # Master project technical documentation
 └── .gitignore                      # Git exclusion rules
 ```
@@ -491,6 +499,21 @@ npm run dev
 
 *Note: The Go Gateway on `http://localhost:3000` also serves the built frontend production bundle directly from `frontend/dist`.*
 
+### 12.3 Containerized Execution (Docker & Docker Compose)
+
+The entire platform is containerized into a hardened multi-stage image incorporating the React/Vite frontend build, Go API Gateway binary, and Python 3.11 scientific runtime (`engine/requirements.runtime.txt`):
+
+```bash
+# Production container deployment:
+docker compose up --build
+
+# Or build and run standalone container:
+docker build -t abps-platform:v4.0 .
+docker run -p 3000:3000 -p 8765:8765 abps-platform:v4.0
+```
+- **Dual-Port Exposure**: Port `3000` serves the React 18 production UI and Go Fiber REST API Gateway; port `8765` provides access to the internal Python CP-SAT solver and ML inference engine.
+- **Entrypoint Orchestration**: `docker/entrypoint.sh` automatically initializes `backend/server.py` in the background, monitors port 8765 health, and executes `server_go` in the foreground with signal traps for graceful shutdown.
+
 ---
 
 ## 13. Automated Verification & Test Suite
@@ -498,8 +521,11 @@ npm run dev
 The project enforces an automated double-verification gate covering both mathematical safety laws and UI presentation asset integrity:
 
 ```powershell
-# Unified Verification Gate (PowerShell)
+# 1. Unified Verification Gate (Python mathematical safety & presentation asset validator)
 python docs/ui_doc_generator.py --validate; if ($?) { python engine/test_suite.py }
+
+# 2. Go API Gateway Unit Tests (Deterministic headway & route proofs)
+cd backend; go test -v ./...
 ```
 
 ### Verification Gate Output:
@@ -547,15 +573,15 @@ Presentation PPTX Deck   : PRESENT (9172797 bytes, 24 slides)
 For jury evaluations, technical presentations, and viva defenses:
 
 - **Executive PowerPoint Deck**: [`docs/presentation/ABPS_UI_Walkthrough.pptx`](docs/presentation/ABPS_UI_Walkthrough.pptx)  
-  *24 widescreen 16:9 slides featuring executive architecture, multi-color taxonomy, 18 section slides with annotated visuals and embedded conversational viva defense notes, end-to-end workflows, and mathematical proofs.*
+  *24 widescreen 16:9 slides featuring executive architecture, multi-color taxonomy, annotated visuals and embedded conversational viva defense notes, end-to-end workflows, and mathematical proofs.*
 - **Master Written Walkthrough**: [`docs/presentation/UI_PRESENTATION_WALKTHROUGH.md`](docs/presentation/UI_PRESENTATION_WALKTHROUGH.md)  
-  *Detailed Sections A through J operational explanations and 15-field component tables for all 18 views.*
+  *Detailed Sections A through J operational explanations and 15-field component tables across operational views.*
 - **Consolidated Component Catalog**: [`docs/presentation/COMPONENT_INVENTORY.md`](docs/presentation/COMPONENT_INVENTORY.md)  
-  *Searchable index of all 80 UI components across the application.*
+  *Searchable index of all cataloged UI components across the application.*
 - **Operational Workflow Diagrams**: [`docs/presentation/WORKFLOW_DIAGRAMS.md`](docs/presentation/WORKFLOW_DIAGRAMS.md)  
   *6 Mermaid sequence and flow diagrams mapping controller decision-making.*
 - **Technical Gap Analysis**: [`docs/presentation/DISCREPANCY_ANALYSIS.md`](docs/presentation/DISCREPANCY_ANALYSIS.md)  
-  *Mapping of 26 authentic screenshots to the 18-section architecture and legacy reconciliation.*
+  *Mapping of authentic screenshots to operational architecture and legacy reconciliation.*
 
 ---
 

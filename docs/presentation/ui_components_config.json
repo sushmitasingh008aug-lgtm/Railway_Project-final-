@@ -9,7 +9,7 @@
     "corridor_length_km": 1447,
     "corridor_sections_count": 6,
     "total_screens": 18,
-    "total_components": 80,
+    "total_components": 81,
     "color_palette": {
       "NAV": {
         "hex": "#2563EB",
@@ -82,9 +82,11 @@
       "tab_id": "dashboard",
       "source_file": "frontend/src/components/CommandCenterView.tsx",
       "route": "/?tab=dashboard",
-      "screenshot_file": "docs/visual_guide/Screenshot (1543).png",
+      "screenshot_file": "docs/visual_guide/Screenshot (1571).png",
       "secondary_screenshots": [
-        "docs/visual_guide/Screenshot (1544).png"
+        "docs/visual_guide/Screenshot (1572).png",
+        "docs/visual_guide/Screenshot (1573).png",
+        "docs/visual_guide/Screenshot (1574).png"
       ],
       "description": "Consolidated operational nerve-center providing real-time situational awareness across the Delhi-Howrah mainline, integrating KPI summaries, emergency queues, corridor availability, and interactive GIS geospatial mapping.",
       "explanation": {
@@ -130,7 +132,8 @@
           "validation_edge_cases": "Displays amber 'RECONNECTING' pill if WebSocket disconnects; auto-reconnects with exponential backoff.",
           "connected_components": "App.tsx root navigation shell, Sidebar navigation items",
           "railway_impact": "Guarantees that controllers always know their operating jurisdiction and connectivity state.",
-          "presentation": "Our shell header anchors the system to Delhi Division, displaying live connection status to the central dispatch server."
+          "presentation": "Our shell header anchors the system to Delhi Division, displaying live connection status to the central dispatch server.",
+          "component_id": "S01-C01"
         },
         {
           "id": 2,
@@ -156,7 +159,8 @@
           "validation_edge_cases": "Displays skeleton loaders if backend latency exceeds 200ms; highlights red if conflicts > 0.",
           "connected_components": "TasksView (Section 2), GanttTab (Section 3), AlertsView (Section 18)",
           "railway_impact": "Alerts leadership within seconds to pending safety hazards and block execution progress.",
-          "presentation": "At a glance, division controllers see our system has certified 72 conflict-free block windows while resolving all 15 high-criticality asset defects."
+          "presentation": "At a glance, division controllers see our system has certified 72 conflict-free block windows while resolving all 15 high-criticality asset defects.",
+          "component_id": "S01-C02"
         },
         {
           "id": 3,
@@ -182,7 +186,8 @@
           "validation_edge_cases": "Handles empty queue gracefully with 'Zero Critical Overdue Tasks' green banner.",
           "connected_components": "TaskDetailDrawer, TasksView (Section 2), CoordinationView (Section 6)",
           "railway_impact": "Directly mitigates derailment risks by surfacing ultrasonic flaw detections before track fractures occur.",
-          "presentation": "Our priority queue ranks work orders using physics-informed degradation models, guaranteeing that safety-critical rail cracks are addressed first."
+          "presentation": "Our priority queue ranks work orders using physics-informed degradation models, guaranteeing that safety-critical rail cracks are addressed first.",
+          "component_id": "S01-C03"
         },
         {
           "id": 4,
@@ -208,7 +213,8 @@
           "validation_edge_cases": "Gracefully falls back to offline schematic svg if Leaflet tile servers are unreachable.",
           "connected_components": "AssetHealthView (Section 11), GanttTab (Section 3)",
           "railway_impact": "Enables dispatchers to visualize geographic density and avoid isolated block trap points.",
-          "presentation": "This interactive GIS map provides live geospatial tracking of Delhi Division's 6 main sections, highlighting active track possessions in real time."
+          "presentation": "This interactive GIS map provides live geospatial tracking of Delhi Division's 6 main sections, highlighting active track possessions in real time.",
+          "component_id": "S01-C04"
         },
         {
           "id": 5,
@@ -234,7 +240,8 @@
           "validation_edge_cases": "Flags sections experiencing speed restrictions with amber alert icon.",
           "connected_components": "GanttTab (Section 3), WeeklyMonthlyView (Section 4)",
           "railway_impact": "Maintains 95%+ punctuality for Vande Bharat and Rajdhani expresses during active maintenance cycles.",
-          "presentation": "Here controllers monitor throughput and punctuality across all 6 corridor segments, proving that our block allocations preserve track capacity."
+          "presentation": "Here controllers monitor throughput and punctuality across all 6 corridor segments, proving that our block allocations preserve track capacity.",
+          "component_id": "S01-C05"
         }
       ]
     },
@@ -246,8 +253,11 @@
       "tab_id": "asset_backlog",
       "source_file": "frontend/src/components/TasksView.tsx",
       "route": "/?tab=asset_backlog",
-      "screenshot_file": "docs/visual_guide/Screenshot (1545).png",
-      "secondary_screenshots": [],
+      "screenshot_file": "docs/visual_guide/Screenshot (1576).png",
+      "secondary_screenshots": [
+        "docs/visual_guide/Screenshot (1575).png",
+        "docs/visual_guide/Screenshot (1577).png"
+      ],
       "description": "Comprehensive maintenance task repository integrating work orders from Engineering (ENG), Traction Distribution (TRD), and Signal & Telecommunication (S&T) with expected-loss prioritization.",
       "explanation": {
         "A_what_is_this": "Asset Backlog is the centralized inventory of all pending, approved, and completed railway maintenance tasks across permanent way, overhead electrification, and signaling assets.",
@@ -292,7 +302,8 @@
           "validation_edge_cases": "If no tasks match selected department, displays 'No pending work orders for this department'.",
           "connected_components": "Tasks Data Table, Priority Distribution Cards",
           "railway_impact": "Enables Senior Section Engineers (SSE) to audit their department's backlog in seconds.",
-          "presentation": "These quick-filters allow track, overhead electric, and signaling supervisors to instantly filter their respective work orders."
+          "presentation": "These quick-filters allow track, overhead electric, and signaling supervisors to instantly filter their respective work orders.",
+          "component_id": "S02-C01"
         },
         {
           "id": 2,
@@ -318,7 +329,8 @@
           "validation_edge_cases": "Critical counter pulses red if any statutory deadline has lapsed.",
           "connected_components": "AIPriorityView (Section 9), CommandCenterView (Section 1)",
           "railway_impact": "Prevents safety-critical tasks from being buried under routine cosmetic maintenance.",
-          "presentation": "These summary cards categorize the backlog into 4 distinct risk tiers, highlighting the 15 non-negotiable safety tasks."
+          "presentation": "These summary cards categorize the backlog into 4 distinct risk tiers, highlighting the 15 non-negotiable safety tasks.",
+          "component_id": "S02-C02"
         },
         {
           "id": 3,
@@ -344,7 +356,8 @@
           "validation_edge_cases": "Sanitizes special regex characters to prevent input evaluation errors.",
           "connected_components": "Tasks Data Table",
           "railway_impact": "Locates critical rail defect work orders in less than 1 second across 500+ items.",
-          "presentation": "With this search bar, a controller can type 'KM 142' and immediately find all pending track, signal, and wire work at that exact kilometer."
+          "presentation": "With this search bar, a controller can type 'KM 142' and immediately find all pending track, signal, and wire work at that exact kilometer.",
+          "component_id": "S02-C03"
         },
         {
           "id": 4,
@@ -370,7 +383,8 @@
           "validation_edge_cases": "Row turns amber if task deadline is within 24 hours; red if overdue.",
           "connected_components": "TaskDetailDrawer, CoordinationView (Section 6), GanttTab (Section 3)",
           "railway_impact": "Standardizes maintenance operations across disparate railway divisions into a single digital ledger.",
-          "presentation": "This table lists every pending task with its mathematical priority score, department code, required duration, and statutory deadline."
+          "presentation": "This table lists every pending task with its mathematical priority score, department code, required duration, and statutory deadline.",
+          "component_id": "S02-C04"
         },
         {
           "id": 5,
@@ -396,22 +410,198 @@
           "validation_edge_cases": "Loads fallback asset data if deep telemetry endpoint is temporarily unavailable.",
           "connected_components": "TaskDetailDrawer, AssetHealthView (Section 11)",
           "railway_impact": "Ensures that controllers verify 25kV power shutoff requirements before dispatching track crews.",
-          "presentation": "Clicking inspect opens our detailed engineering drawer, displaying ultrasonic flaw depth, required tamping machinery, and electrical isolation checklists."
+          "presentation": "Clicking inspect opens our detailed engineering drawer, displaying ultrasonic flaw depth, required tamping machinery, and electrical isolation checklists.",
+          "component_id": "S02-C05"
         }
       ]
     },
     {
-      "id": "03_weekly_planner",
-      "title": "3. Weekly Block Planner",
+      "id": "03_task_generator",
+      "title": "3. Task Generator",
+      "subtitle": "Cross-Departmental Maintenance Requirement Submission & Constraint-Certified Block Allocation",
+      "category": "OPERATIONS",
+      "tab_id": "task_generator",
+      "source_file": "frontend/src/components/TaskGeneratorView.tsx",
+      "route": "/?tab=task_generator",
+      "screenshot_file": "docs/visual_guide/Screenshot (1578).png",
+      "secondary_screenshots": [
+        "docs/visual_guide/Screenshot (1579).png",
+        "docs/visual_guide/Screenshot (1580).png"
+      ],
+      "description": "Interactive cross-departmental maintenance intake and instant CP-SAT corridor feasibility evaluation engine. Enables Civil, Electrical (TRD), and S&T engineers to define work packages, select assets, configure 8-stage isolation/safety procedures, and immediately obtain constraint-certified block windows.",
+      "explanation": {
+        "A_what_is_this": "The Task Generator is the primary operational portal for field engineers across Indian Railways departments (Engineering/P-Way, Traction/TRD, and Signal & Telecom/S&T) to submit new maintenance requirements and generate conflict-free possession blocks.",
+        "B_why_included": "Historically, maintenance requisitions were filed on fragmented paper slips or isolated division portals without spatial or timetable validation. The Task Generator unifies requirements intake, enforces safety isolation protocols, and executes immediate mathematical pre-validation against timetabled passenger trains.",
+        "C_features_available": [
+          "Cross-Department Category Selector (Engineering, Traction, S&T) with department-tailored templates.",
+          "Geospatial Asset Selector linking directly to track centerline chainage, section codes, and GIS coordinates.",
+          "Comprehensive Maintenance Task Definition with preset engineering packages (Rail Replacement, Tamping, OHE Inspection, Point Machine Testing).",
+          "8-Stage Safety & Isolation Package Stepper (Site Preparation, Traffic Protection, 25kV OHE Isolation, Work Execution, Testing, Inspection, Restoration, Handover).",
+          "Instant CP-SAT Feasibility Assessment Engine testing candidate possession windows against timetabled trains."
+        ],
+        "D_how_it_works": "The user selects a department, chooses a physical track asset from canonical inventory, selects a work package template, and specifies isolation requirements. Upon clicking Generate Task, the frontend calls POST /api/tasks/generate. The backend calculates Weibull failure urgency, searches the timetable graph for minimum 10-minute headway windows, and returns certified block options.",
+        "E_user_interaction_flow": "1. Department Selection: Click Civil Engineering, TRD, or S&T card.\n2. Asset Selection: Choose asset from searchable dropdown or click on the embedded Leaflet track map.\n3. Task Parameters: Select template (e.g. Rail Replacement), target date, and requested duration (minutes).\n4. Safety & Isolation: Check required isolations (25kV Traction Power, Signalling Lockout) and select crew resources.\n5. Dispatch: Click 'Generate Maintenance Task & Block Allocation'. Review certified block options and commit to the master schedule.",
+        "F_system_response_outputs": "Generates a canonical task record (TASK-DH-xxxxxx), assigns an expected-loss priority score, returns certified block windows with zero train overlap, and displays a radar chart of section disruption impact.",
+        "G_information_handled": {
+          "displays": "Asset attributes (type, section, age, condition score), candidate block slots, timetable train traffic density, isolation checklists.",
+          "collects": "Department code, asset ID, task type, work description, target date, duration in minutes, urgency flag, isolation flags, allocated machine/crew resources.",
+          "processes": "Logistic urgency transformation, CP-SAT time-window feasibility validation, 10-minute statutory headway clearance calculation.",
+          "returns": "Task ID, certified candidate block timeslots, conflict radar telemetry, schedule commitment confirmation."
+        },
+        "H_connections_to_other_sections": "Tasks created here immediately populate Section 02 (Asset Backlog), Section 04 (Weekly Block Planner), Section 06 (Coordination Centre) for shadow-block pairing, and Section 15 (Human Review & Audit).",
+        "I_practical_example": "A P-Way Section Engineer identifies track gauge widening near km 142 on Section SEC-DH-01. They open Task Generator, select Engineering -> Rail Replacement on Asset AST-DH-003582, set 180 min duration, require 25kV OHE isolation, and click Generate. The system finds a 02:15-05:15 nighttime window between freight trains with zero passenger delay.",
+        "J_presentation_speaking_notes": "The Task Generator solves the root cause of railway coordination failure: fragmented work orders. By integrating department-specific safety templates with live timetable intelligence, field engineers receive mathematically certified possession windows in under 2 seconds instead of days of manual correspondence.",
+        "K_technical_implementation": "Implemented in frontend/src/components/TaskGeneratorView.tsx using React state hooks for multi-step form wizard, React-Leaflet for asset coordinate pin drops, and Axios communicating with POST /api/tasks/generate. Validates required crew skills, machine availability, and 25kV traction power interlock rules before API dispatch."
+      },
+      "components": [
+        {
+          "id": 1,
+          "component_id": "S03-C01",
+          "name": "Cross-Department Selection Cards",
+          "color_category": "FORM",
+          "ui_type": "Interactive Department Cards",
+          "location": "Top Left Wizard Step 1 (x: 300-850, y: 340-480)",
+          "bbox": [
+            300,
+            340,
+            850,
+            480
+          ],
+          "visual": "Three interactive cards with department icons: Civil Engineering (TMS), Signal & Telecom (SMMS), and TRD Traction (TDMS) with saffron active border.",
+          "purpose": "Filters available task templates, machinery options, and safety protocols to the operating department.",
+          "functionality": "Switches the active department context, loading department-specific asset catalogs, crew definitions, and isolation checklists.",
+          "interaction": "Click on Civil Engineering, S&T, or TRD card to switch wizard context.",
+          "io": "Input: Department selection -> Output: Updated task type templates and resource pools.",
+          "workflow": "Step 1 of Task Generator wizard; conditions subsequent steps.",
+          "tech": "frontend/src/components/TaskGeneratorView.tsx, Lucide-React Radio, Wrench, Zap",
+          "backend_api": "GET /api/departments/templates",
+          "state_handled": "selectedDept ('Engineering' | 'Traction' | 'S&T')",
+          "validation_edge_cases": "Defaults to Engineering; updates templates without clearing already entered notes.",
+          "connected_components": "Asset selector, Quick templates, Resource options",
+          "railway_impact": "Maintains strict departmental accountability while enforcing unified multi-department data schemas.",
+          "presentation": "First, the field engineer selects their department, immediately customizing the wizard for track, overhead electric, or signaling workflows."
+        },
+        {
+          "id": 2,
+          "component_id": "S03-C02",
+          "name": "Asset Selector & Geospatial Topology Context",
+          "color_category": "FORM",
+          "ui_type": "Searchable Select & GIS Mini-Map",
+          "location": "Top Right Wizard Step 2 (x: 870-1880, y: 220-480)",
+          "bbox": [
+            870,
+            220,
+            1880,
+            480
+          ],
+          "visual": "Searchable dropdown with asset ID autocomplete, displaying asset class, operational section, chainage kilometer, and Leaflet location preview.",
+          "purpose": "Binds the maintenance work order to an exact physical asset and operational corridor section.",
+          "functionality": "Queries canonical asset database (/api/assets), auto-populates section ID, GPS coordinates, and historical failure health score.",
+          "interaction": "Type asset ID or name; click asset to select; mini-map pans to asset coordinates.",
+          "io": "Input: Asset ID query -> Output: Selected asset metadata and map pin.",
+          "workflow": "Step 2 of Task Generator wizard; establishes spatial bounds for block allocation.",
+          "tech": "React-Leaflet MapContainer, TileLayer, CircleMarker, Lucide MapPin",
+          "backend_api": "GET /api/assets?department=:dept",
+          "state_handled": "selectedAsset (AssetItem | null), assetSearchQuery",
+          "validation_edge_cases": "Disables generate button if asset does not belong to valid corridor section.",
+          "connected_components": "TasksView, AssetHealthView, Leaflet GIS Map",
+          "railway_impact": "Eliminates work on incorrect track locations by enforcing 100% geospatial alignment with railway track charts.",
+          "presentation": "Second, selecting an asset automatically locks the exact track section and chainage kilometer, pinpointing the work location on the GIS map."
+        },
+        {
+          "id": 3,
+          "component_id": "S03-C03",
+          "name": "Maintenance Task Definition & Quick Templates",
+          "color_category": "FORM",
+          "ui_type": "Template Buttons & Form Inputs",
+          "location": "Bottom Left Wizard Step 3 (x: 300-850, y: 500-950)",
+          "bbox": [
+            300,
+            500,
+            850,
+            950
+          ],
+          "visual": "Pill buttons for rapid task selection (Rail Replacement, Tamping, Track Repair) plus inputs for target date, duration (min), and urgency toggle.",
+          "purpose": "Captures operational parameters of the requested maintenance block.",
+          "functionality": "Populates standard durations, default safety buffers, and enables high-urgency emergency overrides.",
+          "interaction": "Click template pills for 1-click auto-fill, adjust duration slider, pick completion target date.",
+          "io": "Input: Work parameters -> Output: Structured task definition payload.",
+          "workflow": "Step 3 of Task Generator wizard; sets temporal constraints for CP-SAT solver.",
+          "tech": "Tailwind form inputs, Lucide Clock, Calendar, Sliders",
+          "backend_api": "POST /api/tasks/generate",
+          "state_handled": "taskType, durationMinutes, targetDate, isUrgent, description",
+          "validation_edge_cases": "Requires duration > 15 min and <= 480 min; target date must be within planning horizon.",
+          "connected_components": "AIPriorityView, WeeklyMonthlyView",
+          "railway_impact": "Standardizes maintenance durations based on RDSO maintenance manual benchmarks.",
+          "presentation": "Third, one-click templates allow field teams to specify complex maintenance tasks in seconds, including duration and target completion dates."
+        },
+        {
+          "id": 4,
+          "component_id": "S03-C04",
+          "name": "8-Stage Action, Isolation & Safety Stepper",
+          "color_category": "CARD",
+          "ui_type": "Interactive Process Stepper & Checklists",
+          "location": "Bottom Right Wizard Step 4 (x: 870-1880, y: 500-850)",
+          "bbox": [
+            870,
+            500,
+            1880,
+            850
+          ],
+          "visual": "Numbered circular badges showing 8 workflow stages: Site Prep, Traffic Protection, Isolation, Work, Testing, Inspection, Restoration, Handover, with 25kV OHE isolation toggle.",
+          "purpose": "Ensures comprehensive safety compliance and procedural rigor prior to block grant.",
+          "functionality": "Tracks mandatory execution phases, enforces 25kV traction power shutdown verification, and binds required machinery (Tamping Machine, Tower Wagon).",
+          "interaction": "Click stages to inspect details, check required isolations, add crew/machine allocations.",
+          "io": "Input: Procedural safety flags -> Output: Validated safety package attached to work order.",
+          "workflow": "Step 4 of Task Generator wizard; mandatory before CP-SAT optimization.",
+          "tech": "Lucide ShieldAlert, CheckCircle2, Zap, Layers",
+          "backend_api": "POST /api/tasks/generate",
+          "state_handled": "actionStages, isolationRequired, selectedResources",
+          "validation_edge_cases": "If Traction department or OHE work selected, 25kV isolation is locked to REQUIRED.",
+          "connected_components": "ApprovalAuditView, VerificationSuite",
+          "railway_impact": "Guarantees zero electrocution risk and strict compliance with General Rules (GR 4.08) for railway line protection.",
+          "presentation": "Fourth, our 8-stage safety package embeds railway protection rules directly into the workflow, locking 25kV OHE isolation whenever overhead work is required."
+        },
+        {
+          "id": 5,
+          "component_id": "S03-C05",
+          "name": "CP-SAT Block Window Certification & Dispatch Button",
+          "color_category": "ACTION",
+          "ui_type": "Primary Submission Button & Feasibility Badge",
+          "location": "Bottom Action Bar (x: 870-1880, y: 870-950)",
+          "bbox": [
+            870,
+            870,
+            1880,
+            950
+          ],
+          "visual": "Vibrant emerald green primary CTA with sparkle icon: 'Generate Maintenance Task & Block Allocation', accompanied by certified status badge.",
+          "purpose": "Submits maintenance requirement, triggers instant CP-SAT optimization, and returns collision-free block candidates.",
+          "functionality": "Calls backend optimizer, calculates priority score, evaluates train schedule gaps, and renders certified window candidates.",
+          "interaction": "Click button to trigger optimization. Spinner displays during solver execution (< 2.0s).",
+          "io": "Input: Complete task specification -> Output: Certified block options with zero train conflicts.",
+          "workflow": "Final execution step; redirects or commits candidate block to master schedule.",
+          "tech": "Lucide Sparkles, Send, Axios POST call to /api/tasks/generate",
+          "backend_api": "POST /api/tasks/generate",
+          "state_handled": "isSubmitting, generatedTaskResult, candidateBlockOptions",
+          "validation_edge_cases": "Displays explanatory warning if no block window is available without train rescheduling.",
+          "connected_components": "CommandCenterView, GanttTab, CoordinationView",
+          "railway_impact": "Compresses hours of manual block requisitioning into an instant, constraint-certified mathematical grant.",
+          "presentation": "Finally, clicking Generate evaluates live train timetables using Google OR-Tools CP-SAT, returning verified, collision-free possession windows in real time."
+        }
+      ]
+    },
+    {
+      "id": "04_weekly_planner",
+      "title": "4. Weekly Block Planner",
       "subtitle": "CP-SAT 7-Day Corridor Block Schedule & Interactive Gantt Timeline",
       "category": "OPERATIONS",
       "tab_id": "weekly_planner",
       "source_file": "frontend/src/components/GanttTab.tsx",
       "route": "/?tab=weekly_planner",
-      "screenshot_file": "docs/visual_guide/Screenshot (1547).png",
+      "screenshot_file": "docs/visual_guide/Screenshot (1581).png",
       "secondary_screenshots": [
-        "docs/visual_guide/Screenshot (1546).png",
-        "docs/visual_guide/Screenshot (1548).png"
+        "docs/visual_guide/Screenshot (1582).png"
       ],
       "description": "Interactive Gantt timeline displaying Google OR-Tools CP-SAT optimized 7-day maintenance block allocations across all 6 corridor sections, guaranteed to be conflict-free against 1,819 timetable trains.",
       "explanation": {
@@ -457,7 +647,8 @@
           "validation_edge_cases": "Prevents navigation beyond allowable 60-day timetable projection window.",
           "connected_components": "Gantt Timeline Canvas, Possessions Table",
           "railway_impact": "Allows advance planning of weekly track possessions aligned with zonal railway circulars.",
-          "presentation": "This date navigator allows controllers to scroll seamlessly through 7 days of scheduled blocks or jump directly to weekend possession windows."
+          "presentation": "This date navigator allows controllers to scroll seamlessly through 7 days of scheduled blocks or jump directly to weekend possession windows.",
+          "component_id": "S04-C01"
         },
         {
           "id": 2,
@@ -483,7 +674,8 @@
           "validation_edge_cases": "Gated by 60s Singleflight Mutex to prevent multiple controllers from triggering concurrent solver thrashing.",
           "connected_components": "AlertsView (Section 18), CommandCenterView (Section 1)",
           "railway_impact": "Replaces 4 hours of error-prone manual conflict checking with a 2-second mathematically optimal schedule.",
-          "presentation": "Clicking this button invokes Google OR-Tools CP-SAT, solving 15,000 constraint equations in under 2 seconds to generate a conflict-free plan."
+          "presentation": "Clicking this button invokes Google OR-Tools CP-SAT, solving 15,000 constraint equations in under 2 seconds to generate a conflict-free plan.",
+          "component_id": "S04-C02"
         },
         {
           "id": 3,
@@ -509,7 +701,8 @@
           "validation_edge_cases": "Highlights block in red if emergency train schedule change causes headway buffer violation (<10m).",
           "connected_components": "TrainConflictsView (Section 8), TaskDetailDrawer",
           "railway_impact": "Eliminates spatial overlap errors, preventing multiple track machines from entering the same block section.",
-          "presentation": "These 6 corridor swimlanes map out all maintenance blocks across the Delhi-Howrah route, color-coded by department so controllers immediately see track occupancy."
+          "presentation": "These 6 corridor swimlanes map out all maintenance blocks across the Delhi-Howrah route, color-coded by department so controllers immediately see track occupancy.",
+          "component_id": "S04-C03"
         },
         {
           "id": 4,
@@ -535,7 +728,8 @@
           "validation_edge_cases": "Flags unapproved or pending blocks with amber badge.",
           "connected_components": "ApprovalAuditView (Section 17), TasksView (Section 2)",
           "railway_impact": "Generates verified, tamper-evident block possession notices required under Indian Railways General Rules (GR).",
-          "presentation": "Below the timeline, this table provides the official possession roster, showing exact line allocations, start/end times, and certified safety clearances."
+          "presentation": "Below the timeline, this table provides the official possession roster, showing exact line allocations, start/end times, and certified safety clearances.",
+          "component_id": "S04-C04"
         },
         {
           "id": 5,
@@ -561,20 +755,23 @@
           "validation_edge_cases": "Immediately alerts if high-speed express schedule update infringes on planned possession window.",
           "connected_components": "AlertsView (Section 18), TrainConflictsView (Section 8)",
           "railway_impact": "Directly enforces Indian Railways General & Subsidiary Rules (G&SR) for safe block working.",
-          "presentation": "This compliance badge proves that all 72 blocks strictly adhere to the mandatory 10-minute headway clearance from high-speed trains."
+          "presentation": "This compliance badge proves that all 72 blocks strictly adhere to the mandatory 10-minute headway clearance from high-speed trains.",
+          "component_id": "S04-C05"
         }
       ]
     },
     {
-      "id": "04_monthly_forecast",
-      "title": "4. Monthly Forecast",
+      "id": "05_monthly_forecast",
+      "title": "5. Monthly Forecast",
       "subtitle": "30-Day Strategic Corridor Capacity & Multi-Horizon Possession Projections",
       "category": "OPERATIONS",
       "tab_id": "monthly_forecast",
       "source_file": "frontend/src/components/WeeklyMonthlyView.tsx",
       "route": "/?tab=monthly_forecast",
-      "screenshot_file": "docs/visual_guide/Screenshot (1549).png",
-      "secondary_screenshots": [],
+      "screenshot_file": "docs/visual_guide/Screenshot (1583).png",
+      "secondary_screenshots": [
+        "docs/visual_guide/Screenshot (1584).png"
+      ],
       "description": "Strategic 30-day corridor planning dashboard providing long-term capacity forecasts, seasonal maintenance demand trends, and multi-horizon day cards for major engineering work.",
       "explanation": {
         "A_what_is_this": "The Monthly Forecast section is the strategic capacity planning dashboard of ABPS v4.0. It projects maintenance requirements and track possession opportunities across a 30-day planning horizon.",
@@ -619,7 +816,8 @@
           "validation_edge_cases": "Smoothly transitions chart axes without screen flicker.",
           "connected_components": "Multi-Horizon Day Cards, Capacity Curve Chart",
           "railway_impact": "Enables rolling 30-day capital works budgeting for track machine fuel and crew staging.",
-          "presentation": "This horizon switcher toggles between tactical 7-day schedules and strategic 30-day long-range corridor projections."
+          "presentation": "This horizon switcher toggles between tactical 7-day schedules and strategic 30-day long-range corridor projections.",
+          "component_id": "S05-C01"
         },
         {
           "id": 2,
@@ -645,7 +843,8 @@
           "validation_edge_cases": "Marks gazetted holidays and festival rush periods (Diwali, Chhath) with red exclusion bands.",
           "connected_components": "ScenarioExplorerView (Section 15)",
           "railway_impact": "Prevents disruptive maintenance from being scheduled during peak festival travel seasons.",
-          "presentation": "This chart plots 30 days of train density against available maintenance capacity, highlighting optimal low-traffic days for major track works."
+          "presentation": "This chart plots 30 days of train density against available maintenance capacity, highlighting optimal low-traffic days for major track works.",
+          "component_id": "S05-C02"
         },
         {
           "id": 3,
@@ -671,7 +870,8 @@
           "validation_edge_cases": "Shows warning icon on days where maintenance requests exceed maximum allowable line occupancy (15%).",
           "connected_components": "GanttTab (Section 3), TasksView (Section 2)",
           "railway_impact": "Ensures uniform utilization of heavy track tamping machines (CSM, BCM) across the month.",
-          "presentation": "These day cards break down the 30-day forecast day-by-day, color-coding each day by maintenance density to prevent workload clustering."
+          "presentation": "These day cards break down the 30-day forecast day-by-day, color-coding each day by maintenance density to prevent workload clustering.",
+          "component_id": "S05-C03"
         },
         {
           "id": 4,
@@ -697,143 +897,8 @@
           "validation_edge_cases": "Highlights emergency spikes following extreme weather events.",
           "connected_components": "FailureIntelligenceView (Section 10)",
           "railway_impact": "Demonstrates measurable transition towards 90%+ planned maintenance, drastically reducing unexpected rail fractures.",
-          "presentation": "Here we track our preventive vs emergency workload: ABPS achieves an 88% planned maintenance ratio, drastically reducing reactive emergency line closures."
-        }
-      ]
-    },
-    {
-      "id": "05_anomaly_handling",
-      "title": "5. Anomaly Handling",
-      "subtitle": "29 Scenario Classes, Active Disruption Traces & Real-Time Auto-Remediation",
-      "category": "OPERATIONS",
-      "tab_id": "anomaly_handling",
-      "source_file": "frontend/src/components/AnomalyHandlingView.tsx",
-      "route": "/?tab=anomaly_handling",
-      "screenshot_file": "docs/visual_guide/Screenshot (1550).png",
-      "secondary_screenshots": [],
-      "description": "Real-time incident detection and auto-remediation engine capable of recognizing and mitigating 29 distinct operational railway disruption classes, from machine breakdowns to sudden weather speed restrictions.",
-      "explanation": {
-        "A_what_is_this": "Anomaly Handling is the real-time disruption management system of ABPS v4.0. It continuously monitors live train feeds and asset sensors to detect schedule infringements and generate instant auto-remediation recommendations.",
-        "B_why_included": "Even the best planned schedule faces unexpected operational disruptions in live railway operations—track machine breakdowns, signal failures, or train delays. This section ensures the system responds autonomously within seconds.",
-        "C_features_available": [
-          "29 Scenario Coverage Matrix classifying disruptions across P-Way, OHE, Signaling, and Traffic.",
-          "Active Anomaly Trace Panel showing incident description, affected track kilometer, and severity level.",
-          "Real-Time Automated Remediation Options (Shift Block, Truncate Duration, Re-route Traffic, Cancel).",
-          "Downstream Delay Impact Simulation displaying estimated ripple delays across timetable trains.",
-          "One-click 'Apply Remediation' button to re-solve and publish updated schedule."
-        ],
-        "D_how_it_works": "When an anomaly occurs (e.g. Tamping Machine #4 breaks down at KM 84), the system captures the event via SCADA or controller input. It maps the event to one of 29 pre-modeled scenario archetypes, runs a localized sub-problem solver, and suggests verified alternatives with minimal ripple delay.",
-        "E_user_interaction": "Controllers review active anomaly alerts in the red trace panel, compare suggested remediation strategies (e.g., 'Shift window by +45m' vs 'Truncate by 30m'), and click 'Execute Plan' to dispatch revised orders.",
-        "F_output": "Resolved schedule adjustments, updated headway certificates, and automated advisory messages to affected station masters.",
-        "G_cross_connections": "Integrates with Section 12 (What-If Simulator) for contingency testing and Section 15 (Scenario Explorer) for historical benchmark coverage.",
-        "H_practical_example": "A track tamping machine experiences hydraulic failure 40 minutes into a 180-minute block. Anomaly Handling detects the stall, isolates the stranded machine at KM 84, immediately re-opens the adjacent track line for Rajdhani Express, and re-allocates the remaining tamping work to Thursday.",
-        "I_viva_defense_pitch": "Anomaly Handling protects live operations from unexpected disruptions. Our system recognizes 29 scenario classes—from tamping machine failures to sudden fog restrictions—and computes verified auto-remediations in under 3 seconds.",
-        "J_technical_architecture": "Implemented in frontend/src/components/AnomalyHandlingView.tsx. Driven by engine/anomaly_engine.py with pattern-matching rule trees and fallback CP-SAT re-optimization hooks."
-      },
-      "components": [
-        {
-          "id": 1,
-          "name": "29 Scenario Benchmark Coverage Header",
-          "color_category": "CARD",
-          "ui_type": "Status Banner",
-          "location": "Top View Header (x: 280-1890, y: 70-140)",
-          "bbox": [
-            280,
-            70,
-            1890,
-            140
-          ],
-          "visual": "Header banner displaying '29/29 SCENARIO CLASSES TESTED & COVERED' with coverage percentage chip and active status indicator.",
-          "purpose": "Verifies that the anomaly handling system has formal coverage for all 29 recognized railway disruption types.",
-          "functionality": "Summarizes engine test coverage across mechanical, environmental, signaling, and traffic disruptions.",
-          "interaction": "Click to view full 29-scenario taxonomy list.",
-          "io": "Input: Test suite validation manifest -> Output: Rendered coverage certificate banner.",
-          "workflow": "Validates system resilience during formal safety certification audits.",
-          "tech": "frontend/src/components/AnomalyHandlingView.tsx",
-          "backend_api": "GET /api/anomalies/coverage",
-          "state_handled": "coverageStats: { total: 29, active: 1, resolvedToday: 4 }",
-          "validation_edge_cases": "Flags any unclassified anomaly pattern with amber 'Unmapped Pattern' warning.",
-          "connected_components": "ScenarioExplorerView (Section 15), AlertsView (Section 18)",
-          "railway_impact": "Guarantees that field controllers are never left without automated guidance during critical failures.",
-          "presentation": "This banner confirms that our anomaly engine has 100% test coverage across all 29 standard Indian Railways disruption scenarios."
-        },
-        {
-          "id": 2,
-          "name": "Active Anomaly Incident Trace Panel",
-          "color_category": "ALERT",
-          "ui_type": "Critical Incident Card",
-          "location": "Upper Incident Area (x: 280-1890, y: 150-340)",
-          "bbox": [
-            280,
-            150,
-            1890,
-            340
-          ],
-          "visual": "High-visibility crimson card with flashing alert icon, displaying Anomaly ID, Affected Section, Disruption Type, and Impact Score.",
-          "purpose": "Highlights live disruptions requiring immediate controller attention and decision.",
-          "functionality": "Displays real-time incident telemetry: asset ID, GPS coordinates, delay onset time, and affected trains.",
-          "interaction": "Inspect incident details, expand failure chronology, or dismiss non-critical false alarms.",
-          "io": "Input: Live telemetry alert payload -> Output: Visual high-priority incident card.",
-          "workflow": "Triggers immediate sound chime and visual alert on controller screens when an incident occurs.",
-          "tech": "frontend/src/components/AnomalyHandlingView.tsx, Lucide-React AlertTriangle",
-          "backend_api": "WebSocket /ws/anomalies, GET /api/anomalies/active",
-          "state_handled": "activeAnomaly: AnomalyRecord | null",
-          "validation_edge_cases": "Maintains persistent alert until controller confirms action or resolves the condition.",
-          "connected_components": "CommandCenterView (Section 1), WhatIfSimulatorView (Section 12)",
-          "railway_impact": "Reduces mean time to respond (MTTR) to track disruptions from 25 minutes to under 30 seconds.",
-          "presentation": "When an incident occurs, this red trace panel immediately surfaces the disruption details, affected track kilometer, and severity level."
-        },
-        {
-          "id": 3,
-          "name": "Automated Remediation Strategy Recommender",
-          "color_category": "ACTION",
-          "ui_type": "Decision Option Cards",
-          "location": "Mid-Left Action Area (x: 280-1100, y: 360-950)",
-          "bbox": [
-            280,
-            360,
-            1100,
-            950
-          ],
-          "visual": "Stack of recommendation cards comparing Option A (Shift Schedule), Option B (Truncate Duration), and Option C (Single-Line Working).",
-          "purpose": "Presents evaluated, conflict-free recovery actions ranked by minimum passenger train delay.",
-          "functionality": "Calculates total secondary delay minutes and train rescheduling requirements for each candidate option.",
-          "interaction": "Click on candidate card to inspect simulated schedule; click 'EXECUTE THIS REMEDIATION' to apply.",
-          "io": "Input: Anomaly parameters -> Output: 3 evaluated remediation options with delay metrics.",
-          "workflow": "Enables controllers to pick the optimal recovery action with full transparency into downstream effects.",
-          "tech": "frontend/src/components/AnomalyHandlingView.tsx, engine/anomaly_engine.py",
-          "backend_api": "POST /api/anomalies/remediate",
-          "state_handled": "remediationOptions: RemediationOption[], selectedOptionIndex: number",
-          "validation_edge_cases": "Re-validates statutory 10-minute headway before enabling the 'EXECUTE' button.",
-          "connected_components": "GanttTab (Section 3), WhatIfSimulatorView (Section 12)",
-          "railway_impact": "Prevents controller panic and haphazard decisions during major corridor blockades.",
-          "presentation": "Our system doesn't just flag problems—it solves them. Here it evaluates 3 distinct recovery options and recommends the one with lowest delay."
-        },
-        {
-          "id": 4,
-          "name": "Incident Chronology & Audit Trace Log",
-          "color_category": "CHART",
-          "ui_type": "Chronological Event Timeline",
-          "location": "Mid-Right Audit Area (x: 1120-1890, y: 360-950)",
-          "bbox": [
-            1120,
-            360,
-            1890,
-            950
-          ],
-          "visual": "Vertical timeline with timestamped event bubbles showing detection, analysis, controller interaction, and resolution.",
-          "purpose": "Maintains an unalterable chronological record of incident progression for post-incident inquiry.",
-          "functionality": "Logs every automated detection, sensor reading, controller action, and schedule update with millisecond timestamps.",
-          "interaction": "Scroll through timeline events; export complete incident dossier for Commissioner of Railway Safety (CRS).",
-          "io": "Input: Event stream -> Output: Formatted audit trail with status chips.",
-          "workflow": "Creates official incident documentation automatically without requiring manual report drafting.",
-          "tech": "frontend/src/components/AnomalyHandlingView.tsx",
-          "backend_api": "GET /api/anomalies/:id/trace",
-          "state_handled": "traceEvents: TraceEvent[]",
-          "validation_edge_cases": "Cryptographically hashes trace logs to guarantee evidentiary integrity.",
-          "connected_components": "ApprovalAuditView (Section 17)",
-          "railway_impact": "Provides transparent audit records for safety inquiries, ending blame games between departments.",
-          "presentation": "This chronology maintains an immutable audit log of the disruption from initial detection to final resolution, timestamped to the millisecond."
+          "presentation": "Here we track our preventive vs emergency workload: ABPS achieves an 88% planned maintenance ratio, drastically reducing reactive emergency line closures.",
+          "component_id": "S05-C04"
         }
       ]
     },
@@ -845,10 +910,9 @@
       "tab_id": "coordination",
       "source_file": "frontend/src/components/CoordinationView.tsx",
       "route": "/?tab=coordination",
-      "screenshot_file": "docs/visual_guide/Screenshot (1551).png",
+      "screenshot_file": "docs/visual_guide/Screenshot (1585).png",
       "secondary_screenshots": [
-        "docs/visual_guide/Screenshot (1552).png",
-        "docs/visual_guide/Screenshot (1553).png"
+        "docs/visual_guide/Screenshot (1586).png"
       ],
       "description": "Multi-departmental synergy engine identifying spatial and temporal 'shadow block' opportunities, bundling Track, OHE, and Signaling tasks into unified possessions while enforcing an 8-point deterministic safety compatibility matrix.",
       "explanation": {
@@ -894,7 +958,8 @@
           "validation_edge_cases": "Ensures all 3 department supervisors have acknowledged readiness before activating the button.",
           "connected_components": "BeforeAfterView (Section 7), GanttTab (Section 3)",
           "railway_impact": "Saves 2 complete corridor line closures in a single click.",
-          "presentation": "Our AI spotlights this high-impact opportunity: bundling rail welding, track circuit testing, and OHE maintenance saves 2 complete line closures."
+          "presentation": "Our AI spotlights this high-impact opportunity: bundling rail welding, track circuit testing, and OHE maintenance saves 2 complete line closures.",
+          "component_id": "S06-C01"
         },
         {
           "id": 2,
@@ -920,7 +985,8 @@
           "validation_edge_cases": "Strict fail-safe: any ambiguous or unclassified combination is rejected by default.",
           "connected_components": "AlertsView (Section 18), TasksView (Section 2)",
           "railway_impact": "Prevents catastrophic safety hazards such as tamping ballast dust blinding active signal lenses.",
-          "presentation": "Our 8-point deterministic safety matrix validates 15,000 potential task combinations, strictly prohibiting hazardous overlaps like ballast cleaning near optical sensors."
+          "presentation": "Our 8-point deterministic safety matrix validates 15,000 potential task combinations, strictly prohibiting hazardous overlaps like ballast cleaning near optical sensors.",
+          "component_id": "S06-C02"
         },
         {
           "id": 3,
@@ -946,7 +1012,8 @@
           "validation_edge_cases": "Updates dynamically based on seasonal traction power tariffs.",
           "connected_components": "BeforeAfterView (Section 7)",
           "railway_impact": "Reduces diesel traction switching moves by 40% through synchronized machine deployment.",
-          "presentation": "These 4 synergy principles quantify our savings: shared 25kV power shutoffs, co-located crew staging, and joint track inspection."
+          "presentation": "These 4 synergy principles quantify our savings: shared 25kV power shutoffs, co-located crew staging, and joint track inspection.",
+          "component_id": "S06-C03"
         },
         {
           "id": 4,
@@ -972,7 +1039,8 @@
           "validation_edge_cases": "Displays explicit prohibition reason code if a pair is rejected (e.g., ERR_PROHIBITED_BALLAST_DUST).",
           "connected_components": "ApprovalAuditView (Section 17)",
           "railway_impact": "Gives sectional engineers complete confidence that bundled blocks satisfy all safety bylaws.",
-          "presentation": "This audit roster allows engineering supervisors to verify the exact spatial proximity and power shutoff synergy for every proposed shadow block."
+          "presentation": "This audit roster allows engineering supervisors to verify the exact spatial proximity and power shutoff synergy for every proposed shadow block.",
+          "component_id": "S06-C04"
         }
       ]
     },
@@ -984,8 +1052,10 @@
       "tab_id": "shadow_blocks",
       "source_file": "frontend/src/components/BeforeAfterView.tsx",
       "route": "/?tab=shadow_blocks",
-      "screenshot_file": "docs/visual_guide/Screenshot (1554).png",
-      "secondary_screenshots": [],
+      "screenshot_file": "docs/visual_guide/Screenshot (1587).png",
+      "secondary_screenshots": [
+        "docs/visual_guide/Screenshot (1570).png"
+      ],
       "description": "Comparative ROI and efficiency dashboard showcasing unbundled baseline operations versus ABPS-integrated shadow blocks, quantifying track availability gains, freight throughput increases, and passenger delay reductions.",
       "explanation": {
         "A_what_is_this": "Integrated / Shadow Blocks (Before vs After) is the quantitative business intelligence and ROI dashboard of ABPS v4.0. It compares traditional uncoordinated railway operations against ABPS-optimized shadow block scheduling.",
@@ -1030,7 +1100,8 @@
           "validation_edge_cases": "Guarantees all KPI formulas are non-negative, validated by engine test suite [8.1].",
           "connected_components": "CommandCenterView (Section 1), AlertsView (Section 18)",
           "railway_impact": "Directly justifies the deployment of ABPS across all 68 divisions of Indian Railways.",
-          "presentation": "This ROI ribbon highlights our core results: 63.1% block consolidation, a 0.67% gain in mainline availability, and zero train collisions."
+          "presentation": "This ROI ribbon highlights our core results: 63.1% block consolidation, a 0.67% gain in mainline availability, and zero train collisions.",
+          "component_id": "S07-C01"
         },
         {
           "id": 2,
@@ -1056,7 +1127,8 @@
           "validation_edge_cases": "Synchronizes time scrubber across both timelines for accurate horizontal comparison.",
           "connected_components": "GanttTab (Section 3), CoordinationView (Section 6)",
           "railway_impact": "Demonstrates why multi-departmental coordination is critical to resolving corridor saturation.",
-          "presentation": "Comparing the two timelines side-by-side: top shows fragmented manual planning blocking the line 5 times; bottom shows ABPS compressing them into 2 clean windows."
+          "presentation": "Comparing the two timelines side-by-side: top shows fragmented manual planning blocking the line 5 times; bottom shows ABPS compressing them into 2 clean windows.",
+          "component_id": "S07-C02"
         },
         {
           "id": 3,
@@ -1082,7 +1154,8 @@
           "validation_edge_cases": "Accounts for bidirectional single-line working capacity limits.",
           "connected_components": "CommandCenterView (Section 1)",
           "railway_impact": "A 0.67% availability gain across Delhi-Howrah unlocks capacity for 14 additional freight trains daily.",
-          "presentation": "A 0.67% availability gain might sound modest, but on Delhi-Howrah it unlocks enough track capacity to run 14 additional freight trains every single day."
+          "presentation": "A 0.67% availability gain might sound modest, but on Delhi-Howrah it unlocks enough track capacity to run 14 additional freight trains every single day.",
+          "component_id": "S07-C03"
         },
         {
           "id": 4,
@@ -1108,7 +1181,8 @@
           "validation_edge_cases": "Verifies that no department had its required maintenance time truncated below minimum engineering requirements.",
           "connected_components": "TasksView (Section 2), ApprovalAuditView (Section 17)",
           "railway_impact": "Solves inter-departmental conflicts over line possession quotas.",
-          "presentation": "This ledger shows that all 3 departments received 100% of their requested maintenance hours, but through shadow scheduling we saved 38 hours of line closures."
+          "presentation": "This ledger shows that all 3 departments received 100% of their requested maintenance hours, but through shadow scheduling we saved 38 hours of line closures.",
+          "component_id": "S07-C04"
         }
       ]
     },
@@ -1120,10 +1194,9 @@
       "tab_id": "train_conflicts",
       "source_file": "frontend/src/components/TrainConflictsView.tsx",
       "route": "/?tab=train_conflicts",
-      "screenshot_file": "docs/visual_guide/Screenshot (1555).png",
+      "screenshot_file": "docs/visual_guide/Screenshot (1588).png",
       "secondary_screenshots": [
-        "docs/visual_guide/Screenshot (1556).png",
-        "docs/visual_guide/Screenshot (1542).png"
+        "docs/visual_guide/Screenshot (1589).png"
       ],
       "description": "Directional timetable collision-detection engine mapping 1,819 scheduled train movements against maintenance blocks across UP and DOWN mainlines, verifying statutory 10-minute headway clearance.",
       "explanation": {
@@ -1169,7 +1242,8 @@
           "validation_edge_cases": "Correctly handles bi-directional single-line working exceptions.",
           "connected_components": "Directional Conflict Swimlanes, Headway Inspector",
           "railway_impact": "Prevents confusing trains on opposing tracks, reflecting real-world double-line dispatching.",
-          "presentation": "This directional selector allows controllers to audit the UP and DOWN mainlines independently, matching actual Indian Railways double-track operations."
+          "presentation": "This directional selector allows controllers to audit the UP and DOWN mainlines independently, matching actual Indian Railways double-track operations.",
+          "component_id": "S08-C01"
         },
         {
           "id": 2,
@@ -1195,7 +1269,8 @@
           "validation_edge_cases": "Turns bright red if even a single conflict is detected.",
           "connected_components": "AlertsView (Section 18), CommandCenterView (Section 1)",
           "railway_impact": "Guarantees that train operations remain 100% safe and uncompromised by maintenance.",
-          "presentation": "This banner confirms that our system has checked all 1,819 scheduled train movements and certified that zero conflicts exist across the entire division."
+          "presentation": "This banner confirms that our system has checked all 1,819 scheduled train movements and certified that zero conflicts exist across the entire division.",
+          "component_id": "S08-C02"
         },
         {
           "id": 3,
@@ -1221,7 +1296,8 @@
           "validation_edge_cases": "Highlights in pulsing amber if buffer is between 10 and 12 minutes (legal but tight).",
           "connected_components": "GanttTab (Section 3)",
           "railway_impact": "Directly replaces the manual paper charts used in divisional control offices.",
-          "presentation": "This string chart plots train trajectories against our maintenance blocks, making it visually obvious that every train passes safely outside block possession windows."
+          "presentation": "This string chart plots train trajectories against our maintenance blocks, making it visually obvious that every train passes safely outside block possession windows.",
+          "component_id": "S08-C03"
         },
         {
           "id": 4,
@@ -1247,7 +1323,8 @@
           "validation_edge_cases": "Strict non-negotiable rule: if buffer < 10.0m, certificate is revoked instantly.",
           "connected_components": "ApprovalAuditView (Section 17), AlertsView (Section 18)",
           "railway_impact": "Ensures full compliance with Indian Railways General & Subsidiary Rules (G&SR).",
-          "presentation": "This certificate verifies that our closest train-to-block margin is +14 minutes, exceeding the statutory 10-minute requirement and ensuring complete safety."
+          "presentation": "This certificate verifies that our closest train-to-block margin is +14 minutes, exceeding the statutory 10-minute requirement and ensuring complete safety.",
+          "component_id": "S08-C04"
         }
       ]
     },
@@ -1259,7 +1336,7 @@
       "tab_id": "ai_priority",
       "source_file": "frontend/src/components/AIPriorityView.tsx",
       "route": "/?tab=ai_priority",
-      "screenshot_file": "docs/visual_guide/Screenshot (1557).png",
+      "screenshot_file": "docs/visual_guide/Screenshot (1590).png",
       "secondary_screenshots": [],
       "description": "Explainable AI machine learning dashboard presenting multi-model risk benchmarks, physics-informed Weibull hazard curves, and local SHAP feature attributions for every maintenance priority score.",
       "explanation": {
@@ -1305,7 +1382,8 @@
           "validation_edge_cases": "Displays warning badge if challenger model outperforms champion in shadow mode.",
           "connected_components": "ModelVersionsView (Section 16)",
           "railway_impact": "Guarantees that only statistically validated models guide operational maintenance dispatch.",
-          "presentation": "Our AI intelligence engine runs an XGBoost v2.4 Champion model, trained on 15,000 real railway operational records with verified PR-AUC benchmarks."
+          "presentation": "Our AI intelligence engine runs an XGBoost v2.4 Champion model, trained on 15,000 real railway operational records with verified PR-AUC benchmarks.",
+          "component_id": "S09-C01"
         },
         {
           "id": 2,
@@ -1331,7 +1409,8 @@
           "validation_edge_cases": "Bounds shape parameter beta >= 1.0 to prevent non-physical negative aging rates.",
           "connected_components": "AssetHealthView (Section 11), TasksView (Section 2)",
           "railway_impact": "Enables predictive replacement of rails before fatigue fractures develop.",
-          "presentation": "We combine machine learning with classical Weibull physics modeling to compute an asset's exact probability of failure based on accumulated gross million tonnes."
+          "presentation": "We combine machine learning with classical Weibull physics modeling to compute an asset's exact probability of failure based on accumulated gross million tonnes.",
+          "component_id": "S09-C02"
         },
         {
           "id": 3,
@@ -1357,7 +1436,8 @@
           "validation_edge_cases": "Non-bypassable: safety overrides cannot be disabled by non-admin accounts.",
           "connected_components": "TasksView (Section 2), AlertsView (Section 18)",
           "railway_impact": "Guarantees passenger safety by treating critical defects with absolute operational urgency.",
-          "presentation": "While AI optimizes efficiency, passenger safety is non-negotiable: our safety override rule forces critical track defects to the maximum priority immediately."
+          "presentation": "While AI optimizes efficiency, passenger safety is non-negotiable: our safety override rule forces critical track defects to the maximum priority immediately.",
+          "component_id": "S09-C03"
         },
         {
           "id": 4,
@@ -1383,7 +1463,8 @@
           "validation_edge_cases": "Ensures sum of SHAP values equals model prediction minus expected baseline value.",
           "connected_components": "TasksView (Section 2)",
           "railway_impact": "Builds trust between senior railway engineers and automated AI systems.",
-          "presentation": "This SHAP explainability chart removes the AI 'black box', clearly showing controllers that high track age and temperature stress drove the urgent maintenance score."
+          "presentation": "This SHAP explainability chart removes the AI 'black box', clearly showing controllers that high track age and temperature stress drove the urgent maintenance score.",
+          "component_id": "S09-C04"
         }
       ]
     },
@@ -1395,8 +1476,10 @@
       "tab_id": "failure_intelligence",
       "source_file": "frontend/src/components/FailureIntelligenceView.tsx",
       "route": "/?tab=failure_intelligence",
-      "screenshot_file": "docs/visual_guide/Screenshot (1558).png",
-      "secondary_screenshots": [],
+      "screenshot_file": "docs/visual_guide/Screenshot (1591).png",
+      "secondary_screenshots": [
+        "docs/visual_guide/Screenshot (1592).png"
+      ],
       "description": "Historical incident analytics repository ingesting Unified Incident Management System (UIMS) data to compute Mean Time Between Failures (MTBF), root-cause Pareto breakdowns, and preventative maintenance triggers.",
       "explanation": {
         "A_what_is_this": "Failure Intelligence is the reliability engineering and incident analytics hub of ABPS v4.0. It mines historical breakdown logs to identify failure patterns, recurring defect clusters, and asset MTBF trends.",
@@ -1441,7 +1524,8 @@
           "validation_edge_cases": "Excludes scheduled maintenance blocks from unscheduled breakdown counts.",
           "connected_components": "CommandCenterView (Section 1), AssetHealthView (Section 11)",
           "railway_impact": "Directly measures the operational reliability and health of divisional infrastructure.",
-          "presentation": "This header tracks our core reliability metrics: our current Mean Time Between Failures stands at 412 hours with an average repair time under 48 minutes."
+          "presentation": "This header tracks our core reliability metrics: our current Mean Time Between Failures stands at 412 hours with an average repair time under 48 minutes.",
+          "component_id": "S10-C01"
         },
         {
           "id": 2,
@@ -1467,7 +1551,8 @@
           "validation_edge_cases": "Preserves filter state across view switches.",
           "connected_components": "Root-Cause Pareto Chart, Historical Log Table",
           "railway_impact": "Enables rapid retrieval of historical precedent when analyzing similar failures.",
-          "presentation": "With this toolbar, engineers can isolate failures by department and season, filtering specifically for monsoon or summer heat incidents."
+          "presentation": "With this toolbar, engineers can isolate failures by department and season, filtering specifically for monsoon or summer heat incidents.",
+          "component_id": "S10-C02"
         },
         {
           "id": 3,
@@ -1493,7 +1578,8 @@
           "validation_edge_cases": "Dynamically updates 80% threshold line as filters change.",
           "connected_components": "TasksView (Section 2)",
           "railway_impact": "Eliminating the top 3 root causes on this chart resolves 80% of all corridor train delays.",
-          "presentation": "Our Pareto chart proves the 80/20 rule: just 3 defect modes—weld fractures, insulator flashovers, and point motor jams—cause 80% of our line delays."
+          "presentation": "Our Pareto chart proves the 80/20 rule: just 3 defect modes—weld fractures, insulator flashovers, and point motor jams—cause 80% of our line delays.",
+          "component_id": "S10-C03"
         },
         {
           "id": 4,
@@ -1519,7 +1605,8 @@
           "validation_edge_cases": "Prevents duplicate work orders for assets already in the backlog.",
           "connected_components": "TasksView (Section 2), AssetHealthView (Section 11)",
           "railway_impact": "Replaces guesswork with automated, data-driven preventative maintenance orders.",
-          "presentation": "This table takes immediate action: it flags assets nearing their MTBF limit and allows controllers to dispatch a preventative work order with one click."
+          "presentation": "This table takes immediate action: it flags assets nearing their MTBF limit and allows controllers to dispatch a preventative work order with one click.",
+          "component_id": "S10-C04"
         }
       ]
     },
@@ -1531,7 +1618,7 @@
       "tab_id": "asset_health",
       "source_file": "frontend/src/components/AssetHealthView.tsx",
       "route": "/?tab=asset_health",
-      "screenshot_file": "docs/visual_guide/Screenshot (1559).png",
+      "screenshot_file": "docs/visual_guide/Screenshot (1593).png",
       "secondary_screenshots": [],
       "description": "Comprehensive asset health and degradation monitoring system tracking 12,000 canonical physical assets across Delhi Division, integrating Ultrasonic Flaw Detection (USFD) scans and track quality indices.",
       "explanation": {
@@ -1577,7 +1664,8 @@
           "validation_edge_cases": "Ensures all 12,000 assets are mapped to valid corridor coordinates.",
           "connected_components": "CommandCenterView (Section 1), TasksView (Section 2)",
           "railway_impact": "Guarantees complete oversight of all physical assets across 1,447 km of railway.",
-          "presentation": "This header tracks our entire physical asset fleet—12,000 canonical assets across Delhi Division—with a verified network health score of 98.4%."
+          "presentation": "This header tracks our entire physical asset fleet—12,000 canonical assets across Delhi Division—with a verified network health score of 98.4%.",
+          "component_id": "S11-C01"
         },
         {
           "id": 2,
@@ -1603,7 +1691,8 @@
           "validation_edge_cases": "Flags any discipline dropping below 95% with an amber review warning.",
           "connected_components": "TasksView (Section 2), CoordinationView (Section 6)",
           "railway_impact": "Identifies which engineering branch needs increased block allocation.",
-          "presentation": "Here we compare health across engineering branches: track stands at 98.1%, electrical at 98.8%, and signaling at 98.4%, showing balanced maintenance."
+          "presentation": "Here we compare health across engineering branches: track stands at 98.1%, electrical at 98.8%, and signaling at 98.4%, showing balanced maintenance.",
+          "component_id": "S11-C02"
         },
         {
           "id": 3,
@@ -1629,7 +1718,8 @@
           "validation_edge_cases": "Automatically locks asset to Critical Priority if flaw depth exceeds 2.5 mm.",
           "connected_components": "AIPriorityView (Section 9), TasksView (Section 2)",
           "railway_impact": "Detects internal rail cracks invisible to the human eye, preventing catastrophic rail breaks.",
-          "presentation": "This USFD telemetry card displays precision ultrasonic flaw scans: here a 2.4 mm rail crack is tracked against its 3.0 mm statutory limit, ensuring timely intervention."
+          "presentation": "This USFD telemetry card displays precision ultrasonic flaw scans: here a 2.4 mm rail crack is tracked against its 3.0 mm statutory limit, ensuring timely intervention.",
+          "component_id": "S11-C03"
         },
         {
           "id": 4,
@@ -1655,13 +1745,797 @@
           "validation_edge_cases": "Flags machine maintenance lockouts to prevent scheduling broken tampers.",
           "connected_components": "GanttTab (Section 3), CoordinationView (Section 6)",
           "railway_impact": "Eliminates empty block possessions caused by missing track machines or delayed crews.",
-          "presentation": "Our system doesn't just allocate time—it verifies logistics. Here it confirms machine availability, base depot transit times, and crew staging before block approval."
+          "presentation": "Our system doesn't just allocate time—it verifies logistics. Here it confirms machine availability, base depot transit times, and crew staging before block approval.",
+          "component_id": "S11-C04"
         }
       ]
     },
     {
-      "id": "12_what_if",
-      "title": "12. What-If Simulator",
+      "id": "12_data_ingestion",
+      "title": "12. Data Ingestion",
+      "subtitle": "Enterprise Railway Feeds (COIS, ICMS, UIMS, TMS) & Multi-Source Pipelines",
+      "category": "DATA",
+      "tab_id": "data_ingestion",
+      "source_file": "frontend/src/components/DataIngestionView.tsx",
+      "route": "/?tab=data_ingestion",
+      "screenshot_file": "docs/visual_guide/Screenshot (1594).png",
+      "secondary_screenshots": [
+        "docs/visual_guide/Screenshot (1562).png"
+      ],
+      "description": "Enterprise multi-source data ingestion pipeline integrating Indian Railways production feeds (COIS, ICMS, UIMS, TMS) with schema mapping, batch ETL, and immutable audit history.",
+      "explanation": {
+        "A_what_is_this": "Data Ingestion is the enterprise data gateway of ABPS v4.0. It manages incoming data feeds from Indian Railways production enterprise systems (COIS, ICMS, UIMS, TMS) and handles manual CSV/JSON data uploads.",
+        "B_why_included": "Railway operational data originates in disparate legacy systems—passenger timetables in ICMS, freight rakes in COIS, track defects in UIMS, and live signals in TMS. This section creates a clean, robust data ingestion bridge.",
+        "C_features_available": [
+          "Multi-Source Enterprise Pipeline Status (COIS, ICMS, UIMS, TMS) showing sync frequency and latency.",
+          "Manual File Upload & Batch ETL Trigger for offline timetable and track geometry updates.",
+          "Real-Time Pipeline Health Indicators (Sync Latency, Records Ingested, Error Rate).",
+          "Immutable Ingestion Audit History Table logging batch IDs, record counts, and schema hashes.",
+          "Automated Schema Validation Gate verifying column headers and data types prior to database commit."
+        ],
+        "D_how_it_works": "Polls enterprise REST APIs and SFTP servers at configured intervals (e.g. 5 minutes for TMS, 1 hour for UIMS). Passes raw data through a validation pipeline that checks referential integrity, formats timestamps, and writes clean records to PostgreSQL staging tables.",
+        "E_user_interaction": "Database administrators monitor live pipeline heartbeats, upload updated timetable CSV files, inspect ingestion error logs, and trigger manual synchronization jobs.",
+        "F_output": "Clean, normalized database tables feeding the entire ABPS application suite.",
+        "G_cross_connections": "Feeds normalized data into Section 14 (Data Quality) for schema integrity checks and Section 2 (Asset Backlog) for work orders.",
+        "H_practical_example": "A new seasonal timetable circular is issued by Northern Railway. The administrator uploads the revised timetable CSV via Data Ingestion; the pipeline validates 1,819 train records in 1.4 seconds and updates the master timetable database.",
+        "I_viva_defense_pitch": "Data Ingestion is our enterprise bridge to Indian Railways. It pulls real-time feeds from ICMS timetables, COIS freight rakes, and UIMS defect logs, standardizing millions of operational data points into a unified schema.",
+        "J_technical_architecture": "Built in frontend/src/components/DataIngestionView.tsx. Backend ETL pipelines implemented in Go and Python. Uses schema validators and PostgreSQL transactional staging tables."
+      },
+      "components": [
+        {
+          "id": 1,
+          "name": "Enterprise Ingestion Feed Status Ribbon",
+          "color_category": "CARD",
+          "ui_type": "Pipeline Health Ribbon",
+          "location": "Top View Header (x: 280-1890, y: 70-150)",
+          "bbox": [
+            280,
+            70,
+            1890,
+            150
+          ],
+          "visual": "Four cards showing connection health for ICMS (Passenger Timetable), COIS (Freight), UIMS (Asset Defects), and TMS (Traffic Management).",
+          "purpose": "Provides real-time visibility into the health and sync latency of external railway enterprise systems.",
+          "functionality": "Monitors API latency, last successful sync timestamp, and payload record counts.",
+          "interaction": "Click on any feed card to view connection logs and trigger an immediate re-sync.",
+          "io": "Input: System heartbeat endpoints -> Output: Live status indicator (Active, Delayed, Offline).",
+          "workflow": "Monitored 24/7 by IT system administrators in the divisional server room.",
+          "tech": "frontend/src/components/DataIngestionView.tsx",
+          "backend_api": "GET /api/ingestion/feeds",
+          "state_handled": "feedStatuses: FeedStatus[]",
+          "validation_edge_cases": "Displays amber 'High Latency' warning if sync lag exceeds 15 minutes.",
+          "connected_components": "DataQualityView (Section 14)",
+          "railway_impact": "Guarantees that block planners are always working with the latest operational timetable data.",
+          "presentation": "This ribbon monitors our 4 enterprise feeds—ICMS, COIS, UIMS, and TMS—ensuring that live train schedules and defect logs are synchronized continuously.",
+          "component_id": "S12-C01"
+        },
+        {
+          "id": 2,
+          "name": "Manual File Upload & Batch ETL Trigger",
+          "color_category": "FORM",
+          "ui_type": "Drag-and-Drop File Upload Area",
+          "location": "Mid-Left Area (x: 280-1080, y: 170-680)",
+          "bbox": [
+            280,
+            170,
+            1080,
+            680
+          ],
+          "visual": "Dashed dropzone box with cloud upload icon, 'Drag & Drop CSV / JSON Timetable Files', and 'Browse Files' button.",
+          "purpose": "Enables offline updates of train schedules, track asset geometries, and machine rosters.",
+          "functionality": "Parses uploaded CSV/JSON files, validates schema, and displays preview table before committing to database.",
+          "interaction": "Drag file into dropzone or browse; review parsed columns; click 'Process Batch Ingestion'.",
+          "io": "Input: Multipart file upload -> Output: Ingestion preview and validation summary.",
+          "workflow": "Used when receiving periodic circular updates from Headquarters or CRIS.",
+          "tech": "frontend/src/components/DataIngestionView.tsx, Lucide-React UploadCloud",
+          "backend_api": "POST /api/ingestion/upload",
+          "state_handled": "uploadProgress: number, parsedPreview: DataRow[]",
+          "validation_edge_cases": "Rejects malformed CSVs with row-and-column error highlighting.",
+          "connected_components": "DataQualityView (Section 14)",
+          "railway_impact": "Allows rapid system updates even in offline environments or air-gapped server installations.",
+          "presentation": "This upload dropzone allows administrators to import new seasonal timetables or track geometry files with instant schema validation.",
+          "component_id": "S12-C02"
+        },
+        {
+          "id": 3,
+          "name": "Immutable Ingestion Audit History Table",
+          "color_category": "CARD",
+          "ui_type": "Audit Data Table",
+          "location": "Mid-Right Area (x: 1100-1890, y: 170-950)",
+          "bbox": [
+            1100,
+            170,
+            1890,
+            950
+          ],
+          "visual": "Table listing Batch ID, Source Feed, Ingested Rows, Error Count, Hash, and Timestamp.",
+          "purpose": "Maintains an auditable, tamper-evident log of all data updates across the application lifecycle.",
+          "functionality": "Stores SHA-256 hashes of imported datasets for regulatory compliance and audit tracking.",
+          "interaction": "Click on any batch row to view ingestion error logs or roll back a corrupted batch.",
+          "io": "Input: Ingestion event records -> Output: Paginated audit history table.",
+          "workflow": "Reviewed during system integrity audits by Centre for Railway Information Systems (CRIS).",
+          "tech": "frontend/src/components/DataIngestionView.tsx",
+          "backend_api": "GET /api/ingestion/history",
+          "state_handled": "ingestionBatches: IngestionBatch[]",
+          "validation_edge_cases": "Prevents rolling back batches that are actively locked by the CP-SAT solver.",
+          "connected_components": "ModelVersionsView (Section 16)",
+          "railway_impact": "Ensures complete data lineage and traceability for all operational schedules.",
+          "presentation": "This audit table maintains an immutable log of every data ingestion batch with SHA-256 hashes, ensuring complete data traceability.",
+          "component_id": "S12-C03"
+        },
+        {
+          "id": 4,
+          "name": "Validation Pipeline Telemetry & Error Monitor",
+          "color_category": "ALERT",
+          "ui_type": "Pipeline Status Card",
+          "location": "Lower-Left Area (x: 280-1080, y: 700-950)",
+          "bbox": [
+            280,
+            700,
+            1080,
+            950
+          ],
+          "visual": "Card showing 100% Validation Pass Rate across 21 canonical datasets with zero nulls detected.",
+          "purpose": "Confirms that incoming data meets strict relational and referential integrity standards.",
+          "functionality": "Runs automated checks for missing primary keys, duplicate train numbers, and invalid section coordinates.",
+          "interaction": "Inspect validation rule definitions and error resolution logs.",
+          "io": "Input: Ingested batch -> Output: Validation scorecard.",
+          "workflow": "Automated quality gate preventing bad data from entering the production database.",
+          "tech": "frontend/src/components/DataIngestionView.tsx",
+          "backend_api": "GET /api/ingestion/validation-status",
+          "state_handled": "validationStatus: ValidationReport",
+          "validation_edge_cases": "Quarantines malformed records in an isolation table without aborting the entire batch.",
+          "connected_components": "DataQualityView (Section 14)",
+          "railway_impact": "Prevents corrupted data from causing solver crashes or schedule anomalies.",
+          "presentation": "This telemetry card proves our ingestion pipeline is hardened: all 21 canonical datasets achieve a 100% validation pass rate before entering the database.",
+          "component_id": "S12-C04"
+        }
+      ]
+    },
+    {
+      "id": "13_data_quality",
+      "title": "13. Data Quality",
+      "subtitle": "21 Canonical Datasets Audit, Zero-Null Referential Integrity & Schema Gate",
+      "category": "DATA",
+      "tab_id": "data_quality",
+      "source_file": "frontend/src/components/DataQualityView.tsx",
+      "route": "/?tab=data_quality",
+      "screenshot_file": "docs/visual_guide/Screenshot (1563).png",
+      "secondary_screenshots": [],
+      "description": "Exhaustive data quality and schema validation gate auditing 21 canonical railway operational datasets, enforcing zero-null constraints, foreign key referential integrity, and mathematical range boundaries.",
+      "explanation": {
+        "A_what_is_this": "Data Quality is the automated data validation and schema integrity laboratory of ABPS v4.0. It continuously audits all 21 canonical datasets powering the optimization engine.",
+        "B_why_included": "Garbage in, garbage out: an optimization solver fed with missing track coordinates, negative durations, or duplicate train IDs will produce invalid or dangerous schedules. This section enforces zero-compromise data standards.",
+        "C_features_available": [
+          "21 Canonical Datasets Audit Matrix with 100% Pass status across all tables.",
+          "Zero-Null Constraint Verification ensuring no missing critical attributes (lat/long, speeds, line codes).",
+          "Foreign Key Referential Integrity Checker linking assets, sections, tasks, and trains.",
+          "Numerical Range Bounds Validator (e.g. Criticality score strictly bounded in [0.0, 1.0]).",
+          "One-Click 'Trigger Full Re-Validation' action button."
+        ],
+        "D_how_it_works": "Runs automated SQL assertion queries and Great Expectations test suites across the database. Verifies primary key uniqueness, foreign key consistency, temporal causality (departure time > arrival time), and geospatial bounding boxes. Displays green pass chips for each dataset.",
+        "E_user_interaction": "Engineers review validation cards for each of the 21 datasets, inspect detailed constraint rules, and click 'Run Integrity Check' to re-verify after bulk data updates.",
+        "F_output": "Formally certified Data Quality Audit Certificate confirming 100% compliance across all 21 canonical tables.",
+        "G_cross_connections": "Validates data ingested in Section 13 (Data Ingestion) before it reaches Section 3 (Weekly Block Planner) or Section 9 (AI Risk & Priority).",
+        "H_practical_example": "A data import from an external track database contains a typo: a rail section with length -450 meters. The Data Quality gate immediately flags a range constraint violation, blocks database commit, and prevents the optimizer from crashing.",
+        "I_viva_defense_pitch": "Mathematical optimization requires pristine data. Our Data Quality gate audits all 21 canonical datasets—from train timetables to track geometry—enforcing zero-null rules and referential integrity with a 100% pass rate.",
+        "J_technical_architecture": "Implemented in frontend/src/components/DataQualityView.tsx. Validations executed via engine/test_suite.py and backend SQL assertion checks. Backed by PostgreSQL constraints and SQLite WAL mirrors."
+      },
+      "components": [
+        {
+          "id": 1,
+          "name": "21 Canonical Datasets Audit Overview",
+          "color_category": "CARD",
+          "ui_type": "Audit Summary Card",
+          "location": "Top Dashboard Section (x: 280-1890, y: 70-160)",
+          "bbox": [
+            280,
+            70,
+            1890,
+            160
+          ],
+          "visual": "Emerald banner displaying '21/21 CANONICAL DATASETS AUDITED · 100% INTEGRITY PASS' with verified seal.",
+          "purpose": "Summarizes complete data health and verifies that no corrupted datasets exist in the system.",
+          "functionality": "Aggregates validation check results across all 21 relational tables in the database.",
+          "interaction": "Click to expand full audit checklist.",
+          "io": "Input: Test suite assertion results -> Output: Overall data health certificate.",
+          "workflow": "The primary data gate checked before running weekly schedule optimization.",
+          "tech": "frontend/src/components/DataQualityView.tsx",
+          "backend_api": "GET /api/quality/summary",
+          "state_handled": "qualitySummary: QualitySummary",
+          "validation_edge_cases": "Requires all 21 datasets to pass; single failure flips banner to red.",
+          "connected_components": "DataIngestionView (Section 13), AlertsView (Section 18)",
+          "railway_impact": "Guarantees that safety algorithms never run on incomplete or corrupted data.",
+          "presentation": "This overview confirms that all 21 canonical datasets powering our solver have been audited and achieved a 100% integrity pass.",
+          "component_id": "S13-C01"
+        },
+        {
+          "id": 2,
+          "name": "Data Integrity Verification Rules Panel",
+          "color_category": "ALERT",
+          "ui_type": "Rule Specification Display",
+          "location": "Upper Canvas Area (x: 280-1890, y: 180-350)",
+          "bbox": [
+            280,
+            180,
+            1890,
+            350
+          ],
+          "visual": "Card detailing core verification checks: Zero Nulls in Primary Fields, FK Referential Integrity, Temporal Causality, and Range Bounds [0, 1].",
+          "purpose": "Displays the exact mathematical and relational assertions enforced across the database.",
+          "functionality": "Runs continuous assertions: e.g. asset coordinates non-null, train departure >= arrival, priority in [0, 100].",
+          "interaction": "Inspect individual assertion logic and failure thresholds.",
+          "io": "Input: Database schema constraints -> Output: Interactive rule specification cards.",
+          "workflow": "Serves as documentation for system auditors and software maintenance teams.",
+          "tech": "frontend/src/components/DataQualityView.tsx",
+          "backend_api": "GET /api/quality/rules",
+          "state_handled": "activeRules: QualityRule[]",
+          "validation_edge_cases": "Strict fail-safe: any violated constraint raises an unignorable alert.",
+          "connected_components": "AlertsView (Section 18)",
+          "railway_impact": "Eliminates database corruption risks that could compromise train safety.",
+          "presentation": "These 4 rule panels show our integrity checks: zero nulls in critical fields, strict foreign key links, chronological time validation, and mathematical bounds.",
+          "component_id": "S13-C02"
+        },
+        {
+          "id": 3,
+          "name": "Dataset-by-Dataset Verification Matrix",
+          "color_category": "CHART",
+          "ui_type": "Interactive Status Grid",
+          "location": "Mid Canvas Area (x: 280-1890, y: 370-750)",
+          "bbox": [
+            280,
+            370,
+            1890,
+            750
+          ],
+          "visual": "Grid of 21 dataset cards (e.g. timetable_trains, corridor_sections, asset_registry, uims_failures) with green check badges and row counts.",
+          "purpose": "Provides individual status, row counts, and last validation timestamps for every canonical table.",
+          "functionality": "Displays table name, row count (e.g. 1,819 trains, 12,000 assets), schema version, and validation latency.",
+          "interaction": "Click on any dataset card to view sample rows and schema definitions.",
+          "io": "Input: Database catalog telemetry -> Output: Interactive dataset cards.",
+          "workflow": "Used by database engineers to inspect individual table sizes and health.",
+          "tech": "frontend/src/components/DataQualityView.tsx",
+          "backend_api": "GET /api/quality/datasets",
+          "state_handled": "datasets: DatasetStatus[]",
+          "validation_edge_cases": "Highlights empty tables or tables with schema mismatches.",
+          "connected_components": "DataIngestionView (Section 13)",
+          "railway_impact": "Provides complete transparency into the size and health of all railway operational data.",
+          "presentation": "This matrix breaks down all 21 tables—including our 1,819 trains and 12,000 assets—confirming that each table is populated and 100% valid.",
+          "component_id": "S13-C03"
+        },
+        {
+          "id": 4,
+          "name": "Trigger Re-Validation & Anomaly Export Controls",
+          "color_category": "ACTION",
+          "ui_type": "Action Toolbar",
+          "location": "Bottom Area (x: 280-1890, y: 770-950)",
+          "bbox": [
+            280,
+            770,
+            1890,
+            950
+          ],
+          "visual": "Toolbar with emerald 'TRIGGER FULL RE-VALIDATION' button, 'Download Audit Report', and 'Export Schema Definition'.",
+          "purpose": "Allows users to execute an on-demand integrity audit across all 21 tables in real time.",
+          "functionality": "Invokes backend test suite assertions; updates UI status badges within 1.5 seconds.",
+          "interaction": "Click 'TRIGGER FULL RE-VALIDATION' to execute the test suite.",
+          "io": "Input: Click event -> Output: Re-validated database status and updated report.",
+          "workflow": "Executed after completing any major data ingestion or timetable update.",
+          "tech": "frontend/src/components/DataQualityView.tsx",
+          "backend_api": "POST /api/quality/revalidate",
+          "state_handled": "isValidating: boolean, lastValidationTimestamp: string",
+          "validation_edge_cases": "Disables button during active re-validation to prevent duplicate concurrent runs.",
+          "connected_components": "AlertsView (Section 18)",
+          "railway_impact": "Provides instant confidence that data is clean before running multi-hour block allocations.",
+          "presentation": "Clicking this button runs our automated verification suite across all 21 tables in 1.5 seconds, guaranteeing pristine data before scheduling begins.",
+          "component_id": "S13-C04"
+        }
+      ]
+    },
+    {
+      "id": "14_model_versions",
+      "title": "14. Model / Data Versions",
+      "subtitle": "Model Registry, Hyperparameter Lineage & 6 Candidate Benchmark Leaderboard",
+      "category": "DATA",
+      "tab_id": "model_versions",
+      "source_file": "frontend/src/components/ModelVersionsView.tsx",
+      "route": "/?tab=model_versions",
+      "screenshot_file": "docs/visual_guide/Screenshot (1565).png",
+      "secondary_screenshots": [],
+      "description": "Enterprise MLOps model registry and data versioning repository managing machine learning model lifecycle, hyperparameter lineage, and comparative benchmark leaderboards across 6 candidate algorithms.",
+      "explanation": {
+        "A_what_is_this": "Model / Data Versions is the MLOps governance and data provenance repository of ABPS v4.0. It tracks the training lineage, hyperparameters, validation benchmarks, and active production status of all AI models.",
+        "B_why_included": "Railway operations require strict auditability. Regulators must know exactly which model version made a prediction, what training dataset it used, and how its precision was validated before it was promoted to production.",
+        "C_features_available": [
+          "Model Governance & MLflow Registry Banner displaying active Champion (XGBoost v2.4).",
+          "6 Candidate Benchmark Leaderboard comparing XGBoost, LightGBM, CatBoost, Random Forest, Extra Trees, and Logistic Regression.",
+          "Hyperparameter Lineage Table showing learning rates, tree depths, and regularization values.",
+          "Data Version Snapshot Hash (SHA-256) tracking exact training dataset splits.",
+          "Champion Promotion Action Button for zero-downtime model hot-swapping."
+        ],
+        "D_how_it_works": "Integrates with MLflow model registry conventions. Retraining scripts evaluate candidate algorithms on holdout operational datasets, logging PR-AUC, ROC-AUC, Brier score, and inference latency. The best-performing model is promoted to 'Champion' status and hot-swapped into the live inference pipeline.",
+        "E_user_interaction": "Data scientists and safety auditors review model leaderboard metrics, inspect hyperparameter differences, verify dataset snapshot hashes, and promote validated challenger models to production.",
+        "F_output": "Complete MLOps governance manifest and auditable training lineage certificates for regulatory compliance.",
+        "G_cross_connections": "Manages the model utilized in Section 9 (AI Risk & Priority) and records dataset versions from Section 13 (Data Ingestion).",
+        "H_practical_example": "A new training cycle completes on 15,000 recent operational records. CatBoost achieves PR-AUC of 0.3110 versus XGBoost's 0.3138. The registry maintains XGBoost as Champion, documenting why CatBoost was kept in shadow challenger mode.",
+        "I_viva_defense_pitch": "Model / Data Versions brings enterprise MLOps governance to Indian Railways. We maintain full lineage of our training data and benchmark 6 candidate algorithms, ensuring that only the highest-precision model ever guides live operations.",
+        "J_technical_architecture": "Built in frontend/src/components/ModelVersionsView.tsx. Model metadata stored in engine/ml_model_meta.json. MLOps pipeline automated via engine/retrain_from_operational_data.py."
+      },
+      "components": [
+        {
+          "id": 1,
+          "name": "Model Governance & Registry Banner",
+          "color_category": "CARD",
+          "ui_type": "MLOps Status Banner",
+          "location": "Top Dashboard Section (x: 280-1890, y: 70-140)",
+          "bbox": [
+            280,
+            70,
+            1890,
+            140
+          ],
+          "visual": "Banner displaying active Champion model: 'XGBoost v2.4 Champion' with deployment timestamp, MLflow run ID, and production status badge.",
+          "purpose": "Identifies the currently deployed machine learning model serving live inference requests.",
+          "functionality": "Displays model version, deployment date, framework version (xgboost 2.0.3), and artifact hash.",
+          "interaction": "Click to view full MLflow deployment manifest.",
+          "io": "Input: Production model pointer -> Output: Deployed model metadata banner.",
+          "workflow": "Audited during software release sign-offs.",
+          "tech": "frontend/src/components/ModelVersionsView.tsx",
+          "backend_api": "GET /api/models/active",
+          "state_handled": "activeModelMeta: ModelMeta",
+          "validation_edge_cases": "Ensures only one model can hold the 'Champion' production pointer at any time.",
+          "connected_components": "AIPriorityView (Section 9)",
+          "railway_impact": "Guarantees full accountability for every automated AI recommendation.",
+          "presentation": "This banner displays our active production model—XGBoost v2.4 Champion—with its unique MLflow run ID and verified deployment timestamp.",
+          "component_id": "S14-C01"
+        },
+        {
+          "id": 2,
+          "name": "6 Candidate Benchmark Leaderboard",
+          "color_category": "CHART",
+          "ui_type": "Comparative Leaderboard Table",
+          "location": "Upper Canvas Area (x: 280-1890, y: 160-380)",
+          "bbox": [
+            280,
+            160,
+            1890,
+            380
+          ],
+          "visual": "Table ranking 6 models: XGBoost (1st), CatBoost (2nd), LightGBM (3rd), Random Forest (4th), Extra Trees (5th), Logistic Regression (6th) by PR-AUC and Brier Score.",
+          "purpose": "Compares candidate model performance on identical holdout validation datasets.",
+          "functionality": "Sorts models by precision metrics; highlights top-performing champion with gold trophy badge.",
+          "interaction": "Click on any model row to inspect its precision-recall curve and confusion matrix.",
+          "io": "Input: Benchmark evaluation records -> Output: Ranked model leaderboard.",
+          "workflow": "Informs data science teams whether a retrained challenger model is ready for promotion.",
+          "tech": "frontend/src/components/ModelVersionsView.tsx",
+          "backend_api": "GET /api/models/benchmarks",
+          "state_handled": "leaderboard: ModelBenchmark[]",
+          "validation_edge_cases": "Requires Brier score < 0.10 and PR-AUC > 0.30 for champion consideration.",
+          "connected_components": "AIPriorityView (Section 9)",
+          "railway_impact": "Ensures the system continuously uses the most accurate predictive algorithm available.",
+          "presentation": "Our leaderboard benchmarks 6 candidate algorithms: XGBoost wins with a PR-AUC of 0.3138 and a Brier score of 0.0812, outperforming Random Forest and CatBoost.",
+          "component_id": "S14-C02"
+        },
+        {
+          "id": 3,
+          "name": "Hyperparameter Lineage & Dataset Splits",
+          "color_category": "CARD",
+          "ui_type": "Parameter Configuration Table",
+          "location": "Mid-Left Area (x: 280-1080, y: 400-950)",
+          "bbox": [
+            280,
+            400,
+            1080,
+            950
+          ],
+          "visual": "Table displaying exact hyperparameter configurations: max_depth=5, learning_rate=0.05, n_estimators=250, subsample=0.8, and 80/20 train/test split.",
+          "purpose": "Maintains reproducible records of exact training configurations for every model build.",
+          "functionality": "Enables 100% reproducible model training runs from scratch.",
+          "interaction": "Inspect hyperparameter tuning history and grid search logs.",
+          "io": "Input: Model configuration JSON -> Output: Formatted parameter table.",
+          "workflow": "Required documentation for formal government software safety certifications.",
+          "tech": "frontend/src/components/ModelVersionsView.tsx",
+          "backend_api": "GET /api/models/:id/hyperparameters",
+          "state_handled": "hyperparameters: Record<string, any>",
+          "validation_edge_cases": "Flags any hyperparameter configurations that led to overfitting on training data.",
+          "connected_components": "AIPriorityView (Section 9)",
+          "railway_impact": "Guarantees algorithmic reproducibility across independent external audits.",
+          "presentation": "This table documents the exact hyperparameters and 80/20 training splits used for XGBoost v2.4, ensuring 100% reproducibility.",
+          "component_id": "S14-C03"
+        },
+        {
+          "id": 4,
+          "name": "Champion Promotion & Hot-Swap Action Button",
+          "color_category": "ACTION",
+          "ui_type": "Administrative Action Trigger",
+          "location": "Mid-Right Upper Area (x: 1100-1890, y: 400-650)",
+          "bbox": [
+            1100,
+            400,
+            1890,
+            650
+          ],
+          "visual": "Card with emerald 'PROMOTE CHALLENGER TO CHAMPION' button, rollback trigger, and confirmation dialog.",
+          "purpose": "Enables zero-downtime hot-swapping of production machine learning models.",
+          "functionality": "Atomically updates production model pointer in Redis cache without restarting backend servers.",
+          "interaction": "Click button; confirm administrative credentials; live inference seamlessly switches to new model.",
+          "io": "Input: Challenger model ID -> Output: Atomic promotion to Champion.",
+          "workflow": "Executed by Lead AI Engineer during scheduled model update releases.",
+          "tech": "frontend/src/components/ModelVersionsView.tsx",
+          "backend_api": "POST /api/models/promote",
+          "state_handled": "isPromoting: boolean, promotionError: string | null",
+          "validation_edge_cases": "Requires dual-controller sign-off to prevent unauthorized model deployment.",
+          "connected_components": "ApprovalAuditView (Section 17)",
+          "railway_impact": "Allows continuous AI improvement without requiring disruptive system maintenance windows.",
+          "presentation": "This action button enables zero-downtime model promotion: when a challenger outperforms the champion, it can be promoted atomically in under 50 milliseconds.",
+          "component_id": "S14-C04"
+        },
+        {
+          "id": 5,
+          "name": "Data Version Snapshot Hash Card",
+          "color_category": "NAV",
+          "ui_type": "Data Provenance Card",
+          "location": "Mid-Right Lower Area (x: 1100-1890, y: 670-950)",
+          "bbox": [
+            1100,
+            670,
+            1890,
+            950
+          ],
+          "visual": "Card displaying SHA-256 dataset hash ('e3b0c44298fc1c14...'), record count (15,000), and timestamp.",
+          "purpose": "Links each trained model to the exact immutable snapshot of operational data it learned from.",
+          "functionality": "Stores cryptographic hashes of training datasets to prevent data tampering or leakage.",
+          "interaction": "Click to copy hash or download data manifest.",
+          "io": "Input: Dataset file hash -> Output: Cryptographic verification card.",
+          "workflow": "Essential for regulatory compliance under Indian Railways cybersecurity bylaws.",
+          "tech": "frontend/src/components/ModelVersionsView.tsx",
+          "backend_api": "GET /api/models/:id/data-hash",
+          "state_handled": "dataHash: string",
+          "validation_edge_cases": "Verifies that dataset hash matches the manifest recorded in the training run.",
+          "connected_components": "DataIngestionView (Section 13)",
+          "railway_impact": "Guarantees complete forensic auditability for every predictive model.",
+          "presentation": "This card displays the SHA-256 hash of our 15,000-record training dataset, proving complete data provenance and tamper-evident lineage.",
+          "component_id": "S14-C05"
+        }
+      ]
+    },
+    {
+      "id": "15_approvals_audit",
+      "title": "15. Human Review & Audit",
+      "subtitle": "L4 Divisional Traffic Controller Sign-Off Stepper & Immutable Dispatch Audit Trail",
+      "category": "CONTROL",
+      "tab_id": "approvals_audit",
+      "source_file": "frontend/src/components/ApprovalAuditView.tsx",
+      "route": "/?tab=approvals_audit",
+      "screenshot_file": "docs/visual_guide/Screenshot (1566).png",
+      "secondary_screenshots": [],
+      "description": "Human-in-the-loop regulatory control center providing Level 4 (L4) Divisional Traffic Controller review, digital sign-off steppers, pre-condition safety checklists, and immutable dispatch audit trails.",
+      "explanation": {
+        "A_what_is_this": "Human Review & Audit is the statutory human-in-the-loop governance center of ABPS v4.0. It ensures that no automated AI or solver-generated block schedule can be dispatched without explicit sign-off by a certified Level 4 (L4) Divisional Traffic Controller.",
+        "B_why_included": "Under Indian Railways General Rules (GR), automated algorithms cannot legally execute line closures without human authorization. This screen enforces statutory human accountability, ensuring full compliance with railway safety law.",
+        "C_features_available": [
+          "L4 Controller Review Stepper (Review Allocation -> Verify Headway -> Electrical Interlocks -> Final Sign-Off).",
+          "Pending Block Allocation Review Card detailing corridor, lines affected, and machine transit routes.",
+          "Controller Override & Modification Controls (Adjust Window, Request Re-Solve, Approve, Reject).",
+          "Mandatory Safety Checklist (OHE 25kV de-energization confirmed, SCADA power token held, discharge rods staged).",
+          "Immutable Audit Trail recording controller badge ID, digital signature hash, and millisecond timestamp."
+        ],
+        "D_how_it_works": "Presents proposed CP-SAT block allocations in an auditable review queue. The controller steps through mandatory safety verifications. Upon clicking 'Authorize Possession', the system validates controller credentials, signs the dispatch token with an SHA-256 hash, and broadcasts the approved possession to field stations.",
+        "E_user_interaction": "The L4 Chief Controller reviews pending block windows, checks traction power isolation readiness, clicks the 3 safety checklist checkboxes, enters approval remarks, and signs off with a secure authorization PIN.",
+        "F_output": "Legally binding, digitally signed Block Possession Authority (Form T/409) dispatched to Sectional Controllers and Station Masters.",
+        "G_cross_connections": "Authorizes blocks created in Section 3 (Weekly Block Planner) and logs sign-offs verified by Section 18 (Verification Suite).",
+        "H_practical_example": "The Chief Controller reviews Block BLK_DH01_042 (2-hour tamping at KM 142/8). The controller checks the electrical interlock box, verifies that the 10-minute headway buffer to Rajdhani Express is +14 minutes, enters badge ID 'DEL-CTRL-409', and signs the block authority.",
+        "I_viva_defense_pitch": "AI recommends, but humans decide. This screen enforces statutory Level 4 human-in-the-loop governance: no machine moves and no line closes until an authorized Divisional Traffic Controller verifies the safety checklists and signs the digital authority.",
+        "J_technical_architecture": "Built in frontend/src/components/ApprovalAuditView.tsx. Enforces multi-stage state transitions. Signs tokens via backend/main.go and commits immutable audit logs to PostgreSQL dispatch_audit table."
+      },
+      "components": [
+        {
+          "id": 1,
+          "name": "L4 Controller Multi-Stage Review Stepper",
+          "color_category": "NAV",
+          "ui_type": "Progress Stepper",
+          "location": "Top View Header (x: 280-1890, y: 70-180)",
+          "bbox": [
+            280,
+            70,
+            1890,
+            180
+          ],
+          "visual": "Horizontal 4-step progress stepper: 1. Schedule Inspection (Green check), 2. Headway Audit (Green check), 3. Safety Interlocks (Active Blue), 4. Digital Sign-Off (Pending).",
+          "purpose": "Guides the Chief Controller through mandatory statutory verification stages in rigid sequential order.",
+          "functionality": "Enforces workflow gate: Step 4 cannot be unlocked until Steps 1, 2, and 3 are formally completed.",
+          "interaction": "Step through review stages by clicking 'Next Stage' after completing required checks.",
+          "io": "Input: Controller checklist responses -> Output: Unlocked downstream approval stages.",
+          "workflow": "The mandatory pre-condition for dispatching any maintenance possession.",
+          "tech": "frontend/src/components/ApprovalAuditView.tsx",
+          "backend_api": "GET /api/approval/stepper-status",
+          "state_handled": "currentStep: number (1 to 4), isStepValid: boolean",
+          "validation_edge_cases": "Prevents skipping steps or proceeding with unacknowledged safety warnings.",
+          "connected_components": "Mandatory Safety Checklist, Digital Sign-Off Card",
+          "railway_impact": "Enforces strict adherence to Indian Railways standard operating procedures (SOP).",
+          "presentation": "This 4-stage stepper guides the controller through mandatory verification steps, ensuring that safety checklists cannot be bypassed before sign-off.",
+          "component_id": "S15-C01"
+        },
+        {
+          "id": 2,
+          "name": "Pending Block Allocation Review Card",
+          "color_category": "CARD",
+          "ui_type": "Structured Review Card",
+          "location": "Mid-Left Area (x: 280-1150, y: 200-620)",
+          "bbox": [
+            280,
+            200,
+            1150,
+            620
+          ],
+          "visual": "Card displaying detailed block specifications: Block ID ('BLK_DH01_042'), Corridor ('NDLS-GZB'), Line ('UP Mainline'), Window ('02:30 -> 04:30'), and Bundled Departments ('TRD + ENG').",
+          "purpose": "Presents all operational parameters of the pending block allocation for human verification.",
+          "functionality": "Displays bundled tasks, allocated track lines, required machinery, and station jurisdiction limits.",
+          "interaction": "Inspect machine transit details or request schedule adjustment.",
+          "io": "Input: Selected block allocation -> Output: Comprehensive operational review card.",
+          "workflow": "The primary review object inspected by the Sectional Train Controller.",
+          "tech": "frontend/src/components/ApprovalAuditView.tsx",
+          "backend_api": "GET /api/approval/pending/:id",
+          "state_handled": "pendingBlockDetail: BlockDetail | null",
+          "validation_edge_cases": "Displays warning badge if machine transit crosses busy suburban passenger tracks.",
+          "connected_components": "GanttTab (Section 3), TasksView (Section 2)",
+          "railway_impact": "Gives controllers complete situational clarity before executing disruptive line closures.",
+          "presentation": "This review card presents all block parameters—corridor section, affected track line, bundled tasks, and station limits—for human controller verification.",
+          "component_id": "S15-C02"
+        },
+        {
+          "id": 3,
+          "name": "Controller Decision & Override Controls",
+          "color_category": "ACTION",
+          "ui_type": "Decision Action Button Array",
+          "location": "Mid-Right Area (x: 1170-1890, y: 200-620)",
+          "bbox": [
+            1170,
+            200,
+            1890,
+            620
+          ],
+          "visual": "Control panel featuring green 'AUTHORIZE & DISPATCH', red 'REJECT WITH REMARKS', and blue 'REQUEST ADJUSTMENT' buttons.",
+          "purpose": "Empowers the human controller with final, unappealable decision authority over automated recommendations.",
+          "functionality": "Captures controller decision, prompts for mandatory remarks, and commits decision to audit log.",
+          "interaction": "Click 'AUTHORIZE & DISPATCH' to sign off, or 'REJECT' to return task to backlog.",
+          "io": "Input: Controller button click and remarks -> Output: Executed dispatch authority or rejection notice.",
+          "workflow": "The definitive moment of decision in the block planning lifecycle.",
+          "tech": "frontend/src/components/ApprovalAuditView.tsx",
+          "backend_api": "POST /api/approval/decide",
+          "state_handled": "decisionRemarks: string, isSubmittingDecision: boolean",
+          "validation_edge_cases": "Requires minimum 10-character remarks if rejecting or modifying an allocation.",
+          "connected_components": "Immutable Audit Trail, GanttTab (Section 3)",
+          "railway_impact": "Maintains human command authority over AI recommendations as required by law.",
+          "presentation": "These action buttons embody human command: the controller has ultimate authority to authorize, adjust, or reject any AI recommendation.",
+          "component_id": "S15-C03"
+        },
+        {
+          "id": 4,
+          "name": "Mandatory Safety & Interlock Checklist",
+          "color_category": "ALERT",
+          "ui_type": "Interactive Safety Checklist",
+          "location": "Lower-Left Area (x: 280-1150, y: 640-950)",
+          "bbox": [
+            280,
+            640,
+            1150,
+            950
+          ],
+          "visual": "High-visibility card with 3 interactive checkboxes: 1. OHE 25kV Traction Power De-energization Confirmed, 2. SCADA Isolation Token Staged, 3. Discharge Earthing Rods Verified.",
+          "purpose": "Enforces non-negotiable physical life-safety pre-conditions before crews step on track.",
+          "functionality": "Validates that all physical electrical and signaling interlocks are satisfied before sign-off.",
+          "interaction": "Controller must click and confirm each checkbox individually.",
+          "io": "Input: 3 checkbox confirmations -> Output: Validation pass enabling sign-off button.",
+          "workflow": "Prevents catastrophic electrocution or collision accidents during maintenance.",
+          "tech": "frontend/src/components/ApprovalAuditView.tsx",
+          "backend_api": "POST /api/approval/verify-checklist",
+          "state_handled": "checklist: { oheDeenergized: boolean, scadaToken: boolean, earthingVerified: boolean }",
+          "validation_edge_cases": "All 3 checkboxes must be True; unchecking any box disables authorization immediately.",
+          "connected_components": "AlertsView (Section 18)",
+          "railway_impact": "Prevents maintenance crews from working under live 25,000-volt overhead wires.",
+          "presentation": "This safety checklist enforces physical life-safety protocols: confirming that 25kV wires are de-energized, SCADA permits issued, and earthing rods staged before dispatch.",
+          "component_id": "S15-C04"
+        },
+        {
+          "id": 5,
+          "name": "Immutable Dispatch Audit Trail Record",
+          "color_category": "CHART",
+          "ui_type": "Cryptographic Audit Ledger",
+          "location": "Lower-Right Area (x: 1170-1890, y: 640-950)",
+          "bbox": [
+            1170,
+            640,
+            1890,
+            950
+          ],
+          "visual": "Card displaying digital signature hash ('SHA256: 7f8a92b...'), Controller ID ('DEL-CTRL-409'), and timestamp ('2026-09-20 20:15:02 IST').",
+          "purpose": "Creates an immutable, legally binding digital record of the dispatch authority.",
+          "functionality": "Hashes block ID, controller badge, and timestamp into an unforgeable digital token.",
+          "interaction": "Inspect signature certificate or export signed Block Authority (Form T/409).",
+          "io": "Input: Signed authority payload -> Output: Verifiable cryptographic audit token.",
+          "workflow": "Archived permanently in divisional legal dispatch records for statutory compliance.",
+          "tech": "frontend/src/components/ApprovalAuditView.tsx",
+          "backend_api": "GET /api/approval/audit-trail",
+          "state_handled": "auditToken: string, signTimestamp: string",
+          "validation_edge_cases": "Cryptographically verifies signature on retrieval to detect any database tampering.",
+          "connected_components": "AlertsView (Section 18)",
+          "railway_impact": "Provides indisputable legal proof of proper authorization during safety inquiries.",
+          "presentation": "This audit card generates an immutable cryptographic signature for every approved possession, binding controller badge ID and timestamp into an unalterable legal record.",
+          "component_id": "S15-C05"
+        }
+      ]
+    },
+    {
+      "id": "16_verification_suite",
+      "title": "16. Verification Suite",
+      "subtitle": "6 Physical Railway Safety Laws, 12/12 Mathematical Proof Invariants & Solver Telemetry",
+      "category": "CONTROL",
+      "tab_id": "verification_suite",
+      "source_file": "frontend/src/components/AlertsView.tsx",
+      "route": "/?tab=verification_suite",
+      "screenshot_file": "docs/visual_guide/Screenshot (1567).png",
+      "secondary_screenshots": [],
+      "description": "Formal mathematical and safety verification suite executing 12 deterministic proof checks across 6 physical railway safety laws, guaranteeing that zero unsafe or headway-violating schedules can ever be generated.",
+      "explanation": {
+        "A_what_is_this": "The Verification Suite is the mathematical proof and safety certification gate of ABPS v4.0. It executes 12 rigorous automated verification checks across 6 physical railway safety laws, certifying every schedule before execution.",
+        "B_why_included": "Railway operations require mathematical guarantees, not heuristic guesses. This suite provides formal proof that the generated schedule violates zero physical constraints, maintains non-negative KPIs, and strictly enforces 10-minute train headways.",
+        "C_features_available": [
+          "12/12 Mathematical & Safety Proof Checks Passed indicator (Blueprint v2 Certification).",
+          "6 Physical Railway Safety Laws Compliance Matrix (Geospatial link, Timetable causality, Expected loss bounds, Safety overrides, Headway clearance, Shadow block integrity).",
+          "Injected Collision Detection Validator proving the safety gate reliably catches simulated errors.",
+          "Singleflight Mutex & 60-Second Recompute Lock Monitor preventing concurrent solver thrashing.",
+          "Formal Safety Certificate Export with digital verification seal."
+        ],
+        "D_how_it_works": "Runs engine/test_suite.py against the SQLite database and in-memory schedule. Asserts: 1) 100% assets mapped to valid sections, 2) Zero timetable chronology violations, 3) Criticality in [0, 1], 4) 100% safety-critical tasks locked >= 90.0, 5) Zero train collisions, 6) Coordinated blocks share identical sections. All 12 tests must pass.",
+        "E_user_interaction": "Safety officers review the 12 proof cards, verify individual execution runtimes (all <0.04s), review solver singleflight lock status, and export the formal safety certificate.",
+        "F_output": "Formally certified Safety Compliance Certificate (PASS) guaranteeing zero physical or mathematical violations.",
+        "G_cross_connections": "Acts as the final safety gate for Section 3 (Weekly Block Planner), Section 8 (Train Conflicts), and Section 17 (Human Review & Audit).",
+        "H_practical_example": "During automated testing, test [7.1] artificially injects an overlapping train conflict into the schedule. The Verification Suite immediately detects the collision, proves the validator catches violations, rejects the bad plan, and restores the certified schedule.",
+        "I_viva_defense_pitch": "The Verification Suite provides formal mathematical proof of safety. Our 12-check test suite validates 6 physical railway laws in 35 milliseconds, proving with 100% certainty that every generated schedule has zero collisions and zero headway violations.",
+        "J_technical_architecture": "Built in frontend/src/components/AlertsView.tsx. Backend test suite implemented in engine/test_suite.py. Executes 12 assertion functions in Python against SQLite database in WAL mode with 60s busy timeout."
+      },
+      "components": [
+        {
+          "id": 1,
+          "name": "12/12 Mathematical Proof Gate Header",
+          "color_category": "ALERT",
+          "ui_type": "Formal Certification Banner",
+          "location": "Top Dashboard Section (x: 280-1890, y: 70-160)",
+          "bbox": [
+            280,
+            70,
+            1890,
+            160
+          ],
+          "visual": "Green-bordered banner with large badge '12/12', displaying '12/12 MATHEMATICAL & SAFETY PROOF CHECKS PASSED · SCHEDULE FORMALLY CERTIFIED'.",
+          "purpose": "Declares formal mathematical and statutory safety certification of the active schedule.",
+          "functionality": "Summarizes completion of all 12 test assertions covering physical safety and mathematical consistency.",
+          "interaction": "Click to view full test execution logs with sub-millisecond execution times.",
+          "io": "Input: Test suite execution results -> Output: Formal certification banner.",
+          "workflow": "The final safety gate before any schedule is cleared for operational dispatch.",
+          "tech": "frontend/src/components/AlertsView.tsx, engine/test_suite.py",
+          "backend_api": "GET /api/verification/suite-status",
+          "state_handled": "suiteStatus: { totalTests: 12, passedTests: 12, certified: true }",
+          "validation_edge_cases": "Strict binary outcome: 12/12 = CERTIFIED PASS; 11/12 = IMMEDIATE SYSTEM LOCKOUT.",
+          "connected_components": "ApprovalAuditView (Section 17), CommandCenterView (Section 1)",
+          "railway_impact": "Provides absolute certainty that the schedule contains zero latent safety defects.",
+          "presentation": "This banner declares our formal certification: 12 out of 12 mathematical and safety proof checks have passed, proving the schedule is 100% collision-free.",
+          "component_id": "S16-C01"
+        },
+        {
+          "id": 2,
+          "name": "6 Physical Railway Safety Laws Matrix",
+          "color_category": "CHART",
+          "ui_type": "Proof Assertion Card Grid",
+          "location": "Upper Canvas Area (x: 280-1890, y: 180-480)",
+          "bbox": [
+            280,
+            180,
+            1890,
+            480
+          ],
+          "visual": "Grid of 6 proof cards detailing: 1. Geospatial Topology Link (100%), 2. Timetable Chronology (0 violations), 3. Criticality Formula Bounds, 4. Safety Overrides (100%), 5. Train Collision-Free (0 collisions), 6. Headway Clearance (>=10m).",
+          "purpose": "Exhibits individual verification proofs for the 6 non-negotiable physical laws of railway operation.",
+          "functionality": "Reports exact test runtimes (e.g. 0.012s, 0.018s, 0.024s) and empirical pass criteria.",
+          "interaction": "Click on any proof card to view mathematical equations and assertion code.",
+          "io": "Input: Assertion results from engine/test_suite.py -> Output: Formatted proof cards with execution times.",
+          "workflow": "Scrutinized by safety certifiers and mathematical evaluators during project defense.",
+          "tech": "frontend/src/components/AlertsView.tsx",
+          "backend_api": "GET /api/verification/proof-laws",
+          "state_handled": "safetyLaws: SafetyLawProof[]",
+          "validation_edge_cases": "All runtimes monitored; flags any test taking longer than 100ms for optimization.",
+          "connected_components": "TrainConflictsView (Section 8), TasksView (Section 2)",
+          "railway_impact": "Translates complex railway safety rules into verifiable mathematical invariants.",
+          "presentation": "These 6 cards verify our physical safety laws: geospatial mapping, timetable causality, mathematical bounds, non-negotiable overrides, and train headway clearance.",
+          "component_id": "S16-C02"
+        },
+        {
+          "id": 3,
+          "name": "Injected Collision Detection Proof Validator",
+          "color_category": "CHART",
+          "ui_type": "Adversarial Stress Test Card",
+          "location": "Mid-Left Area (x: 280-1080, y: 500-950)",
+          "bbox": [
+            280,
+            500,
+            1080,
+            950
+          ],
+          "visual": "Card detailing Test [7.1]: artificially injects a simulated train collision into schedule; confirms validator reliably caught the violation (1 violation detected in 0.016s).",
+          "purpose": "Proves adversarial robustness: verifies that the safety validator actually catches collisions when they occur.",
+          "functionality": "Runs automated negative testing, confirming that the validator is not a passive rubber-stamp.",
+          "interaction": "Inspect injected conflict parameters and validator rejection response.",
+          "io": "Input: Artificially corrupted schedule -> Output: Verified rejection receipt.",
+          "workflow": "Automated regression testing executed on every build.",
+          "tech": "frontend/src/components/AlertsView.tsx, engine/test_suite.py (Test 7.1)",
+          "backend_api": "GET /api/verification/adversarial-test",
+          "state_handled": "adversarialResult: TestResult",
+          "validation_edge_cases": "Ensures the artificially injected collision is completely cleaned up after test completion.",
+          "connected_components": "TrainConflictsView (Section 8)",
+          "railway_impact": "Proves beyond doubt that the verification gate cannot be bypassed by faulty data.",
+          "presentation": "To prove our validator isn't a passive rubber-stamp, Test 7.1 injects an artificial train collision: our validator reliably caught it in 16 milliseconds and rejected the schedule.",
+          "component_id": "S16-C03"
+        },
+        {
+          "id": 4,
+          "name": "Singleflight Mutex & 60s Recompute Lock Monitor",
+          "color_category": "CARD",
+          "ui_type": "Concurrency Telemetry Card",
+          "location": "Mid-Right Upper Area (x: 1100-1890, y: 500-720)",
+          "bbox": [
+            1100,
+            500,
+            1890,
+            720
+          ],
+          "visual": "Card displaying active Singleflight Mutex lock status, 60s busy timeout, and SQLite WAL mode telemetry.",
+          "purpose": "Prevents race conditions and solver thrashing when multiple controllers interact concurrently.",
+          "functionality": "Suppresses duplicate recompute requests and queues incoming queries smoothly.",
+          "interaction": "Inspect active lock holders and concurrent worker counts.",
+          "io": "Input: Server mutex state -> Output: Visual lock status monitor.",
+          "workflow": "Protects the backend CPU and solver resources from overload during high-traffic shifts.",
+          "tech": "backend/main.go (singleflight.Group), engine/test_suite.py",
+          "backend_api": "GET /api/system/mutex-status",
+          "state_handled": "mutexLocked: boolean, currentLockHolder: string | null",
+          "validation_edge_cases": "Enforces 60-second automatic lock release to prevent deadlocks if a solver process crashes.",
+          "connected_components": "GanttTab (Section 3)",
+          "railway_impact": "Guarantees system stability during critical shift handovers with dozens of active users.",
+          "presentation": "This monitor displays our Singleflight Mutex lock: it prevents solver thrashing by ensuring only one optimization runs at a time while serving cached results safely.",
+          "component_id": "S16-C04"
+        },
+        {
+          "id": 5,
+          "name": "Formal Safety Certificate Export & Audit Seal",
+          "color_category": "ACTION",
+          "ui_type": "Formal Export Action Card",
+          "location": "Mid-Right Lower Area (x: 1100-1890, y: 740-950)",
+          "bbox": [
+            1100,
+            740,
+            1890,
+            950
+          ],
+          "visual": "Card featuring official digital certificate seal, 'EXPORT SAFETY CERTIFICATE (PDF)', and cryptographic verification token.",
+          "purpose": "Generates the official formal safety compliance certificate for regulatory filing.",
+          "functionality": "Bundles all 12 test assertion outcomes into a tamper-evident, printable PDF dossier.",
+          "interaction": "Click 'EXPORT SAFETY CERTIFICATE (PDF)' to download official compliance document.",
+          "io": "Input: 12 passing test results -> Output: Signed PDF certificate file.",
+          "workflow": "Submitted to the Commissioner of Railway Safety (CRS) and Railway Board evaluators.",
+          "tech": "frontend/src/components/AlertsView.tsx",
+          "backend_api": "POST /api/verification/export-certificate",
+          "state_handled": "isExportingCert: boolean",
+          "validation_edge_cases": "Export disabled if any of the 12 suite checks has failed.",
+          "connected_components": "ApprovalAuditView (Section 17)",
+          "railway_impact": "Provides the formal legal authorization document required to execute block possessions.",
+          "presentation": "With all 12 checks passed, this button exports our formal Safety Compliance Certificate, signed and sealed for submission to the Commissioner of Railway Safety.",
+          "component_id": "S16-C05"
+        }
+      ]
+    },
+    {
+      "id": "17_what_if",
+      "title": "17. What-If Simulator",
       "subtitle": "Dynamic Contingency Replanning, Disruption Injection & Ripple Delay Sandbox",
       "category": "INTELLIGENCE",
       "tab_id": "what_if",
@@ -1715,7 +2589,8 @@
           "validation_edge_cases": "Ensures simulated changes cannot be published without passing L4 review (Section 17).",
           "connected_components": "GanttTab (Section 3), ApprovalAuditView (Section 17)",
           "railway_impact": "Prevents accidental disruption of live train operations during training or contingency planning.",
-          "presentation": "Our What-If simulator provides a risk-free sandbox where controllers can simulate emergency breakdowns and evaluate contingency plans before touching live operations."
+          "presentation": "Our What-If simulator provides a risk-free sandbox where controllers can simulate emergency breakdowns and evaluate contingency plans before touching live operations.",
+          "component_id": "S17-C01"
         },
         {
           "id": 2,
@@ -1741,7 +2616,8 @@
           "validation_edge_cases": "Limits shift range to +/- 360 minutes within the 24-hour cycle.",
           "connected_components": "Collision Radar Alert Banner",
           "railway_impact": "Allows dispatchers to test contingency shifts before machine crews depart their depots.",
-          "presentation": "With these controls, a dispatcher can ask: 'What happens if our track tamping machine arrives 2 hours late?' and see the immediate ripple effects."
+          "presentation": "With these controls, a dispatcher can ask: 'What happens if our track tamping machine arrives 2 hours late?' and see the immediate ripple effects.",
+          "component_id": "S17-C02"
         },
         {
           "id": 3,
@@ -1767,7 +2643,8 @@
           "validation_edge_cases": "Highlights affected train category (Superfast, Express, Freight) in priority order.",
           "connected_components": "TrainConflictsView (Section 8)",
           "railway_impact": "Prevents catastrophic misjudgments where emergency block shifts trap premium express trains.",
-          "presentation": "Here our collision radar catches the hazard immediately: shifting the block by 120 minutes violates headway for Rajdhani Express by 35 minutes, instantly blocking the shift."
+          "presentation": "Here our collision radar catches the hazard immediately: shifting the block by 120 minutes violates headway for Rajdhani Express by 35 minutes, instantly blocking the shift.",
+          "component_id": "S17-C03"
         },
         {
           "id": 4,
@@ -1793,7 +2670,8 @@
           "validation_edge_cases": "Accounts for sectional maximum permissible speed (MPS) recovery margins.",
           "connected_components": "CommandCenterView (Section 1)",
           "railway_impact": "Saves thousands of passenger delay minutes by optimizing knock-on recovery paths.",
-          "presentation": "This delay propagation chart models how a primary 45-minute delay ripples across downstream trains, giving controllers complete visibility into total system impact."
+          "presentation": "This delay propagation chart models how a primary 45-minute delay ripples across downstream trains, giving controllers complete visibility into total system impact.",
+          "component_id": "S17-C04"
         },
         {
           "id": 5,
@@ -1819,285 +2697,14 @@
           "validation_edge_cases": "Guarantees all recommended alternatives have verified >=10m headway buffer.",
           "connected_components": "GanttTab (Section 3)",
           "railway_impact": "Enables instant recovery during operational disruptions without requiring manual re-calculation.",
-          "presentation": "When an initial shift fails, our engine immediately suggests a verified alternative: 'Shift by 60 minutes instead', which clears with an 18-minute headway buffer."
+          "presentation": "When an initial shift fails, our engine immediately suggests a verified alternative: 'Shift by 60 minutes instead', which clears with an 18-minute headway buffer.",
+          "component_id": "S17-C05"
         }
       ]
     },
     {
-      "id": "13_data_ingestion",
-      "title": "13. Data Ingestion",
-      "subtitle": "Enterprise Railway Feeds (COIS, ICMS, UIMS, TMS) & Multi-Source Pipelines",
-      "category": "DATA",
-      "tab_id": "data_ingestion",
-      "source_file": "frontend/src/components/DataIngestionView.tsx",
-      "route": "/?tab=data_ingestion",
-      "screenshot_file": "docs/visual_guide/Screenshot (1562).png",
-      "secondary_screenshots": [],
-      "description": "Enterprise multi-source data ingestion pipeline integrating Indian Railways production feeds (COIS, ICMS, UIMS, TMS) with schema mapping, batch ETL, and immutable audit history.",
-      "explanation": {
-        "A_what_is_this": "Data Ingestion is the enterprise data gateway of ABPS v4.0. It manages incoming data feeds from Indian Railways production enterprise systems (COIS, ICMS, UIMS, TMS) and handles manual CSV/JSON data uploads.",
-        "B_why_included": "Railway operational data originates in disparate legacy systems—passenger timetables in ICMS, freight rakes in COIS, track defects in UIMS, and live signals in TMS. This section creates a clean, robust data ingestion bridge.",
-        "C_features_available": [
-          "Multi-Source Enterprise Pipeline Status (COIS, ICMS, UIMS, TMS) showing sync frequency and latency.",
-          "Manual File Upload & Batch ETL Trigger for offline timetable and track geometry updates.",
-          "Real-Time Pipeline Health Indicators (Sync Latency, Records Ingested, Error Rate).",
-          "Immutable Ingestion Audit History Table logging batch IDs, record counts, and schema hashes.",
-          "Automated Schema Validation Gate verifying column headers and data types prior to database commit."
-        ],
-        "D_how_it_works": "Polls enterprise REST APIs and SFTP servers at configured intervals (e.g. 5 minutes for TMS, 1 hour for UIMS). Passes raw data through a validation pipeline that checks referential integrity, formats timestamps, and writes clean records to PostgreSQL staging tables.",
-        "E_user_interaction": "Database administrators monitor live pipeline heartbeats, upload updated timetable CSV files, inspect ingestion error logs, and trigger manual synchronization jobs.",
-        "F_output": "Clean, normalized database tables feeding the entire ABPS application suite.",
-        "G_cross_connections": "Feeds normalized data into Section 14 (Data Quality) for schema integrity checks and Section 2 (Asset Backlog) for work orders.",
-        "H_practical_example": "A new seasonal timetable circular is issued by Northern Railway. The administrator uploads the revised timetable CSV via Data Ingestion; the pipeline validates 1,819 train records in 1.4 seconds and updates the master timetable database.",
-        "I_viva_defense_pitch": "Data Ingestion is our enterprise bridge to Indian Railways. It pulls real-time feeds from ICMS timetables, COIS freight rakes, and UIMS defect logs, standardizing millions of operational data points into a unified schema.",
-        "J_technical_architecture": "Built in frontend/src/components/DataIngestionView.tsx. Backend ETL pipelines implemented in Go and Python. Uses schema validators and PostgreSQL transactional staging tables."
-      },
-      "components": [
-        {
-          "id": 1,
-          "name": "Enterprise Ingestion Feed Status Ribbon",
-          "color_category": "CARD",
-          "ui_type": "Pipeline Health Ribbon",
-          "location": "Top View Header (x: 280-1890, y: 70-150)",
-          "bbox": [
-            280,
-            70,
-            1890,
-            150
-          ],
-          "visual": "Four cards showing connection health for ICMS (Passenger Timetable), COIS (Freight), UIMS (Asset Defects), and TMS (Traffic Management).",
-          "purpose": "Provides real-time visibility into the health and sync latency of external railway enterprise systems.",
-          "functionality": "Monitors API latency, last successful sync timestamp, and payload record counts.",
-          "interaction": "Click on any feed card to view connection logs and trigger an immediate re-sync.",
-          "io": "Input: System heartbeat endpoints -> Output: Live status indicator (Active, Delayed, Offline).",
-          "workflow": "Monitored 24/7 by IT system administrators in the divisional server room.",
-          "tech": "frontend/src/components/DataIngestionView.tsx",
-          "backend_api": "GET /api/ingestion/feeds",
-          "state_handled": "feedStatuses: FeedStatus[]",
-          "validation_edge_cases": "Displays amber 'High Latency' warning if sync lag exceeds 15 minutes.",
-          "connected_components": "DataQualityView (Section 14)",
-          "railway_impact": "Guarantees that block planners are always working with the latest operational timetable data.",
-          "presentation": "This ribbon monitors our 4 enterprise feeds—ICMS, COIS, UIMS, and TMS—ensuring that live train schedules and defect logs are synchronized continuously."
-        },
-        {
-          "id": 2,
-          "name": "Manual File Upload & Batch ETL Trigger",
-          "color_category": "FORM",
-          "ui_type": "Drag-and-Drop File Upload Area",
-          "location": "Mid-Left Area (x: 280-1080, y: 170-680)",
-          "bbox": [
-            280,
-            170,
-            1080,
-            680
-          ],
-          "visual": "Dashed dropzone box with cloud upload icon, 'Drag & Drop CSV / JSON Timetable Files', and 'Browse Files' button.",
-          "purpose": "Enables offline updates of train schedules, track asset geometries, and machine rosters.",
-          "functionality": "Parses uploaded CSV/JSON files, validates schema, and displays preview table before committing to database.",
-          "interaction": "Drag file into dropzone or browse; review parsed columns; click 'Process Batch Ingestion'.",
-          "io": "Input: Multipart file upload -> Output: Ingestion preview and validation summary.",
-          "workflow": "Used when receiving periodic circular updates from Headquarters or CRIS.",
-          "tech": "frontend/src/components/DataIngestionView.tsx, Lucide-React UploadCloud",
-          "backend_api": "POST /api/ingestion/upload",
-          "state_handled": "uploadProgress: number, parsedPreview: DataRow[]",
-          "validation_edge_cases": "Rejects malformed CSVs with row-and-column error highlighting.",
-          "connected_components": "DataQualityView (Section 14)",
-          "railway_impact": "Allows rapid system updates even in offline environments or air-gapped server installations.",
-          "presentation": "This upload dropzone allows administrators to import new seasonal timetables or track geometry files with instant schema validation."
-        },
-        {
-          "id": 3,
-          "name": "Immutable Ingestion Audit History Table",
-          "color_category": "CARD",
-          "ui_type": "Audit Data Table",
-          "location": "Mid-Right Area (x: 1100-1890, y: 170-950)",
-          "bbox": [
-            1100,
-            170,
-            1890,
-            950
-          ],
-          "visual": "Table listing Batch ID, Source Feed, Ingested Rows, Error Count, Hash, and Timestamp.",
-          "purpose": "Maintains an auditable, tamper-evident log of all data updates across the application lifecycle.",
-          "functionality": "Stores SHA-256 hashes of imported datasets for regulatory compliance and audit tracking.",
-          "interaction": "Click on any batch row to view ingestion error logs or roll back a corrupted batch.",
-          "io": "Input: Ingestion event records -> Output: Paginated audit history table.",
-          "workflow": "Reviewed during system integrity audits by Centre for Railway Information Systems (CRIS).",
-          "tech": "frontend/src/components/DataIngestionView.tsx",
-          "backend_api": "GET /api/ingestion/history",
-          "state_handled": "ingestionBatches: IngestionBatch[]",
-          "validation_edge_cases": "Prevents rolling back batches that are actively locked by the CP-SAT solver.",
-          "connected_components": "ModelVersionsView (Section 16)",
-          "railway_impact": "Ensures complete data lineage and traceability for all operational schedules.",
-          "presentation": "This audit table maintains an immutable log of every data ingestion batch with SHA-256 hashes, ensuring complete data traceability."
-        },
-        {
-          "id": 4,
-          "name": "Validation Pipeline Telemetry & Error Monitor",
-          "color_category": "ALERT",
-          "ui_type": "Pipeline Status Card",
-          "location": "Lower-Left Area (x: 280-1080, y: 700-950)",
-          "bbox": [
-            280,
-            700,
-            1080,
-            950
-          ],
-          "visual": "Card showing 100% Validation Pass Rate across 21 canonical datasets with zero nulls detected.",
-          "purpose": "Confirms that incoming data meets strict relational and referential integrity standards.",
-          "functionality": "Runs automated checks for missing primary keys, duplicate train numbers, and invalid section coordinates.",
-          "interaction": "Inspect validation rule definitions and error resolution logs.",
-          "io": "Input: Ingested batch -> Output: Validation scorecard.",
-          "workflow": "Automated quality gate preventing bad data from entering the production database.",
-          "tech": "frontend/src/components/DataIngestionView.tsx",
-          "backend_api": "GET /api/ingestion/validation-status",
-          "state_handled": "validationStatus: ValidationReport",
-          "validation_edge_cases": "Quarantines malformed records in an isolation table without aborting the entire batch.",
-          "connected_components": "DataQualityView (Section 14)",
-          "railway_impact": "Prevents corrupted data from causing solver crashes or schedule anomalies.",
-          "presentation": "This telemetry card proves our ingestion pipeline is hardened: all 21 canonical datasets achieve a 100% validation pass rate before entering the database."
-        }
-      ]
-    },
-    {
-      "id": "14_data_quality",
-      "title": "14. Data Quality",
-      "subtitle": "21 Canonical Datasets Audit, Zero-Null Referential Integrity & Schema Gate",
-      "category": "DATA",
-      "tab_id": "data_quality",
-      "source_file": "frontend/src/components/DataQualityView.tsx",
-      "route": "/?tab=data_quality",
-      "screenshot_file": "docs/visual_guide/Screenshot (1563).png",
-      "secondary_screenshots": [],
-      "description": "Exhaustive data quality and schema validation gate auditing 21 canonical railway operational datasets, enforcing zero-null constraints, foreign key referential integrity, and mathematical range boundaries.",
-      "explanation": {
-        "A_what_is_this": "Data Quality is the automated data validation and schema integrity laboratory of ABPS v4.0. It continuously audits all 21 canonical datasets powering the optimization engine.",
-        "B_why_included": "Garbage in, garbage out: an optimization solver fed with missing track coordinates, negative durations, or duplicate train IDs will produce invalid or dangerous schedules. This section enforces zero-compromise data standards.",
-        "C_features_available": [
-          "21 Canonical Datasets Audit Matrix with 100% Pass status across all tables.",
-          "Zero-Null Constraint Verification ensuring no missing critical attributes (lat/long, speeds, line codes).",
-          "Foreign Key Referential Integrity Checker linking assets, sections, tasks, and trains.",
-          "Numerical Range Bounds Validator (e.g. Criticality score strictly bounded in [0.0, 1.0]).",
-          "One-Click 'Trigger Full Re-Validation' action button."
-        ],
-        "D_how_it_works": "Runs automated SQL assertion queries and Great Expectations test suites across the database. Verifies primary key uniqueness, foreign key consistency, temporal causality (departure time > arrival time), and geospatial bounding boxes. Displays green pass chips for each dataset.",
-        "E_user_interaction": "Engineers review validation cards for each of the 21 datasets, inspect detailed constraint rules, and click 'Run Integrity Check' to re-verify after bulk data updates.",
-        "F_output": "Formally certified Data Quality Audit Certificate confirming 100% compliance across all 21 canonical tables.",
-        "G_cross_connections": "Validates data ingested in Section 13 (Data Ingestion) before it reaches Section 3 (Weekly Block Planner) or Section 9 (AI Risk & Priority).",
-        "H_practical_example": "A data import from an external track database contains a typo: a rail section with length -450 meters. The Data Quality gate immediately flags a range constraint violation, blocks database commit, and prevents the optimizer from crashing.",
-        "I_viva_defense_pitch": "Mathematical optimization requires pristine data. Our Data Quality gate audits all 21 canonical datasets—from train timetables to track geometry—enforcing zero-null rules and referential integrity with a 100% pass rate.",
-        "J_technical_architecture": "Implemented in frontend/src/components/DataQualityView.tsx. Validations executed via engine/test_suite.py and backend SQL assertion checks. Backed by PostgreSQL constraints and SQLite WAL mirrors."
-      },
-      "components": [
-        {
-          "id": 1,
-          "name": "21 Canonical Datasets Audit Overview",
-          "color_category": "CARD",
-          "ui_type": "Audit Summary Card",
-          "location": "Top Dashboard Section (x: 280-1890, y: 70-160)",
-          "bbox": [
-            280,
-            70,
-            1890,
-            160
-          ],
-          "visual": "Emerald banner displaying '21/21 CANONICAL DATASETS AUDITED · 100% INTEGRITY PASS' with verified seal.",
-          "purpose": "Summarizes complete data health and verifies that no corrupted datasets exist in the system.",
-          "functionality": "Aggregates validation check results across all 21 relational tables in the database.",
-          "interaction": "Click to expand full audit checklist.",
-          "io": "Input: Test suite assertion results -> Output: Overall data health certificate.",
-          "workflow": "The primary data gate checked before running weekly schedule optimization.",
-          "tech": "frontend/src/components/DataQualityView.tsx",
-          "backend_api": "GET /api/quality/summary",
-          "state_handled": "qualitySummary: QualitySummary",
-          "validation_edge_cases": "Requires all 21 datasets to pass; single failure flips banner to red.",
-          "connected_components": "DataIngestionView (Section 13), AlertsView (Section 18)",
-          "railway_impact": "Guarantees that safety algorithms never run on incomplete or corrupted data.",
-          "presentation": "This overview confirms that all 21 canonical datasets powering our solver have been audited and achieved a 100% integrity pass."
-        },
-        {
-          "id": 2,
-          "name": "Data Integrity Verification Rules Panel",
-          "color_category": "ALERT",
-          "ui_type": "Rule Specification Display",
-          "location": "Upper Canvas Area (x: 280-1890, y: 180-350)",
-          "bbox": [
-            280,
-            180,
-            1890,
-            350
-          ],
-          "visual": "Card detailing core verification checks: Zero Nulls in Primary Fields, FK Referential Integrity, Temporal Causality, and Range Bounds [0, 1].",
-          "purpose": "Displays the exact mathematical and relational assertions enforced across the database.",
-          "functionality": "Runs continuous assertions: e.g. asset coordinates non-null, train departure >= arrival, priority in [0, 100].",
-          "interaction": "Inspect individual assertion logic and failure thresholds.",
-          "io": "Input: Database schema constraints -> Output: Interactive rule specification cards.",
-          "workflow": "Serves as documentation for system auditors and software maintenance teams.",
-          "tech": "frontend/src/components/DataQualityView.tsx",
-          "backend_api": "GET /api/quality/rules",
-          "state_handled": "activeRules: QualityRule[]",
-          "validation_edge_cases": "Strict fail-safe: any violated constraint raises an unignorable alert.",
-          "connected_components": "AlertsView (Section 18)",
-          "railway_impact": "Eliminates database corruption risks that could compromise train safety.",
-          "presentation": "These 4 rule panels show our integrity checks: zero nulls in critical fields, strict foreign key links, chronological time validation, and mathematical bounds."
-        },
-        {
-          "id": 3,
-          "name": "Dataset-by-Dataset Verification Matrix",
-          "color_category": "CHART",
-          "ui_type": "Interactive Status Grid",
-          "location": "Mid Canvas Area (x: 280-1890, y: 370-750)",
-          "bbox": [
-            280,
-            370,
-            1890,
-            750
-          ],
-          "visual": "Grid of 21 dataset cards (e.g. timetable_trains, corridor_sections, asset_registry, uims_failures) with green check badges and row counts.",
-          "purpose": "Provides individual status, row counts, and last validation timestamps for every canonical table.",
-          "functionality": "Displays table name, row count (e.g. 1,819 trains, 12,000 assets), schema version, and validation latency.",
-          "interaction": "Click on any dataset card to view sample rows and schema definitions.",
-          "io": "Input: Database catalog telemetry -> Output: Interactive dataset cards.",
-          "workflow": "Used by database engineers to inspect individual table sizes and health.",
-          "tech": "frontend/src/components/DataQualityView.tsx",
-          "backend_api": "GET /api/quality/datasets",
-          "state_handled": "datasets: DatasetStatus[]",
-          "validation_edge_cases": "Highlights empty tables or tables with schema mismatches.",
-          "connected_components": "DataIngestionView (Section 13)",
-          "railway_impact": "Provides complete transparency into the size and health of all railway operational data.",
-          "presentation": "This matrix breaks down all 21 tables—including our 1,819 trains and 12,000 assets—confirming that each table is populated and 100% valid."
-        },
-        {
-          "id": 4,
-          "name": "Trigger Re-Validation & Anomaly Export Controls",
-          "color_category": "ACTION",
-          "ui_type": "Action Toolbar",
-          "location": "Bottom Area (x: 280-1890, y: 770-950)",
-          "bbox": [
-            280,
-            770,
-            1890,
-            950
-          ],
-          "visual": "Toolbar with emerald 'TRIGGER FULL RE-VALIDATION' button, 'Download Audit Report', and 'Export Schema Definition'.",
-          "purpose": "Allows users to execute an on-demand integrity audit across all 21 tables in real time.",
-          "functionality": "Invokes backend test suite assertions; updates UI status badges within 1.5 seconds.",
-          "interaction": "Click 'TRIGGER FULL RE-VALIDATION' to execute the test suite.",
-          "io": "Input: Click event -> Output: Re-validated database status and updated report.",
-          "workflow": "Executed after completing any major data ingestion or timetable update.",
-          "tech": "frontend/src/components/DataQualityView.tsx",
-          "backend_api": "POST /api/quality/revalidate",
-          "state_handled": "isValidating: boolean, lastValidationTimestamp: string",
-          "validation_edge_cases": "Disables button during active re-validation to prevent duplicate concurrent runs.",
-          "connected_components": "AlertsView (Section 18)",
-          "railway_impact": "Provides instant confidence that data is clean before running multi-hour block allocations.",
-          "presentation": "Clicking this button runs our automated verification suite across all 21 tables in 1.5 seconds, guaranteeing pristine data before scheduling begins."
-        }
-      ]
-    },
-    {
-      "id": "15_scenario_explorer",
-      "title": "15. Scenario Explorer",
+      "id": "18_scenario_explorer",
+      "title": "18. Scenario Explorer",
       "subtitle": "29 Operational Disruptions Benchmark Suite & Robustness Coverage Matrix",
       "category": "DATA",
       "tab_id": "scenario_explorer",
@@ -2149,7 +2756,8 @@
           "validation_edge_cases": "Ensures all 29 scenarios have passing test certificates.",
           "connected_components": "AnomalyHandlingView (Section 5)",
           "railway_impact": "Guarantees proven resilience against unpredictable operational emergencies.",
-          "presentation": "This header confirms that our system has been benchmarked against all 29 operational disruption scenarios with an average recovery time of just 2.1 seconds."
+          "presentation": "This header confirms that our system has been benchmarked against all 29 operational disruption scenarios with an average recovery time of just 2.1 seconds.",
+          "component_id": "S18-C01"
         },
         {
           "id": 2,
@@ -2175,7 +2783,8 @@
           "validation_edge_cases": "Updates dynamically when new custom scenarios are executed.",
           "connected_components": "CommandCenterView (Section 1)",
           "railway_impact": "Demonstrates measurable resilience across dozens of operational variables.",
-          "presentation": "These 8 metric tiles quantify our stress-test performance: 94.2% punctuality preserved and a 42% reduction in secondary delay during major disruptions."
+          "presentation": "These 8 metric tiles quantify our stress-test performance: 94.2% punctuality preserved and a 42% reduction in secondary delay during major disruptions.",
+          "component_id": "S18-C02"
         },
         {
           "id": 3,
@@ -2201,7 +2810,8 @@
           "validation_edge_cases": "Displays clear search button when query text is entered.",
           "connected_components": "29 Scenarios Coverage Matrix",
           "railway_impact": "Allows rapid access to specialized contingency procedures.",
-          "presentation": "This filter bar categorizes our 29 scenarios into Weather, Mechanical, Signaling, and Traffic disruptions, allowing instant retrieval."
+          "presentation": "This filter bar categorizes our 29 scenarios into Weather, Mechanical, Signaling, and Traffic disruptions, allowing instant retrieval.",
+          "component_id": "S18-C03"
         },
         {
           "id": 4,
@@ -2227,7 +2837,8 @@
           "validation_edge_cases": "Maintains 100% test pass status across all 29 cards.",
           "connected_components": "AnomalyHandlingView (Section 5)",
           "railway_impact": "Standardizes emergency response procedures across all divisional control rooms.",
-          "presentation": "This matrix displays our full library of 29 scenarios, allowing controllers to click any card to inspect simulated disruption parameters."
+          "presentation": "This matrix displays our full library of 29 scenarios, allowing controllers to click any card to inspect simulated disruption parameters.",
+          "component_id": "S18-C04"
         },
         {
           "id": 5,
@@ -2253,493 +2864,8 @@
           "validation_edge_cases": "Runs in sandbox without altering live operational data.",
           "connected_components": "WhatIfSimulatorView (Section 12)",
           "railway_impact": "Ensures timetables are tested against severe disruptions before they ever go live.",
-          "presentation": "Clicking simulate executes the stress-test in memory, proving that our optimizer recovers timetable flow within 2 seconds without human panic."
-        }
-      ]
-    },
-    {
-      "id": "16_model_versions",
-      "title": "16. Model / Data Versions",
-      "subtitle": "Model Registry, Hyperparameter Lineage & 6 Candidate Benchmark Leaderboard",
-      "category": "DATA",
-      "tab_id": "model_versions",
-      "source_file": "frontend/src/components/ModelVersionsView.tsx",
-      "route": "/?tab=model_versions",
-      "screenshot_file": "docs/visual_guide/Screenshot (1565).png",
-      "secondary_screenshots": [],
-      "description": "Enterprise MLOps model registry and data versioning repository managing machine learning model lifecycle, hyperparameter lineage, and comparative benchmark leaderboards across 6 candidate algorithms.",
-      "explanation": {
-        "A_what_is_this": "Model / Data Versions is the MLOps governance and data provenance repository of ABPS v4.0. It tracks the training lineage, hyperparameters, validation benchmarks, and active production status of all AI models.",
-        "B_why_included": "Railway operations require strict auditability. Regulators must know exactly which model version made a prediction, what training dataset it used, and how its precision was validated before it was promoted to production.",
-        "C_features_available": [
-          "Model Governance & MLflow Registry Banner displaying active Champion (XGBoost v2.4).",
-          "6 Candidate Benchmark Leaderboard comparing XGBoost, LightGBM, CatBoost, Random Forest, Extra Trees, and Logistic Regression.",
-          "Hyperparameter Lineage Table showing learning rates, tree depths, and regularization values.",
-          "Data Version Snapshot Hash (SHA-256) tracking exact training dataset splits.",
-          "Champion Promotion Action Button for zero-downtime model hot-swapping."
-        ],
-        "D_how_it_works": "Integrates with MLflow model registry conventions. Retraining scripts evaluate candidate algorithms on holdout operational datasets, logging PR-AUC, ROC-AUC, Brier score, and inference latency. The best-performing model is promoted to 'Champion' status and hot-swapped into the live inference pipeline.",
-        "E_user_interaction": "Data scientists and safety auditors review model leaderboard metrics, inspect hyperparameter differences, verify dataset snapshot hashes, and promote validated challenger models to production.",
-        "F_output": "Complete MLOps governance manifest and auditable training lineage certificates for regulatory compliance.",
-        "G_cross_connections": "Manages the model utilized in Section 9 (AI Risk & Priority) and records dataset versions from Section 13 (Data Ingestion).",
-        "H_practical_example": "A new training cycle completes on 15,000 recent operational records. CatBoost achieves PR-AUC of 0.3110 versus XGBoost's 0.3138. The registry maintains XGBoost as Champion, documenting why CatBoost was kept in shadow challenger mode.",
-        "I_viva_defense_pitch": "Model / Data Versions brings enterprise MLOps governance to Indian Railways. We maintain full lineage of our training data and benchmark 6 candidate algorithms, ensuring that only the highest-precision model ever guides live operations.",
-        "J_technical_architecture": "Built in frontend/src/components/ModelVersionsView.tsx. Model metadata stored in engine/ml_model_meta.json. MLOps pipeline automated via engine/retrain_from_operational_data.py."
-      },
-      "components": [
-        {
-          "id": 1,
-          "name": "Model Governance & Registry Banner",
-          "color_category": "CARD",
-          "ui_type": "MLOps Status Banner",
-          "location": "Top Dashboard Section (x: 280-1890, y: 70-140)",
-          "bbox": [
-            280,
-            70,
-            1890,
-            140
-          ],
-          "visual": "Banner displaying active Champion model: 'XGBoost v2.4 Champion' with deployment timestamp, MLflow run ID, and production status badge.",
-          "purpose": "Identifies the currently deployed machine learning model serving live inference requests.",
-          "functionality": "Displays model version, deployment date, framework version (xgboost 2.0.3), and artifact hash.",
-          "interaction": "Click to view full MLflow deployment manifest.",
-          "io": "Input: Production model pointer -> Output: Deployed model metadata banner.",
-          "workflow": "Audited during software release sign-offs.",
-          "tech": "frontend/src/components/ModelVersionsView.tsx",
-          "backend_api": "GET /api/models/active",
-          "state_handled": "activeModelMeta: ModelMeta",
-          "validation_edge_cases": "Ensures only one model can hold the 'Champion' production pointer at any time.",
-          "connected_components": "AIPriorityView (Section 9)",
-          "railway_impact": "Guarantees full accountability for every automated AI recommendation.",
-          "presentation": "This banner displays our active production model—XGBoost v2.4 Champion—with its unique MLflow run ID and verified deployment timestamp."
-        },
-        {
-          "id": 2,
-          "name": "6 Candidate Benchmark Leaderboard",
-          "color_category": "CHART",
-          "ui_type": "Comparative Leaderboard Table",
-          "location": "Upper Canvas Area (x: 280-1890, y: 160-380)",
-          "bbox": [
-            280,
-            160,
-            1890,
-            380
-          ],
-          "visual": "Table ranking 6 models: XGBoost (1st), CatBoost (2nd), LightGBM (3rd), Random Forest (4th), Extra Trees (5th), Logistic Regression (6th) by PR-AUC and Brier Score.",
-          "purpose": "Compares candidate model performance on identical holdout validation datasets.",
-          "functionality": "Sorts models by precision metrics; highlights top-performing champion with gold trophy badge.",
-          "interaction": "Click on any model row to inspect its precision-recall curve and confusion matrix.",
-          "io": "Input: Benchmark evaluation records -> Output: Ranked model leaderboard.",
-          "workflow": "Informs data science teams whether a retrained challenger model is ready for promotion.",
-          "tech": "frontend/src/components/ModelVersionsView.tsx",
-          "backend_api": "GET /api/models/benchmarks",
-          "state_handled": "leaderboard: ModelBenchmark[]",
-          "validation_edge_cases": "Requires Brier score < 0.10 and PR-AUC > 0.30 for champion consideration.",
-          "connected_components": "AIPriorityView (Section 9)",
-          "railway_impact": "Ensures the system continuously uses the most accurate predictive algorithm available.",
-          "presentation": "Our leaderboard benchmarks 6 candidate algorithms: XGBoost wins with a PR-AUC of 0.3138 and a Brier score of 0.0812, outperforming Random Forest and CatBoost."
-        },
-        {
-          "id": 3,
-          "name": "Hyperparameter Lineage & Dataset Splits",
-          "color_category": "CARD",
-          "ui_type": "Parameter Configuration Table",
-          "location": "Mid-Left Area (x: 280-1080, y: 400-950)",
-          "bbox": [
-            280,
-            400,
-            1080,
-            950
-          ],
-          "visual": "Table displaying exact hyperparameter configurations: max_depth=5, learning_rate=0.05, n_estimators=250, subsample=0.8, and 80/20 train/test split.",
-          "purpose": "Maintains reproducible records of exact training configurations for every model build.",
-          "functionality": "Enables 100% reproducible model training runs from scratch.",
-          "interaction": "Inspect hyperparameter tuning history and grid search logs.",
-          "io": "Input: Model configuration JSON -> Output: Formatted parameter table.",
-          "workflow": "Required documentation for formal government software safety certifications.",
-          "tech": "frontend/src/components/ModelVersionsView.tsx",
-          "backend_api": "GET /api/models/:id/hyperparameters",
-          "state_handled": "hyperparameters: Record<string, any>",
-          "validation_edge_cases": "Flags any hyperparameter configurations that led to overfitting on training data.",
-          "connected_components": "AIPriorityView (Section 9)",
-          "railway_impact": "Guarantees algorithmic reproducibility across independent external audits.",
-          "presentation": "This table documents the exact hyperparameters and 80/20 training splits used for XGBoost v2.4, ensuring 100% reproducibility."
-        },
-        {
-          "id": 4,
-          "name": "Champion Promotion & Hot-Swap Action Button",
-          "color_category": "ACTION",
-          "ui_type": "Administrative Action Trigger",
-          "location": "Mid-Right Upper Area (x: 1100-1890, y: 400-650)",
-          "bbox": [
-            1100,
-            400,
-            1890,
-            650
-          ],
-          "visual": "Card with emerald 'PROMOTE CHALLENGER TO CHAMPION' button, rollback trigger, and confirmation dialog.",
-          "purpose": "Enables zero-downtime hot-swapping of production machine learning models.",
-          "functionality": "Atomically updates production model pointer in Redis cache without restarting backend servers.",
-          "interaction": "Click button; confirm administrative credentials; live inference seamlessly switches to new model.",
-          "io": "Input: Challenger model ID -> Output: Atomic promotion to Champion.",
-          "workflow": "Executed by Lead AI Engineer during scheduled model update releases.",
-          "tech": "frontend/src/components/ModelVersionsView.tsx",
-          "backend_api": "POST /api/models/promote",
-          "state_handled": "isPromoting: boolean, promotionError: string | null",
-          "validation_edge_cases": "Requires dual-controller sign-off to prevent unauthorized model deployment.",
-          "connected_components": "ApprovalAuditView (Section 17)",
-          "railway_impact": "Allows continuous AI improvement without requiring disruptive system maintenance windows.",
-          "presentation": "This action button enables zero-downtime model promotion: when a challenger outperforms the champion, it can be promoted atomically in under 50 milliseconds."
-        },
-        {
-          "id": 5,
-          "name": "Data Version Snapshot Hash Card",
-          "color_category": "NAV",
-          "ui_type": "Data Provenance Card",
-          "location": "Mid-Right Lower Area (x: 1100-1890, y: 670-950)",
-          "bbox": [
-            1100,
-            670,
-            1890,
-            950
-          ],
-          "visual": "Card displaying SHA-256 dataset hash ('e3b0c44298fc1c14...'), record count (15,000), and timestamp.",
-          "purpose": "Links each trained model to the exact immutable snapshot of operational data it learned from.",
-          "functionality": "Stores cryptographic hashes of training datasets to prevent data tampering or leakage.",
-          "interaction": "Click to copy hash or download data manifest.",
-          "io": "Input: Dataset file hash -> Output: Cryptographic verification card.",
-          "workflow": "Essential for regulatory compliance under Indian Railways cybersecurity bylaws.",
-          "tech": "frontend/src/components/ModelVersionsView.tsx",
-          "backend_api": "GET /api/models/:id/data-hash",
-          "state_handled": "dataHash: string",
-          "validation_edge_cases": "Verifies that dataset hash matches the manifest recorded in the training run.",
-          "connected_components": "DataIngestionView (Section 13)",
-          "railway_impact": "Guarantees complete forensic auditability for every predictive model.",
-          "presentation": "This card displays the SHA-256 hash of our 15,000-record training dataset, proving complete data provenance and tamper-evident lineage."
-        }
-      ]
-    },
-    {
-      "id": "17_approvals_audit",
-      "title": "17. Human Review & Audit",
-      "subtitle": "L4 Divisional Traffic Controller Sign-Off Stepper & Immutable Dispatch Audit Trail",
-      "category": "CONTROL",
-      "tab_id": "approvals_audit",
-      "source_file": "frontend/src/components/ApprovalAuditView.tsx",
-      "route": "/?tab=approvals_audit",
-      "screenshot_file": "docs/visual_guide/Screenshot (1566).png",
-      "secondary_screenshots": [],
-      "description": "Human-in-the-loop regulatory control center providing Level 4 (L4) Divisional Traffic Controller review, digital sign-off steppers, pre-condition safety checklists, and immutable dispatch audit trails.",
-      "explanation": {
-        "A_what_is_this": "Human Review & Audit is the statutory human-in-the-loop governance center of ABPS v4.0. It ensures that no automated AI or solver-generated block schedule can be dispatched without explicit sign-off by a certified Level 4 (L4) Divisional Traffic Controller.",
-        "B_why_included": "Under Indian Railways General Rules (GR), automated algorithms cannot legally execute line closures without human authorization. This screen enforces statutory human accountability, ensuring full compliance with railway safety law.",
-        "C_features_available": [
-          "L4 Controller Review Stepper (Review Allocation -> Verify Headway -> Electrical Interlocks -> Final Sign-Off).",
-          "Pending Block Allocation Review Card detailing corridor, lines affected, and machine transit routes.",
-          "Controller Override & Modification Controls (Adjust Window, Request Re-Solve, Approve, Reject).",
-          "Mandatory Safety Checklist (OHE 25kV de-energization confirmed, SCADA power token held, discharge rods staged).",
-          "Immutable Audit Trail recording controller badge ID, digital signature hash, and millisecond timestamp."
-        ],
-        "D_how_it_works": "Presents proposed CP-SAT block allocations in an auditable review queue. The controller steps through mandatory safety verifications. Upon clicking 'Authorize Possession', the system validates controller credentials, signs the dispatch token with an SHA-256 hash, and broadcasts the approved possession to field stations.",
-        "E_user_interaction": "The L4 Chief Controller reviews pending block windows, checks traction power isolation readiness, clicks the 3 safety checklist checkboxes, enters approval remarks, and signs off with a secure authorization PIN.",
-        "F_output": "Legally binding, digitally signed Block Possession Authority (Form T/409) dispatched to Sectional Controllers and Station Masters.",
-        "G_cross_connections": "Authorizes blocks created in Section 3 (Weekly Block Planner) and logs sign-offs verified by Section 18 (Verification Suite).",
-        "H_practical_example": "The Chief Controller reviews Block BLK_DH01_042 (2-hour tamping at KM 142/8). The controller checks the electrical interlock box, verifies that the 10-minute headway buffer to Rajdhani Express is +14 minutes, enters badge ID 'DEL-CTRL-409', and signs the block authority.",
-        "I_viva_defense_pitch": "AI recommends, but humans decide. This screen enforces statutory Level 4 human-in-the-loop governance: no machine moves and no line closes until an authorized Divisional Traffic Controller verifies the safety checklists and signs the digital authority.",
-        "J_technical_architecture": "Built in frontend/src/components/ApprovalAuditView.tsx. Enforces multi-stage state transitions. Signs tokens via backend/main.go and commits immutable audit logs to PostgreSQL dispatch_audit table."
-      },
-      "components": [
-        {
-          "id": 1,
-          "name": "L4 Controller Multi-Stage Review Stepper",
-          "color_category": "NAV",
-          "ui_type": "Progress Stepper",
-          "location": "Top View Header (x: 280-1890, y: 70-180)",
-          "bbox": [
-            280,
-            70,
-            1890,
-            180
-          ],
-          "visual": "Horizontal 4-step progress stepper: 1. Schedule Inspection (Green check), 2. Headway Audit (Green check), 3. Safety Interlocks (Active Blue), 4. Digital Sign-Off (Pending).",
-          "purpose": "Guides the Chief Controller through mandatory statutory verification stages in rigid sequential order.",
-          "functionality": "Enforces workflow gate: Step 4 cannot be unlocked until Steps 1, 2, and 3 are formally completed.",
-          "interaction": "Step through review stages by clicking 'Next Stage' after completing required checks.",
-          "io": "Input: Controller checklist responses -> Output: Unlocked downstream approval stages.",
-          "workflow": "The mandatory pre-condition for dispatching any maintenance possession.",
-          "tech": "frontend/src/components/ApprovalAuditView.tsx",
-          "backend_api": "GET /api/approval/stepper-status",
-          "state_handled": "currentStep: number (1 to 4), isStepValid: boolean",
-          "validation_edge_cases": "Prevents skipping steps or proceeding with unacknowledged safety warnings.",
-          "connected_components": "Mandatory Safety Checklist, Digital Sign-Off Card",
-          "railway_impact": "Enforces strict adherence to Indian Railways standard operating procedures (SOP).",
-          "presentation": "This 4-stage stepper guides the controller through mandatory verification steps, ensuring that safety checklists cannot be bypassed before sign-off."
-        },
-        {
-          "id": 2,
-          "name": "Pending Block Allocation Review Card",
-          "color_category": "CARD",
-          "ui_type": "Structured Review Card",
-          "location": "Mid-Left Area (x: 280-1150, y: 200-620)",
-          "bbox": [
-            280,
-            200,
-            1150,
-            620
-          ],
-          "visual": "Card displaying detailed block specifications: Block ID ('BLK_DH01_042'), Corridor ('NDLS-GZB'), Line ('UP Mainline'), Window ('02:30 -> 04:30'), and Bundled Departments ('TRD + ENG').",
-          "purpose": "Presents all operational parameters of the pending block allocation for human verification.",
-          "functionality": "Displays bundled tasks, allocated track lines, required machinery, and station jurisdiction limits.",
-          "interaction": "Inspect machine transit details or request schedule adjustment.",
-          "io": "Input: Selected block allocation -> Output: Comprehensive operational review card.",
-          "workflow": "The primary review object inspected by the Sectional Train Controller.",
-          "tech": "frontend/src/components/ApprovalAuditView.tsx",
-          "backend_api": "GET /api/approval/pending/:id",
-          "state_handled": "pendingBlockDetail: BlockDetail | null",
-          "validation_edge_cases": "Displays warning badge if machine transit crosses busy suburban passenger tracks.",
-          "connected_components": "GanttTab (Section 3), TasksView (Section 2)",
-          "railway_impact": "Gives controllers complete situational clarity before executing disruptive line closures.",
-          "presentation": "This review card presents all block parameters—corridor section, affected track line, bundled tasks, and station limits—for human controller verification."
-        },
-        {
-          "id": 3,
-          "name": "Controller Decision & Override Controls",
-          "color_category": "ACTION",
-          "ui_type": "Decision Action Button Array",
-          "location": "Mid-Right Area (x: 1170-1890, y: 200-620)",
-          "bbox": [
-            1170,
-            200,
-            1890,
-            620
-          ],
-          "visual": "Control panel featuring green 'AUTHORIZE & DISPATCH', red 'REJECT WITH REMARKS', and blue 'REQUEST ADJUSTMENT' buttons.",
-          "purpose": "Empowers the human controller with final, unappealable decision authority over automated recommendations.",
-          "functionality": "Captures controller decision, prompts for mandatory remarks, and commits decision to audit log.",
-          "interaction": "Click 'AUTHORIZE & DISPATCH' to sign off, or 'REJECT' to return task to backlog.",
-          "io": "Input: Controller button click and remarks -> Output: Executed dispatch authority or rejection notice.",
-          "workflow": "The definitive moment of decision in the block planning lifecycle.",
-          "tech": "frontend/src/components/ApprovalAuditView.tsx",
-          "backend_api": "POST /api/approval/decide",
-          "state_handled": "decisionRemarks: string, isSubmittingDecision: boolean",
-          "validation_edge_cases": "Requires minimum 10-character remarks if rejecting or modifying an allocation.",
-          "connected_components": "Immutable Audit Trail, GanttTab (Section 3)",
-          "railway_impact": "Maintains human command authority over AI recommendations as required by law.",
-          "presentation": "These action buttons embody human command: the controller has ultimate authority to authorize, adjust, or reject any AI recommendation."
-        },
-        {
-          "id": 4,
-          "name": "Mandatory Safety & Interlock Checklist",
-          "color_category": "ALERT",
-          "ui_type": "Interactive Safety Checklist",
-          "location": "Lower-Left Area (x: 280-1150, y: 640-950)",
-          "bbox": [
-            280,
-            640,
-            1150,
-            950
-          ],
-          "visual": "High-visibility card with 3 interactive checkboxes: 1. OHE 25kV Traction Power De-energization Confirmed, 2. SCADA Isolation Token Staged, 3. Discharge Earthing Rods Verified.",
-          "purpose": "Enforces non-negotiable physical life-safety pre-conditions before crews step on track.",
-          "functionality": "Validates that all physical electrical and signaling interlocks are satisfied before sign-off.",
-          "interaction": "Controller must click and confirm each checkbox individually.",
-          "io": "Input: 3 checkbox confirmations -> Output: Validation pass enabling sign-off button.",
-          "workflow": "Prevents catastrophic electrocution or collision accidents during maintenance.",
-          "tech": "frontend/src/components/ApprovalAuditView.tsx",
-          "backend_api": "POST /api/approval/verify-checklist",
-          "state_handled": "checklist: { oheDeenergized: boolean, scadaToken: boolean, earthingVerified: boolean }",
-          "validation_edge_cases": "All 3 checkboxes must be True; unchecking any box disables authorization immediately.",
-          "connected_components": "AlertsView (Section 18)",
-          "railway_impact": "Prevents maintenance crews from working under live 25,000-volt overhead wires.",
-          "presentation": "This safety checklist enforces physical life-safety protocols: confirming that 25kV wires are de-energized, SCADA permits issued, and earthing rods staged before dispatch."
-        },
-        {
-          "id": 5,
-          "name": "Immutable Dispatch Audit Trail Record",
-          "color_category": "CHART",
-          "ui_type": "Cryptographic Audit Ledger",
-          "location": "Lower-Right Area (x: 1170-1890, y: 640-950)",
-          "bbox": [
-            1170,
-            640,
-            1890,
-            950
-          ],
-          "visual": "Card displaying digital signature hash ('SHA256: 7f8a92b...'), Controller ID ('DEL-CTRL-409'), and timestamp ('2026-09-20 20:15:02 IST').",
-          "purpose": "Creates an immutable, legally binding digital record of the dispatch authority.",
-          "functionality": "Hashes block ID, controller badge, and timestamp into an unforgeable digital token.",
-          "interaction": "Inspect signature certificate or export signed Block Authority (Form T/409).",
-          "io": "Input: Signed authority payload -> Output: Verifiable cryptographic audit token.",
-          "workflow": "Archived permanently in divisional legal dispatch records for statutory compliance.",
-          "tech": "frontend/src/components/ApprovalAuditView.tsx",
-          "backend_api": "GET /api/approval/audit-trail",
-          "state_handled": "auditToken: string, signTimestamp: string",
-          "validation_edge_cases": "Cryptographically verifies signature on retrieval to detect any database tampering.",
-          "connected_components": "AlertsView (Section 18)",
-          "railway_impact": "Provides indisputable legal proof of proper authorization during safety inquiries.",
-          "presentation": "This audit card generates an immutable cryptographic signature for every approved possession, binding controller badge ID and timestamp into an unalterable legal record."
-        }
-      ]
-    },
-    {
-      "id": "18_verification_suite",
-      "title": "18. Verification Suite",
-      "subtitle": "6 Physical Railway Safety Laws, 12/12 Mathematical Proof Invariants & Solver Telemetry",
-      "category": "CONTROL",
-      "tab_id": "verification_suite",
-      "source_file": "frontend/src/components/AlertsView.tsx",
-      "route": "/?tab=verification_suite",
-      "screenshot_file": "docs/visual_guide/Screenshot (1567).png",
-      "secondary_screenshots": [],
-      "description": "Formal mathematical and safety verification suite executing 12 deterministic proof checks across 6 physical railway safety laws, guaranteeing that zero unsafe or headway-violating schedules can ever be generated.",
-      "explanation": {
-        "A_what_is_this": "The Verification Suite is the mathematical proof and safety certification gate of ABPS v4.0. It executes 12 rigorous automated verification checks across 6 physical railway safety laws, certifying every schedule before execution.",
-        "B_why_included": "Railway operations require mathematical guarantees, not heuristic guesses. This suite provides formal proof that the generated schedule violates zero physical constraints, maintains non-negative KPIs, and strictly enforces 10-minute train headways.",
-        "C_features_available": [
-          "12/12 Mathematical & Safety Proof Checks Passed indicator (Blueprint v2 Certification).",
-          "6 Physical Railway Safety Laws Compliance Matrix (Geospatial link, Timetable causality, Expected loss bounds, Safety overrides, Headway clearance, Shadow block integrity).",
-          "Injected Collision Detection Validator proving the safety gate reliably catches simulated errors.",
-          "Singleflight Mutex & 60-Second Recompute Lock Monitor preventing concurrent solver thrashing.",
-          "Formal Safety Certificate Export with digital verification seal."
-        ],
-        "D_how_it_works": "Runs engine/test_suite.py against the SQLite database and in-memory schedule. Asserts: 1) 100% assets mapped to valid sections, 2) Zero timetable chronology violations, 3) Criticality in [0, 1], 4) 100% safety-critical tasks locked >= 90.0, 5) Zero train collisions, 6) Coordinated blocks share identical sections. All 12 tests must pass.",
-        "E_user_interaction": "Safety officers review the 12 proof cards, verify individual execution runtimes (all <0.04s), review solver singleflight lock status, and export the formal safety certificate.",
-        "F_output": "Formally certified Safety Compliance Certificate (PASS) guaranteeing zero physical or mathematical violations.",
-        "G_cross_connections": "Acts as the final safety gate for Section 3 (Weekly Block Planner), Section 8 (Train Conflicts), and Section 17 (Human Review & Audit).",
-        "H_practical_example": "During automated testing, test [7.1] artificially injects an overlapping train conflict into the schedule. The Verification Suite immediately detects the collision, proves the validator catches violations, rejects the bad plan, and restores the certified schedule.",
-        "I_viva_defense_pitch": "The Verification Suite provides formal mathematical proof of safety. Our 12-check test suite validates 6 physical railway laws in 35 milliseconds, proving with 100% certainty that every generated schedule has zero collisions and zero headway violations.",
-        "J_technical_architecture": "Built in frontend/src/components/AlertsView.tsx. Backend test suite implemented in engine/test_suite.py. Executes 12 assertion functions in Python against SQLite database in WAL mode with 60s busy timeout."
-      },
-      "components": [
-        {
-          "id": 1,
-          "name": "12/12 Mathematical Proof Gate Header",
-          "color_category": "ALERT",
-          "ui_type": "Formal Certification Banner",
-          "location": "Top Dashboard Section (x: 280-1890, y: 70-160)",
-          "bbox": [
-            280,
-            70,
-            1890,
-            160
-          ],
-          "visual": "Green-bordered banner with large badge '12/12', displaying '12/12 MATHEMATICAL & SAFETY PROOF CHECKS PASSED · SCHEDULE FORMALLY CERTIFIED'.",
-          "purpose": "Declares formal mathematical and statutory safety certification of the active schedule.",
-          "functionality": "Summarizes completion of all 12 test assertions covering physical safety and mathematical consistency.",
-          "interaction": "Click to view full test execution logs with sub-millisecond execution times.",
-          "io": "Input: Test suite execution results -> Output: Formal certification banner.",
-          "workflow": "The final safety gate before any schedule is cleared for operational dispatch.",
-          "tech": "frontend/src/components/AlertsView.tsx, engine/test_suite.py",
-          "backend_api": "GET /api/verification/suite-status",
-          "state_handled": "suiteStatus: { totalTests: 12, passedTests: 12, certified: true }",
-          "validation_edge_cases": "Strict binary outcome: 12/12 = CERTIFIED PASS; 11/12 = IMMEDIATE SYSTEM LOCKOUT.",
-          "connected_components": "ApprovalAuditView (Section 17), CommandCenterView (Section 1)",
-          "railway_impact": "Provides absolute certainty that the schedule contains zero latent safety defects.",
-          "presentation": "This banner declares our formal certification: 12 out of 12 mathematical and safety proof checks have passed, proving the schedule is 100% collision-free."
-        },
-        {
-          "id": 2,
-          "name": "6 Physical Railway Safety Laws Matrix",
-          "color_category": "CHART",
-          "ui_type": "Proof Assertion Card Grid",
-          "location": "Upper Canvas Area (x: 280-1890, y: 180-480)",
-          "bbox": [
-            280,
-            180,
-            1890,
-            480
-          ],
-          "visual": "Grid of 6 proof cards detailing: 1. Geospatial Topology Link (100%), 2. Timetable Chronology (0 violations), 3. Criticality Formula Bounds, 4. Safety Overrides (100%), 5. Train Collision-Free (0 collisions), 6. Headway Clearance (>=10m).",
-          "purpose": "Exhibits individual verification proofs for the 6 non-negotiable physical laws of railway operation.",
-          "functionality": "Reports exact test runtimes (e.g. 0.012s, 0.018s, 0.024s) and empirical pass criteria.",
-          "interaction": "Click on any proof card to view mathematical equations and assertion code.",
-          "io": "Input: Assertion results from engine/test_suite.py -> Output: Formatted proof cards with execution times.",
-          "workflow": "Scrutinized by safety certifiers and mathematical evaluators during project defense.",
-          "tech": "frontend/src/components/AlertsView.tsx",
-          "backend_api": "GET /api/verification/proof-laws",
-          "state_handled": "safetyLaws: SafetyLawProof[]",
-          "validation_edge_cases": "All runtimes monitored; flags any test taking longer than 100ms for optimization.",
-          "connected_components": "TrainConflictsView (Section 8), TasksView (Section 2)",
-          "railway_impact": "Translates complex railway safety rules into verifiable mathematical invariants.",
-          "presentation": "These 6 cards verify our physical safety laws: geospatial mapping, timetable causality, mathematical bounds, non-negotiable overrides, and train headway clearance."
-        },
-        {
-          "id": 3,
-          "name": "Injected Collision Detection Proof Validator",
-          "color_category": "CHART",
-          "ui_type": "Adversarial Stress Test Card",
-          "location": "Mid-Left Area (x: 280-1080, y: 500-950)",
-          "bbox": [
-            280,
-            500,
-            1080,
-            950
-          ],
-          "visual": "Card detailing Test [7.1]: artificially injects a simulated train collision into schedule; confirms validator reliably caught the violation (1 violation detected in 0.016s).",
-          "purpose": "Proves adversarial robustness: verifies that the safety validator actually catches collisions when they occur.",
-          "functionality": "Runs automated negative testing, confirming that the validator is not a passive rubber-stamp.",
-          "interaction": "Inspect injected conflict parameters and validator rejection response.",
-          "io": "Input: Artificially corrupted schedule -> Output: Verified rejection receipt.",
-          "workflow": "Automated regression testing executed on every build.",
-          "tech": "frontend/src/components/AlertsView.tsx, engine/test_suite.py (Test 7.1)",
-          "backend_api": "GET /api/verification/adversarial-test",
-          "state_handled": "adversarialResult: TestResult",
-          "validation_edge_cases": "Ensures the artificially injected collision is completely cleaned up after test completion.",
-          "connected_components": "TrainConflictsView (Section 8)",
-          "railway_impact": "Proves beyond doubt that the verification gate cannot be bypassed by faulty data.",
-          "presentation": "To prove our validator isn't a passive rubber-stamp, Test 7.1 injects an artificial train collision: our validator reliably caught it in 16 milliseconds and rejected the schedule."
-        },
-        {
-          "id": 4,
-          "name": "Singleflight Mutex & 60s Recompute Lock Monitor",
-          "color_category": "CARD",
-          "ui_type": "Concurrency Telemetry Card",
-          "location": "Mid-Right Upper Area (x: 1100-1890, y: 500-720)",
-          "bbox": [
-            1100,
-            500,
-            1890,
-            720
-          ],
-          "visual": "Card displaying active Singleflight Mutex lock status, 60s busy timeout, and SQLite WAL mode telemetry.",
-          "purpose": "Prevents race conditions and solver thrashing when multiple controllers interact concurrently.",
-          "functionality": "Suppresses duplicate recompute requests and queues incoming queries smoothly.",
-          "interaction": "Inspect active lock holders and concurrent worker counts.",
-          "io": "Input: Server mutex state -> Output: Visual lock status monitor.",
-          "workflow": "Protects the backend CPU and solver resources from overload during high-traffic shifts.",
-          "tech": "backend/main.go (singleflight.Group), engine/test_suite.py",
-          "backend_api": "GET /api/system/mutex-status",
-          "state_handled": "mutexLocked: boolean, currentLockHolder: string | null",
-          "validation_edge_cases": "Enforces 60-second automatic lock release to prevent deadlocks if a solver process crashes.",
-          "connected_components": "GanttTab (Section 3)",
-          "railway_impact": "Guarantees system stability during critical shift handovers with dozens of active users.",
-          "presentation": "This monitor displays our Singleflight Mutex lock: it prevents solver thrashing by ensuring only one optimization runs at a time while serving cached results safely."
-        },
-        {
-          "id": 5,
-          "name": "Formal Safety Certificate Export & Audit Seal",
-          "color_category": "ACTION",
-          "ui_type": "Formal Export Action Card",
-          "location": "Mid-Right Lower Area (x: 1100-1890, y: 740-950)",
-          "bbox": [
-            1100,
-            740,
-            1890,
-            950
-          ],
-          "visual": "Card featuring official digital certificate seal, 'EXPORT SAFETY CERTIFICATE (PDF)', and cryptographic verification token.",
-          "purpose": "Generates the official formal safety compliance certificate for regulatory filing.",
-          "functionality": "Bundles all 12 test assertion outcomes into a tamper-evident, printable PDF dossier.",
-          "interaction": "Click 'EXPORT SAFETY CERTIFICATE (PDF)' to download official compliance document.",
-          "io": "Input: 12 passing test results -> Output: Signed PDF certificate file.",
-          "workflow": "Submitted to the Commissioner of Railway Safety (CRS) and Railway Board evaluators.",
-          "tech": "frontend/src/components/AlertsView.tsx",
-          "backend_api": "POST /api/verification/export-certificate",
-          "state_handled": "isExportingCert: boolean",
-          "validation_edge_cases": "Export disabled if any of the 12 suite checks has failed.",
-          "connected_components": "ApprovalAuditView (Section 17)",
-          "railway_impact": "Provides the formal legal authorization document required to execute block possessions.",
-          "presentation": "With all 12 checks passed, this button exports our formal Safety Compliance Certificate, signed and sealed for submission to the Commissioner of Railway Safety."
+          "presentation": "Clicking simulate executes the stress-test in memory, proving that our optimizer recovers timetable flow within 2 seconds without human panic.",
+          "component_id": "S18-C05"
         }
       ]
     }

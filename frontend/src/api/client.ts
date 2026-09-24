@@ -66,6 +66,7 @@ export interface ScheduledTask {
   assigned_start_time: string;
   assigned_end_time: string;
   combined_group_id?: string;
+  block_id?: string;
   affects_line?: string;
   lat?: number;
   lon?: number;

@@ -255,10 +255,21 @@ def get_metrics():
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
     engine = get_db_engine()
-    page = request.args.get('page', type=int)
-    page_size = request.args.get('page_size', request.args.get('limit', 50), type=int)
+    try:
+        raw_page = request.args.get('page')
+        page = int(raw_page) if raw_page is not None else 1
+    except (TypeError, ValueError):
+        page = 1
+
+    try:
+        raw_limit = request.args.get('page_size') or request.args.get('limit') or 25
+        page_size = int(raw_limit)
+    except (TypeError, ValueError):
+        page_size = 25
+    page_size = max(1, min(page_size, 500))
+
     dept = request.args.get('department')
-    sec = request.args.get('section_id')
+    sec = request.args.get('section') or request.args.get('section_id')
     crit = request.args.get('criticality')
     status = request.args.get('status')
     search = request.args.get('search')
@@ -268,21 +279,29 @@ def get_tasks():
     params = {}
     if overdue_only and str(overdue_only).lower() in ('true', '1', 'yes'):
         where.append("mt.due_date < '2026-09-15'")
-    if dept:
-        where.append("a.department = :dept")
-        params["dept"] = dept
-    if sec:
-        where.append("s.section_id = :sec")
-        params["sec"] = sec
-    if crit:
-        where.append("mt.criticality = :crit")
-        params["crit"] = crit
-    if status:
-        where.append("mt.status = :st")
-        params["st"] = status
+    if dept and dept != 'ALL':
+        d = dept.upper().strip()
+        if d in ('TRACTION', 'TRD', 'TDMS'):
+            where.append("UPPER(a.department) IN ('TRD', 'TRACTION')")
+        elif d in ('ENGINEERING', 'TRACK', 'TMS'):
+            where.append("UPPER(a.department) IN ('ENGINEERING', 'TRACK')")
+        elif d in ('S&T', 'SIGNALLING', 'SIGNAL', 'SMMS'):
+            where.append("UPPER(a.department) IN ('S&T', 'SIGNALLING')")
+        else:
+            where.append("UPPER(a.department) = :dept")
+            params["dept"] = d
+    if sec and sec != 'ALL':
+        where.append("(s.section_id = :sec OR a.section_id = :sec)")
+        params["sec"] = sec.strip()
+    if crit and crit != 'ALL':
+        where.append("UPPER(mt.criticality) = :crit")
+        params["crit"] = crit.upper().strip()
+    if status and status != 'ALL':
+        where.append("UPPER(mt.status) = :st")
+        params["st"] = status.upper().strip()
     if search:
         where.append("(mt.task_id LIKE :srch OR a.asset_id LIKE :srch OR mt.task_type LIKE :srch)")
-        params["srch"] = f"%{search}%"
+        params["srch"] = f"%{search.strip()}%"
         
     where_sql = ("WHERE " + " AND ".join(where)) if where else ""
     
@@ -299,12 +318,8 @@ def get_tasks():
             total = conn.execute(sql_text(count_q), params).scalar() or 0
 
         # Paginated data query
-        limit_sql = ""
-        if page is not None:
-            offset = (page - 1) * page_size
-            limit_sql = f"LIMIT {page_size} OFFSET {offset}"
-        elif request.args.get('limit') is not None or request.args.get('page_size') is not None:
-            limit_sql = f"LIMIT {page_size}"
+        offset = max(0, (page - 1) * page_size)
+        limit_sql = f"LIMIT {page_size} OFFSET {offset}"
 
         q = f"""
             SELECT mt.task_id, mt.task_type, mt.criticality, mt.duration_minutes, mt.priority_score,
@@ -327,11 +342,16 @@ def get_tasks():
         df['days_overdue'] = diff_days.fillna(0.0).round(1).clip(lower=0.0)
         df['is_overdue'] = df['days_overdue'] > 0
         tasks = df.to_dict(orient='records')
-        res = {"status": "success", "data": tasks}
-        if page is not None or request.args.get('limit') is not None:
-            res["total"] = int(total)
-            res["page"] = page or 1
-            res["page_size"] = page_size
+        total_pages = max(1, math.ceil(total / page_size)) if total > 0 else 1
+        res = {
+            "status": "success",
+            "data": tasks,
+            "total": int(total),
+            "page": page,
+            "page_size": page_size,
+            "total_pages": total_pages,
+            "count": len(tasks)
+        }
         return jsonify(res)
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -1901,7 +1921,7 @@ def get_sections_risk():
             ) ac ON s.section_id = ac.section_id
             LEFT JOIN (
                 SELECT section_id, COUNT(*) as open_tasks,
-                       SUM(CASE WHEN criticality = 'Critical' THEN 1 ELSE 0 END) as critical_tasks,
+                       SUM(CASE WHEN UPPER(criticality) = 'CRITICAL' THEN 1 ELSE 0 END) as critical_tasks,
                        AVG(priority_score) as avg_priority
                 FROM maintenance_tasks GROUP BY section_id
             ) tc ON s.section_id = tc.section_id
@@ -2065,7 +2085,7 @@ def api_dashboard_summary():
     engine = get_db_engine()
     try:
         with engine.connect() as conn:
-            critical_tasks = conn.execute(sql_text("SELECT COUNT(*) FROM maintenance_tasks WHERE criticality = 'Critical' AND status = 'Pending'")).scalar() or 0
+            critical_tasks = conn.execute(sql_text("SELECT COUNT(*) FROM maintenance_tasks WHERE UPPER(criticality) = 'CRITICAL'")).scalar() or 0
             safety_overrides = conn.execute(sql_text("SELECT COUNT(*) FROM ml_predictions WHERE safety_override = 1")).scalar() or 0
             open_failures = conn.execute(sql_text("SELECT COUNT(*) FROM failure_event_history")).scalar() or 0
             planned_blocks = conn.execute(sql_text("SELECT COUNT(*) FROM optimized_blocks")).scalar() or 0

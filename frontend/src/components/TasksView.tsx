@@ -60,16 +60,27 @@ export const TasksView: React.FC<TasksViewProps> = ({ schedule = [], sections = 
 
   const fallbackToSchedule = () => {
     let filtered = schedule;
-    if (deptFilter !== 'ALL') filtered = filtered.filter(t => t.department === deptFilter);
-    if (critFilter !== 'ALL') filtered = filtered.filter(t => t.criticality === critFilter);
+    if (deptFilter !== 'ALL') {
+      const d = deptFilter.toUpperCase();
+      filtered = filtered.filter(t => {
+        const td = (t.department || '').toUpperCase();
+        if (d === 'TRACTION' || d === 'TRD') return td === 'TRD' || td === 'TRACTION';
+        if (d === 'ENGINEERING') return td === 'ENGINEERING';
+        if (d === 'S&T') return td === 'S&T' || td === 'SIGNALLING';
+        return td === d;
+      });
+    }
+    if (critFilter !== 'ALL') {
+      filtered = filtered.filter(t => (t.criticality || '').toUpperCase() === critFilter.toUpperCase());
+    }
     if (secFilter !== 'ALL') filtered = filtered.filter(t => t.section_id === secFilter);
     if (overdueOnly) filtered = filtered.filter(t => t.is_overdue || (t.days_overdue && t.days_overdue > 0));
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(t =>
-        t.task_id.toLowerCase().includes(q) ||
-        t.task_type.toLowerCase().includes(q) ||
-        t.asset_id.toLowerCase().includes(q)
+        (t.task_id || '').toLowerCase().includes(q) ||
+        (t.task_type || '').toLowerCase().includes(q) ||
+        (t.asset_id || '').toLowerCase().includes(q)
       );
     }
     setTotal(filtered.length);

@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"encoding/csv"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -29,7 +30,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var db *sql.DB
+var (
+	db         *sql.DB
+	errProxied = errors.New("request proxied to python engine")
+)
 
 type SubmitTaskRequest struct {
 	Department       string `json:"department"`
@@ -186,6 +190,9 @@ func main() {
 		AppName:      "Automatic Block Planning API v2.0",
 		ServerHeader: "Go-Fiber-Secure",
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			if errors.Is(err, errProxied) {
+				return nil
+			}
 			code := fiber.StatusInternalServerError
 			msg := "An error occurred while processing the request."
 			if e, ok := err.(*fiber.Error); ok {
@@ -1652,7 +1659,10 @@ var allowlistedTables = map[string]bool{
 func requireDB(c *fiber.Ctx, proxyPath string) error {
 	if db == nil || db.Ping() != nil {
 		if proxyPath != "" {
-			return proxyHTTP(c, proxyPath)
+			if err := proxyHTTP(c, proxyPath); err != nil {
+				return err
+			}
+			return errProxied
 		}
 		return fiber.NewError(fiber.StatusServiceUnavailable, "database unreachable")
 	}
@@ -1988,7 +1998,7 @@ func handleGetDashboardSummary(c *fiber.Ctx) error {
 		return n
 	}
 	return c.JSON(fiber.Map{"status": "success", "source": "buffer-go", "data": fiber.Map{
-		"critical_tasks":      get("SELECT COUNT(*) FROM maintenance_tasks WHERE criticality = 'Critical' AND status = 'Pending'"),
+		"critical_tasks":      get("SELECT COUNT(*) FROM maintenance_tasks WHERE UPPER(criticality) = 'CRITICAL'"),
 		"safety_overrides":    get("SELECT COUNT(*) FROM ml_predictions WHERE safety_override = 1"),
 		"open_failures":       get("SELECT COUNT(*) FROM failure_event_history"),
 		"planned_blocks":      get("SELECT COUNT(*) FROM optimized_blocks"),

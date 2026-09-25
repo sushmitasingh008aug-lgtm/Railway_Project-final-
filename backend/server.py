@@ -647,9 +647,15 @@ def submit_task():
 @app.route('/api/tasks/generate', methods=['POST'])
 def generate_maintenance_task():
     data = request.json or {}
-    dept = data.get("department", "").strip()
-    if dept in ("TRD", "Traction / TRD", "Traction"):
+    dept_raw = data.get("department", "").strip()
+    if dept_raw.upper() in ("TRD", "TRACTION / TRD", "TRACTION", "OHE"):
         dept = "Traction"
+    elif dept_raw.upper() in ("ENGINEERING", "CIVIL", "CIVIL ENGINEERING"):
+        dept = "Engineering"
+    elif dept_raw.upper() in ("S&T", "SIGNAL", "TELECOM"):
+        dept = "S&T"
+    else:
+        dept = dept_raw
     valid_depts = {"Engineering", "Traction", "S&T"}
     if dept not in valid_depts:
         return jsonify({"status": "error", "message": "Invalid department. Allowed: Engineering, Traction (TRD), S&T"}), 400
@@ -2190,7 +2196,7 @@ def api_anomaly_detail(scenario):
 def api_get_assets():
     engine = get_db_engine()
     page = int(request.args.get('page', 1))
-    page_size = int(request.args.get('page_size', 50))
+    page_size = int(request.args.get('limit') or request.args.get('page_size', 50))
     dept = request.args.get('department')
     sec = request.args.get('section_id')
     crit = request.args.get('criticality')
@@ -2199,8 +2205,15 @@ def api_get_assets():
     where = []
     params = {}
     if dept:
-        where.append("department = :dept")
-        params["dept"] = dept
+        dept_norm = dept.strip().upper()
+        if 'ENG' in dept_norm or 'CIVIL' in dept_norm:
+            dept_norm = 'ENGINEERING'
+        elif 'TRAC' in dept_norm or 'TRD' in dept_norm or 'OHE' in dept_norm:
+            dept_norm = 'TRD'
+        elif 'S&T' in dept_norm or 'SIGNAL' in dept_norm or 'TELECOM' in dept_norm:
+            dept_norm = 'S&T'
+        where.append("UPPER(department) = :dept")
+        params["dept"] = dept_norm
     if sec:
         where.append("section_id = :sec")
         params["sec"] = sec
@@ -2208,8 +2221,9 @@ def api_get_assets():
         where.append("criticality_class = :crit")
         params["crit"] = crit
     if search:
-        where.append("(asset_id LIKE :q OR asset_number LIKE :q OR asset_type LIKE :q)")
-        params["q"] = f"%{search}%"
+        search_pat = f"%{search.strip().upper()}%"
+        where.append("(UPPER(asset_id) LIKE :q OR UPPER(asset_number) LIKE :q OR UPPER(asset_type) LIKE :q OR UPPER(asset_subtype) LIKE :q OR UPPER(section_id) LIKE :q)")
+        params["q"] = search_pat
         
     where_sql = ("WHERE " + " AND ".join(where)) if where else ""
     offset = (page - 1) * page_size

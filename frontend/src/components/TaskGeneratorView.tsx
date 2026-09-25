@@ -37,6 +37,19 @@ import {
 
 export type DepartmentType = 'Engineering' | 'Traction' | 'S&T';
 
+export const mapDepartmentToDb = (dept: DepartmentType): string => {
+  switch (dept) {
+    case 'Engineering':
+      return 'ENGINEERING';
+    case 'Traction':
+      return 'TRD';
+    case 'S&T':
+      return 'S&T';
+    default:
+      return 'ENGINEERING';
+  }
+};
+
 interface TaskGeneratorViewProps {
   initialAssetId?: string | null;
   onNavigate?: (view: any) => void;
@@ -135,10 +148,25 @@ export const TaskGeneratorView: React.FC<TaskGeneratorViewProps> = ({
   // Asset search & selection
   const [assetSearchQuery, setAssetSearchQuery] = useState('');
   const [assetSearchResults, setAssetSearchResults] = useState<AssetItem[]>([]);
+  const [recommendedAssets, setRecommendedAssets] = useState<AssetItem[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchingAssets, setIsSearchingAssets] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<AssetItem | null>(null);
   const [showMapPicker, setShowMapPicker] = useState(false);
   const [mapAssets, setMapAssets] = useState<AssetItem[]>([]);
+  const [isLoadingMapAssets, setIsLoadingMapAssets] = useState(false);
+  const [mapFilterQuery, setMapFilterQuery] = useState('');
+
+  const displayedMapAssets = useMemo(() => {
+    if (!mapFilterQuery.trim()) return mapAssets;
+    const q = mapFilterQuery.trim().toUpperCase();
+    return mapAssets.filter(a => 
+      (a.asset_id && a.asset_id.toUpperCase().includes(q)) ||
+      (a.asset_number && a.asset_number.toUpperCase().includes(q)) ||
+      (a.section_id && a.section_id.toUpperCase().includes(q)) ||
+      (a.asset_type && a.asset_type.toUpperCase().includes(q))
+    );
+  }, [mapAssets, mapFilterQuery]);
 
   // Task form inputs
   const [taskType, setTaskType] = useState<string>('Rail Replacement');
@@ -207,8 +235,11 @@ export const TaskGeneratorView: React.FC<TaskGeneratorViewProps> = ({
           if (res.data?.data) {
             const ast = res.data.data;
             setSelectedAsset(ast);
-            if (ast.department && (ast.department === 'Engineering' || ast.department === 'Traction' || ast.department === 'S&T')) {
-              handleDepartmentChange(ast.department as DepartmentType);
+            if (ast.department) {
+              const d = ast.department.toUpperCase();
+              if (d.includes('ENG') || d.includes('CIVIL')) handleDepartmentChange('Engineering');
+              else if (d.includes('TRD') || d.includes('TRACTION') || d.includes('OHE')) handleDepartmentChange('Traction');
+              else if (d.includes('S&T') || d.includes('SIGNAL')) handleDepartmentChange('S&T');
             }
           }
         })
@@ -216,16 +247,29 @@ export const TaskGeneratorView: React.FC<TaskGeneratorViewProps> = ({
     }
   }, [initialAssetId]);
 
+  // Load recommended top-priority assets whenever department changes
+  useEffect(() => {
+    const dbDept = mapDepartmentToDb(department);
+    apiClient.get<any>(`/assets?department=${dbDept}&limit=12`)
+      .then(res => {
+        if (res.data?.data) {
+          setRecommendedAssets(res.data.data);
+        }
+      })
+      .catch(err => console.warn('Could not load recommended assets:', err));
+  }, [department]);
+
   // Asset search debounce
   useEffect(() => {
-    if (!assetSearchQuery || assetSearchQuery.trim().length < 2) {
+    if (!assetSearchQuery || assetSearchQuery.trim().length === 0) {
       setAssetSearchResults([]);
       return;
     }
     const timer = setTimeout(async () => {
       setIsSearchingAssets(true);
       try {
-        const res = await apiClient.get<any>(`/assets?search=${encodeURIComponent(assetSearchQuery)}&department=${department}&limit=12`);
+        const dbDept = mapDepartmentToDb(department);
+        const res = await apiClient.get<any>(`/assets?search=${encodeURIComponent(assetSearchQuery.trim())}&department=${dbDept}&limit=20`);
         if (res.data?.data) {
           setAssetSearchResults(res.data.data);
         }
@@ -234,20 +278,25 @@ export const TaskGeneratorView: React.FC<TaskGeneratorViewProps> = ({
       } finally {
         setIsSearchingAssets(false);
       }
-    }, 250);
+    }, 200);
     return () => clearTimeout(timer);
   }, [assetSearchQuery, department]);
 
-  // Load map assets for picker
+  // Load map assets for picker whenever modal opens or department changes
   useEffect(() => {
-    if (showMapPicker && mapAssets.length === 0) {
-      apiClient.get<any>(`/assets?department=${department}&limit=50`)
+    if (showMapPicker) {
+      setIsLoadingMapAssets(true);
+      const dbDept = mapDepartmentToDb(department);
+      apiClient.get<any>(`/assets?department=${dbDept}&limit=200`)
         .then(res => {
-          if (res.data?.data) setMapAssets(res.data.data);
+          if (res.data?.data) {
+            setMapAssets(res.data.data);
+          }
         })
-        .catch(() => null);
+        .catch(err => console.warn('Could not load map assets:', err))
+        .finally(() => setIsLoadingMapAssets(false));
     }
-  }, [showMapPicker, department, mapAssets.length]);
+  }, [showMapPicker, department]);
 
   // Toggle stage selection
   const toggleStage = (stage: string) => {
@@ -482,54 +531,152 @@ export const TaskGeneratorView: React.FC<TaskGeneratorViewProps> = ({
               </button>
             </div>
 
-            {/* Search Input */}
+            {/* Search Input with Clear & State Indicators */}
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-3 text-[#98A2B3]" />
               <input
                 type="text"
                 value={assetSearchQuery}
-                onChange={(e) => setAssetSearchQuery(e.target.value)}
-                placeholder="Search assets by ID, type, station, section (e.g. TRK-ENG, SEC-DH-03, NDLS)..."
-                className="w-full pl-9 pr-4 py-2.5 text-xs border border-[#D0D5DD] rounded-xl focus:ring-2 focus:ring-[#D96F13] focus:border-[#D96F13] outline-none"
+                onFocus={() => setIsDropdownOpen(true)}
+                onChange={(e) => {
+                  setAssetSearchQuery(e.target.value);
+                  setIsDropdownOpen(true);
+                }}
+                placeholder={`Search ${department} assets by ID, type (e.g. TRK, RAIL, OHE, POINT), section (e.g. SEC-DH-01)...`}
+                className="w-full pl-9 pr-24 py-2.5 text-xs border border-[#D0D5DD] rounded-xl focus:ring-2 focus:ring-[#D96F13] focus:border-[#D96F13] outline-none"
               />
-              {isSearchingAssets && (
-                <span className="absolute right-3 top-2.5 text-[10px] text-[#98A2B3] font-semibold">
-                  Searching...
-                </span>
-              )}
+              <div className="absolute right-3 top-2.5 flex items-center gap-2">
+                {isSearchingAssets && (
+                  <span className="text-[10px] text-[#98A2B3] font-semibold animate-pulse">
+                    Searching...
+                  </span>
+                )}
+                {assetSearchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAssetSearchQuery('');
+                      setAssetSearchResults([]);
+                    }}
+                    className="p-0.5 rounded text-[#98A2B3] hover:text-[#344054]"
+                    title="Clear search"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="p-0.5 text-[#98A2B3] hover:text-[#344054]"
+                  title="Toggle asset list"
+                >
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
             </div>
 
-            {/* Search Results Dropdown */}
-            {assetSearchResults.length > 0 && !selectedAsset && (
-              <div className="border border-[#E6E6E6] rounded-xl max-h-56 overflow-y-auto divide-y divide-[#F2F4F7] bg-white shadow-md">
-                {assetSearchResults.map((ast) => (
+            {/* Quick Priority Select Chips */}
+            {!selectedAsset && recommendedAssets.length > 0 && (
+              <div className="space-y-1.5 pt-0.5">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="font-bold text-[#667085] flex items-center gap-1">
+                    <Sparkles className="w-3.5 h-3.5 text-[#D96F13]" />
+                    <span>Quick Select Urgent {department} Assets:</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="text-[#D96F13] hover:underline font-semibold"
+                  >
+                    {isDropdownOpen ? 'Hide List' : 'Browse All Suggestions'}
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {recommendedAssets.slice(0, 4).map((ast) => (
+                    <button
+                      key={ast.asset_id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedAsset(ast);
+                        setIsDropdownOpen(false);
+                      }}
+                      className="px-2.5 py-1 text-[11px] font-semibold bg-[#FAFAF9] hover:bg-[#FFF4ED] hover:border-[#FFD9B3] hover:text-[#D92D20] border border-[#E6E6E6] rounded-lg transition flex items-center gap-1.5 text-[#344054]"
+                    >
+                      <span className="font-mono font-bold text-[#7F1418]">{ast.asset_id}</span>
+                      <span className="text-[#667085]">({ast.asset_type})</span>
+                      <span className="text-[10px] font-bold text-[#D92D20] bg-red-50 px-1 rounded">
+                        Cond: {ast.condition_score}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Search Results / Recommended Dropdown */}
+            {(isDropdownOpen || assetSearchResults.length > 0) && !selectedAsset && (
+              <div className="border border-[#E6E6E6] rounded-xl max-h-64 overflow-y-auto divide-y divide-[#F2F4F7] bg-white shadow-xl z-20">
+                <div className="p-2 bg-[#F9FAFB] text-[11px] font-bold text-[#475467] flex items-center justify-between border-b border-[#EAECF0]">
+                  <span>
+                    {assetSearchQuery.trim().length > 0
+                      ? `Search Results (${assetSearchResults.length} found)`
+                      : `Top Priority ${department} Assets (${recommendedAssets.length} available)`}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="text-[#98A2B3] hover:text-[#344054] text-[10px] font-semibold"
+                  >
+                    Close ✕
+                  </button>
+                </div>
+                {(assetSearchQuery.trim().length > 0 ? assetSearchResults : recommendedAssets).map((ast) => (
                   <div
                     key={ast.asset_id}
                     onClick={() => {
                       setSelectedAsset(ast);
+                      setIsDropdownOpen(false);
                       setAssetSearchResults([]);
                       setAssetSearchQuery('');
                     }}
-                    className="p-2.5 hover:bg-[#F9FAFB] cursor-pointer text-xs flex items-center justify-between"
+                    className="p-2.5 hover:bg-[#FFF8F0] cursor-pointer text-xs flex items-center justify-between transition-colors"
                   >
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-[#1F2937] font-mono">{ast.asset_id}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-[#475467] font-medium">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-[#475467] font-semibold">
                           {ast.asset_type}
                         </span>
-                        <span className="text-[10px] text-[#667085]">{ast.section_id}</span>
+                        <span className="text-[10px] text-[#667085] font-medium">{ast.section_id}</span>
+                        {ast.criticality_class && (
+                          <span className={`text-[9px] px-1.5 py-0.2 rounded font-bold ${
+                            ast.criticality_class === 'CRITICAL' ? 'bg-red-100 text-red-700' :
+                            ast.criticality_class === 'HIGH' ? 'bg-amber-100 text-amber-700' :
+                            'bg-blue-100 text-blue-700'
+                          }`}>
+                            {ast.criticality_class}
+                          </span>
+                        )}
                       </div>
                       <p className="text-[11px] text-[#667085] mt-0.5">
-                        Chainage {ast.chainage_km} km · Health Index: {ast.health_index}%
+                        Chainage {ast.chainage_km} km · Subtype: {ast.asset_subtype || 'Standard'} · Health Index: {ast.health_index}%
                       </p>
                     </div>
 
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#ECFDF3] text-[#027A48]">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                      ast.condition_score < 25 ? 'bg-[#FEE4E2] text-[#D92D20]' :
+                      ast.condition_score < 50 ? 'bg-[#FEF0C7] text-[#B54708]' :
+                      'bg-[#ECFDF3] text-[#027A48]'
+                    }`}>
                       Cond: {ast.condition_score}/100
                     </span>
                   </div>
                 ))}
+                {(assetSearchQuery.trim().length > 0 ? assetSearchResults : recommendedAssets).length === 0 && (
+                  <div className="p-4 text-center text-xs text-[#667085]">
+                    No assets found matching your criteria. Try adjusting the search query or select another department.
+                  </div>
+                )}
               </div>
             )}
 
@@ -1239,29 +1386,77 @@ export const TaskGeneratorView: React.FC<TaskGeneratorViewProps> = ({
       {/* GIS Leaflet Map Asset Picker Modal */}
       {showMapPicker && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-4xl h-[650px] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-[#E6E6E6]">
+          <div className="bg-white w-full max-w-5xl h-[700px] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-[#E6E6E6]">
             {/* Modal Header */}
-            <div className="p-4 border-b border-[#E6E6E6] flex items-center justify-between bg-[#FAFAF9]">
+            <div className="p-4 border-b border-[#E6E6E6] flex flex-wrap items-center justify-between gap-3 bg-[#FAFAF9]">
               <div className="flex items-center gap-2">
                 <MapIcon className="w-5 h-5 text-[#D96F13]" />
-                <h3 className="text-sm font-extrabold text-[#1F2937]">
-                  GIS Asset Selector — Select Asset From Map
-                </h3>
+                <div>
+                  <h3 className="text-sm font-extrabold text-[#1F2937]">
+                    GIS Asset Selector — Select Asset From Map
+                  </h3>
+                  <span className="text-[11px] text-[#667085]">
+                    Interactive spatial selection along the Delhi – Kolkata / UP trunk network
+                  </span>
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowMapPicker(false)}
-                className="p-1 rounded-lg text-[#667085] hover:bg-gray-100"
-              >
-                <X className="w-5 h-5" />
-              </button>
+
+              {/* In-Modal Department Switcher */}
+              <div className="flex items-center gap-1 bg-[#F2F4F7] p-1 rounded-xl">
+                {(['Engineering', 'Traction', 'S&T'] as DepartmentType[]).map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => handleDepartmentChange(d)}
+                    className={`px-3 py-1 text-xs font-bold rounded-lg transition ${
+                      department === d
+                        ? 'bg-white text-[#7F1418] shadow-sm'
+                        : 'text-[#667085] hover:text-[#1F2937]'
+                    }`}
+                  >
+                    {d === 'Engineering' ? 'Civil P-Way' : d === 'Traction' ? 'TRD / OHE' : 'Signal & Telecom'}
+                  </button>
+                ))}
+              </div>
+
+              {/* In-Modal Search Input */}
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#98A2B3]" />
+                  <input
+                    type="text"
+                    value={mapFilterQuery}
+                    onChange={(e) => setMapFilterQuery(e.target.value)}
+                    placeholder="Filter on map (ID, section)..."
+                    className="pl-8 pr-3 py-1.5 text-xs border border-[#D0D5DD] rounded-lg focus:ring-2 focus:ring-[#D96F13] outline-none w-48 bg-white"
+                  />
+                  {mapFilterQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setMapFilterQuery('')}
+                      className="absolute right-2 top-2 text-[#98A2B3] hover:text-[#344054]"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowMapPicker(false)}
+                  className="p-1.5 rounded-lg text-[#667085] hover:bg-gray-200 transition"
+                  title="Close Map"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Map Container */}
             <div className="flex-1 relative">
               <MapContainer
-                center={[28.6139, 77.2090]}
-                zoom={9}
+                center={[25.8, 82.5]}
+                zoom={6}
                 className="w-full h-full"
               >
                 <TileLayer
@@ -1269,10 +1464,11 @@ export const TaskGeneratorView: React.FC<TaskGeneratorViewProps> = ({
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                {mapAssets.map((ast) => {
+                {displayedMapAssets.map((ast) => {
                   const lat = ast.location_lat || (28.5 + (parseInt(ast.asset_id.replace(/\D/g, '') || '0') % 100) * 0.005);
                   const lon = ast.location_lon || (77.1 + (parseInt(ast.asset_id.replace(/\D/g, '') || '0') % 100) * 0.005);
-                  const isCrit = ast.condition_score && ast.condition_score < 40;
+                  const isCrit = ast.condition_score && ast.condition_score < 30;
+                  const isMed = ast.condition_score && ast.condition_score >= 30 && ast.condition_score < 60;
 
                   return (
                     <CircleMarker
@@ -1280,8 +1476,8 @@ export const TaskGeneratorView: React.FC<TaskGeneratorViewProps> = ({
                       center={[lat, lon]}
                       radius={isCrit ? 8 : 6}
                       pathOptions={{
-                        color: isCrit ? '#D92D20' : '#D96F13',
-                        fillColor: isCrit ? '#FEE4E2' : '#FFF3E6',
+                        color: isCrit ? '#D92D20' : isMed ? '#D96F13' : '#027A48',
+                        fillColor: isCrit ? '#FEE4E2' : isMed ? '#FFF3E6' : '#ECFDF3',
                         fillOpacity: 0.9,
                         weight: 2
                       }}
@@ -1294,14 +1490,21 @@ export const TaskGeneratorView: React.FC<TaskGeneratorViewProps> = ({
                     >
                       <Tooltip>
                         <div className="text-xs space-y-1">
-                          <span className="font-extrabold text-sm block font-mono text-[#7F1418]">
-                            {ast.asset_id}
-                          </span>
+                          <div className="flex items-center gap-1.5 justify-between">
+                            <span className="font-extrabold text-sm block font-mono text-[#7F1418]">
+                              {ast.asset_id}
+                            </span>
+                            <span className="text-[10px] px-1 py-0.5 rounded bg-gray-100 font-bold">
+                              {ast.criticality_class || 'HIGH'}
+                            </span>
+                          </div>
                           <span className="block text-[#475467] font-semibold">{ast.asset_type}</span>
-                          <span className="block text-[#667085]">Section: {ast.section_id}</span>
-                          <span className="block text-[#027A48] font-bold">Condition: {ast.condition_score}/100</span>
-                          <span className="text-[10px] text-[#D96F13] font-bold block pt-1">
-                            Click to select for Task Generator
+                          <span className="block text-[#667085]">Section: {ast.section_id} · Km {ast.chainage_km}</span>
+                          <span className={`block font-bold ${isCrit ? 'text-[#D92D20]' : isMed ? 'text-[#D96F13]' : 'text-[#027A48]'}`}>
+                            Condition Score: {ast.condition_score}/100
+                          </span>
+                          <span className="text-[10px] text-[#D96F13] font-bold block pt-1 border-t border-gray-100">
+                            👉 Click node to select asset
                           </span>
                         </div>
                       </Tooltip>
@@ -1312,9 +1515,32 @@ export const TaskGeneratorView: React.FC<TaskGeneratorViewProps> = ({
             </div>
 
             {/* Modal Footer */}
-            <div className="p-3 bg-[#FAFAF9] border-t border-[#E6E6E6] text-xs text-[#667085] flex items-center justify-between">
-              <span>Click any asset node along the corridor track to populate task details.</span>
-              <span className="font-semibold text-[#1F2937]">{mapAssets.length} Assets Loaded</span>
+            <div className="p-3 bg-[#FAFAF9] border-t border-[#E6E6E6] text-xs text-[#667085] flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-4">
+                <span>Click any asset node to select.</span>
+                <div className="flex items-center gap-3 text-[11px]">
+                  <span className="flex items-center gap-1">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#D92D20] inline-block" /> Critical (&lt;30)
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#D96F13] inline-block" /> Medium (30-60)
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#027A48] inline-block" /> Good (&gt;60)
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {isLoadingMapAssets && (
+                  <span className="text-[11px] text-[#D96F13] font-semibold animate-pulse">
+                    Loading Assets...
+                  </span>
+                )}
+                <span className="font-bold text-[#1F2937] bg-white px-2.5 py-1 rounded-lg border border-[#E6E6E6]">
+                  {displayedMapAssets.length} Assets Loaded ({department})
+                </span>
+              </div>
             </div>
           </div>
         </div>

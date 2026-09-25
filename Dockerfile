@@ -82,7 +82,8 @@ ENV PORT=3000 \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHON_BIN=python3 \
-    PYTHONPATH=/app:/app/engine:/app/backend
+    PYTHONPATH=/app:/app/engine:/app/backend \
+    HORIZON_DAYS=7
 
 EXPOSE 3000 8765
 

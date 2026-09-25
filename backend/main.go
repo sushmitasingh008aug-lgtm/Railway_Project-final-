@@ -1746,12 +1746,25 @@ func handleGetAssets(c *fiber.Ctx) error {
 			args = append(args, val)
 		}
 	}
-	addFilter("department", c.Query("department"))
+	deptParam := strings.TrimSpace(c.Query("department"))
+	if deptParam != "" {
+		deptUpper := strings.ToUpper(deptParam)
+		if strings.Contains(deptUpper, "ENG") || strings.Contains(deptUpper, "CIVIL") {
+			deptParam = "ENGINEERING"
+		} else if strings.Contains(deptUpper, "TRAC") || strings.Contains(deptUpper, "TRD") || strings.Contains(deptUpper, "OHE") {
+			deptParam = "TRD"
+		} else if strings.Contains(deptUpper, "S&T") || strings.Contains(deptUpper, "SIGNAL") || strings.Contains(deptUpper, "TELECOM") {
+			deptParam = "S&T"
+		}
+		clauses = append(clauses, "UPPER(department) = ?")
+		args = append(args, strings.ToUpper(deptParam))
+	}
 	addFilter("section_id", c.Query("section_id"))
 	addFilter("criticality_class", c.Query("criticality"))
-	if q := c.Query("search"); q != "" {
-		clauses = append(clauses, "(asset_id LIKE ? OR asset_number LIKE ? OR asset_type LIKE ?)")
-		args = append(args, "%"+q+"%", "%"+q+"%", "%"+q+"%")
+	if q := strings.TrimSpace(c.Query("search")); q != "" {
+		clauses = append(clauses, "(UPPER(asset_id) LIKE ? OR UPPER(asset_number) LIKE ? OR UPPER(asset_type) LIKE ? OR UPPER(asset_subtype) LIKE ? OR UPPER(section_id) LIKE ?)")
+		pat := "%" + strings.ToUpper(q) + "%"
+		args = append(args, pat, pat, pat, pat, pat)
 	}
 	where := strings.Join(clauses, " AND ")
 	total := queryCount("assets", withPlaceholders(where), args...)
@@ -1760,6 +1773,9 @@ func handleGetAssets(c *fiber.Ctx) error {
 		page = n
 	}
 	if n, qerr := strconv.Atoi(c.Query("page_size", "50")); qerr == nil && n >= 1 && n <= 500 {
+		pageSize = n
+	}
+	if n, qerr := strconv.Atoi(c.Query("limit", "")); qerr == nil && n >= 1 && n <= 500 {
 		pageSize = n
 	}
 	q := `SELECT asset_id, asset_number, asset_type, asset_subtype, department, corridor_id, section_id, chainage_km, condition_score, health_index, criticality_class, operational_status, last_maintenance_date, last_inspection_date, location_lat, location_lon FROM assets`

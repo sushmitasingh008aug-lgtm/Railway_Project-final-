@@ -10,6 +10,7 @@ interface GanttTabProps {
   onRefreshSchedule: () => void;
   onNavigate?: (view: any) => void;
   onOpenTaskGenerator?: (assetId?: string | null) => void;
+  initialSearch?: string;
 }
 
 const HORIZON_OPTIONS = [
@@ -32,11 +33,18 @@ export const GanttTab: React.FC<GanttTabProps> = ({
   onRefreshSchedule,
   onNavigate,
   onOpenTaskGenerator,
+  initialSearch = '',
 }) => {
   const [optimizing, setOptimizing] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedDept, setSelectedDept] = useState('All');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearch || '');
+
+  useEffect(() => {
+    if (initialSearch !== undefined) {
+      setSearchTerm(initialSearch);
+    }
+  }, [initialSearch]);
   const [notification, setNotification] = useState<string | null>(null);
   const [horizonDays, setHorizonDays] = useState(7);
   const [selectedDay, setSelectedDay] = useState<number | 'all'>('all');
@@ -218,6 +226,8 @@ export const GanttTab: React.FC<GanttTabProps> = ({
       const matchesSearch =
         !q ||
         t.task_id.toLowerCase().includes(q) ||
+        (t.block_id && t.block_id.toLowerCase().includes(q)) ||
+        (t.combined_group_id && t.combined_group_id.toLowerCase().includes(q)) ||
         (t.section_name && t.section_name.toLowerCase().includes(q)) ||
         (t.section_id && t.section_id.toLowerCase().includes(q)) ||
         (t.task_type && t.task_type.toLowerCase().includes(q));
@@ -455,11 +465,20 @@ export const GanttTab: React.FC<GanttTabProps> = ({
           <div className="flex items-center gap-2">
             <input
               type="text"
-              placeholder="Search section or corridor..."
+              placeholder="Search Block ID (e.g. BLK-REQ...), task ID, section..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-[#F7F7F5] border border-[#E6E6E6] text-xs text-[#1F2937] rounded-xl px-3 py-1.5 w-52 focus:outline-none focus:border-[#FF9933]"
+              className="bg-[#F7F7F5] border border-[#E6E6E6] text-xs text-[#1F2937] rounded-xl px-3 py-1.5 w-64 focus:outline-none focus:border-[#FF9933]"
             />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="px-2 py-1 text-[11px] font-bold text-[#667085] hover:text-[#1F2937] bg-[#E6E6E6] rounded-lg transition"
+                title="Clear search filter"
+              >
+                Clear
+              </button>
+            )}
           </div>
         </div>
 
@@ -578,17 +597,32 @@ export const GanttTab: React.FC<GanttTabProps> = ({
                       if (t.department === 'S&T') bg = 'bg-[#175CD3]';
                       if (isCombined) bg = 'bg-[#FF9933]';
 
+                      const qLower = searchTerm.toLowerCase().trim();
+                      const isMatch = qLower !== '' && (
+                        t.task_id.toLowerCase().includes(qLower) ||
+                        (t.block_id && t.block_id.toLowerCase().includes(qLower)) ||
+                        (t.combined_group_id && t.combined_group_id.toLowerCase().includes(qLower))
+                      );
+                      const displayBlockId = t.block_id || t.combined_group_id || '';
+
                       return (
                         <div
                           key={t.task_id}
-                          style={{ left: `${leftPct}%`, width: `${widthPct}%`, top: v.top, height: v.height }}
-                          title={`Click for explanation: ${t.task_id} (${t.department}): ${t.task_type} | ${t.assigned_start_time} - ${t.assigned_end_time}${isCombined ? ` | Combined Block ${t.combined_group_id}` : ''}`}
+                          style={{
+                            left: `${leftPct}%`,
+                            width: `${Math.max(widthPct, isMatch ? 1.5 : 0.4)}%`,
+                            top: v.top,
+                            height: v.height
+                          }}
+                          title={`Block ID: ${displayBlockId || 'Single'}\nTask: ${t.task_id} (${t.department}): ${t.task_type}\nWindow: ${t.assigned_start_time} - ${t.assigned_end_time} (${t.duration_minutes}m)\nStatus: ASSIGNED & APPROVED`}
                           onClick={() => setSelectedBlockModal(t)}
-                          className={`absolute rounded-lg cursor-pointer ${bg} opacity-95 hover:opacity-100 transition-all shadow-sm z-[5] ${isCombined ? 'ring-2 ring-[#B85C00] shadow-md z-10' : ''}`}
+                          className={`absolute rounded-lg cursor-pointer ${bg} opacity-95 hover:opacity-100 transition-all shadow-sm z-[5] ${
+                            isCombined ? 'ring-2 ring-[#B85C00] shadow-md z-10' : ''
+                          } ${isMatch ? 'ring-4 ring-[#FF9933] ring-offset-2 animate-pulse scale-105 z-20 brightness-110' : ''}`}
                         >
-                          {(t.affects_line || 'BOTH') !== 'BOTH' && widthPct > 3 && (
-                            <span className="absolute inset-0 flex items-center justify-center text-[8px] font-bold text-white/95">
-                              {t.affects_line}
+                          {widthPct > 2 && (
+                            <span className="absolute inset-0 flex items-center justify-center text-[8px] font-bold text-white/95 px-0.5 truncate select-none">
+                              {displayBlockId || t.affects_line || t.task_id}
                             </span>
                           )}
                         </div>
@@ -622,13 +656,24 @@ export const GanttTab: React.FC<GanttTabProps> = ({
               <option value="S&T">S&amp;T</option>
             </select>
 
-            <input
-              type="text"
-              placeholder="Search task ID, section..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-[#F7F7F5] border border-[#E6E6E6] text-xs text-[#1F2937] rounded-xl px-3 py-1.5 w-60 focus:outline-none focus:border-[#FF9933]"
-            />
+            <div className="flex items-center gap-1.5">
+              <input
+                type="text"
+                placeholder="Search Block ID (e.g. BLK-REQ...), task ID, section..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-[#F7F7F5] border border-[#E6E6E6] text-xs text-[#1F2937] rounded-xl px-3 py-1.5 w-64 focus:outline-none focus:border-[#FF9933]"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="px-2 py-1 text-[11px] font-bold text-[#667085] hover:text-[#1F2937] bg-[#E6E6E6] rounded-lg transition"
+                  title="Clear search filter"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -637,7 +682,7 @@ export const GanttTab: React.FC<GanttTabProps> = ({
             <thead className="bg-[#F7F7F5] border-b border-[#E6E6E6] uppercase text-[10px] tracking-wider text-[#667085] sticky top-0 z-10">
               <tr>
                 <th className="py-2.5 px-3 font-bold">Task ID</th>
-                <th className="py-2.5 px-3 font-bold">Combined Group</th>
+                <th className="py-2.5 px-3 font-bold">Block ID / Group</th>
                 <th className="py-2.5 px-3 font-bold">Dept</th>
                 <th className="py-2.5 px-3 font-bold">Section</th>
                 <th className="py-2.5 px-3 font-bold">Task Type</th>
@@ -662,9 +707,13 @@ export const GanttTab: React.FC<GanttTabProps> = ({
                   >
                     <td className="py-2.5 px-3 font-mono font-bold text-[#1F2937]">{t.task_id}</td>
                     <td className="py-2.5 px-3">
-                      {t.combined_group_id ? (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFF3E6] text-[#B85C00] border border-[#FFD9B3]">
-                          {t.combined_group_id}
+                      {(t.block_id || t.combined_group_id) ? (
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono border ${
+                          (t.block_id || t.combined_group_id)?.startsWith('BLK-REQ')
+                            ? 'bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0]'
+                            : 'bg-[#FFF3E6] text-[#B85C00] border-[#FFD9B3]'
+                        }`}>
+                          {t.block_id || t.combined_group_id}
                         </span>
                       ) : (
                         <span className="text-[#667085] text-[10px]">Independent</span>

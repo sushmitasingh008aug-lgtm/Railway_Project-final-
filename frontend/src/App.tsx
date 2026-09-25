@@ -101,9 +101,12 @@ function AppContent() {
     fetchAllData(false);
   }, [activeView, fetchAllData]);
 
+  const [weeklyPlannerSearch, setWeeklyPlannerSearch] = useState('');
+
   // Plain navigation (clears any pre-selected Task Generator asset)
-  const navigateTo = useCallback((view: ViewType) => {
+  const navigateTo = useCallback((view: ViewType, search?: string) => {
     if (view === 'task_generator') setTaskGenAssetId(null);
+    if (search !== undefined) setWeeklyPlannerSearch(search);
     setActiveView(view);
   }, []);
 
@@ -174,6 +177,7 @@ function AppContent() {
               onRefreshSchedule={() => fetchAllData(false)}
               onNavigate={navigateTo}
               onOpenTaskGenerator={openTaskGenerator}
+              initialSearch={weeklyPlannerSearch}
             />
           )}
 
@@ -241,7 +245,11 @@ function AppContent() {
 
           {/* CONTROL */}
           {activeView === 'approvals_audit' && (
-            <ApprovalAuditView />
+            <ApprovalAuditView
+              onNavigate={(view: string, initialSearch?: string) =>
+                navigateTo(view as ViewType, initialSearch)
+              }
+            />
           )}
 
           {(activeView === 'verification_suite' || activeView === 'alerts') && (

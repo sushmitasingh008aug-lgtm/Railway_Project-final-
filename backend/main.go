@@ -59,6 +59,7 @@ type ScheduledTask struct {
 	AssignedStartTime string  `json:"assigned_start_time"`
 	AssignedEndTime   string  `json:"assigned_end_time"`
 	CombinedGroupID   string  `json:"combined_group_id,omitempty"`
+	BlockID           string  `json:"block_id,omitempty"`
 	AffectsLine       string  `json:"affects_line,omitempty"`
 	Lat               float64 `json:"lat,omitempty"`
 	Lon               float64 `json:"lon,omitempty"`
@@ -307,6 +308,15 @@ func main() {
 	// 11. Phase C2: writes (Go primary, validated + audited; proxy fallback when DB is down)
 	api.Get("/approvals", handleGetApprovalStatus)
 	api.Post("/approvals", handlePostApproval)
+	api.Get("/approvals/requests", func(c *fiber.Ctx) error {
+		return proxyHTTP(c, c.Path())
+	})
+	api.Post("/approvals/requests/:task_id/approve", func(c *fiber.Ctx) error {
+		return proxyHTTP(c, c.Path())
+	})
+	api.Post("/approvals/requests/:task_id/reject", func(c *fiber.Ctx) error {
+		return proxyHTTP(c, c.Path())
+	})
 	api.Post("/plans/:plan_id/approve", handleApprovePlan)
 	api.Get("/ingestion/runs", handleGetIngestionRuns)
 	api.Post("/ingestion/preview", handleIngestionPreview)
@@ -909,6 +919,7 @@ func loadScheduleTasksFromDB() ([]ScheduledTask, string, error) {
 		t.SectionID, t.SectionName = sid.String, sname.String
 		t.AssignedStartTime, t.AssignedEndTime = aStart.String, aEnd.String
 		t.CombinedGroupID, t.AffectsLine = grp.String, line.String
+		t.BlockID = grp.String
 		if t.AffectsLine == "" {
 			t.AffectsLine = "BOTH"
 		}
@@ -1018,6 +1029,7 @@ func loadScheduleTasks() ([]ScheduledTask, error) {
 			AssignedStartTime: getCol(row, "assigned_start_time"),
 			AssignedEndTime:   getCol(row, "assigned_end_time"),
 			CombinedGroupID:   groupID,
+			BlockID:           groupID,
 			AffectsLine:       affectsLine,
 			Lat:               lat,
 			Lon:               lon,
@@ -2033,7 +2045,7 @@ func handleGetAudit(c *fiber.Ctx) error {
 	if err := requireDB(c, "/api/audit"); err != nil {
 		return err
 	}
-	rows, err := queryMaps(`SELECT log_id, event_type, entity_id, timestamp, user_id, details_json, status FROM audit_log ORDER BY timestamp DESC LIMIT 50`)
+	rows, err := queryMaps(`SELECT log_id, event_type, entity_id, timestamp, user_id, details_json, status FROM audit_log ORDER BY rowid DESC LIMIT 50`)
 	if err != nil {
 		return proxyHTTP(c, "/api/audit")
 	}

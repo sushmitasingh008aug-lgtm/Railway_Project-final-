@@ -83,6 +83,7 @@ def load_schedule_tasks():
                     "assigned_start_time": str(row.get('assigned_start_time', '')),
                     "assigned_end_time": str(row.get('assigned_end_time', '')),
                     "combined_group_id": str(row.get('combined_group_id', '')),
+                    "block_id": str(row.get('block_id') or row.get('combined_group_id', '')),
                     "affects_line": str(row.get('affects_line', 'BOTH') or 'BOTH'),
                     "lat": float(row.get('lat') or row.get('location_lat') or 0.0),
                     "lon": float(row.get('lon') or row.get('location_lon') or 0.0)
@@ -112,6 +113,7 @@ def load_schedule_tasks():
                 "assigned_start_time": str(row.get('assigned_start_time', '')),
                 "assigned_end_time": str(row.get('assigned_end_time', '')),
                 "combined_group_id": str(row.get('combined_group_id', '')),
+                "block_id": str(row.get('block_id') or row.get('combined_group_id', '')),
                 "affects_line": str(row.get('affects_line', 'BOTH') or 'BOTH'),
                 "lat": float(row.get('lat') or row.get('location_lat') or 0.0),
                 "lon": float(row.get('lon') or row.get('location_lon') or 0.0)
@@ -1261,24 +1263,93 @@ def request_task_block(task_id):
     block_id = data.get("block_id")
     try:
         with engine.begin() as conn:
+            # 1. Fetch task details
+            t_row = conn.execute(sql_text("""
+                SELECT task_id, asset_id, department, section_id, duration_minutes,
+                       start_minute, end_minute, combined_group_id, affects_line,
+                       criticality, priority_score
+                FROM maintenance_tasks
+                WHERE task_id = :tid
+            """), {"tid": task_id}).first()
+
+            if not t_row:
+                return jsonify({"status": "error", "message": f"Task {task_id} not found"}), 404
+
+            duration = int(t_row[4] or 120)
+            sec_id = t_row[3] or 'SEC-DH-01'
+            start_minute = data.get("start_minute")
+            end_minute = data.get("end_minute")
+
+            if not block_id:
+                existing_grp = t_row[7]
+                if existing_grp and str(existing_grp).startswith('BLK-'):
+                    block_id = str(existing_grp)
+                else:
+                    clean_num = task_id.replace('TASK-DH-', '').replace('TASK-', '').replace('-', '')
+                    block_id = f"BLK-REQ-{clean_num}"
+
+            if start_minute is None or end_minute is None:
+                if t_row[5] and t_row[6] and t_row[6] > t_row[5]:
+                    start_minute = int(t_row[5])
+                    end_minute = int(t_row[6])
+                else:
+                    start_minute = 1570
+                    end_minute = 1570 + duration
+
+            start_minute = int(start_minute)
+            end_minute = int(end_minute)
+
             conn.execute(sql_text("""
                 UPDATE maintenance_tasks 
-                SET status = 'BLOCK_REQUESTED', updated_at = :now
+                SET status = 'BLOCK_REQUESTED',
+                    combined_group_id = :bid,
+                    start_minute = :smin,
+                    end_minute = :emin,
+                    updated_at = :now
                 WHERE task_id = :tid
-            """), {"tid": task_id, "now": datetime.now()})
-            
+            """), {
+                "tid": task_id,
+                "bid": block_id,
+                "smin": start_minute,
+                "emin": end_minute,
+                "now": datetime.now()
+            })
+
+            day = (start_minute // 1440) + 1
+            sh = (start_minute % 1440) // 60
+            sm = start_minute % 60
+            eh = (end_minute % 1440) // 60
+            em = end_minute % 60
+            window_str = f"Day {day} {sh:02d}:{sm:02d} - {eh:02d}:{em:02d}"
+
             audit_df = pd.DataFrame([{
                 "log_id": f"AUD_REQ_{task_id}_{int(time.time())}",
                 "event_type": "BLOCK_REQUEST_SUBMITTED",
                 "entity_id": task_id,
                 "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                "user_id": "OPERATOR_CONSOLE",
-                "details_json": json.dumps({"block_id": block_id}),
+                "user_id": data.get("user", "OPERATOR_CONSOLE"),
+                "details_json": json.dumps({
+                    "block_id": block_id,
+                    "task_id": task_id,
+                    "section_id": sec_id,
+                    "proposed_window": window_str,
+                    "duration_minutes": duration,
+                    "action": "AWAITING_CONTROLLER_APPROVAL"
+                }),
                 "status": "BLOCK_REQUESTED",
-                "sha256_hash": hashlib.sha256(f"{task_id}:BLOCK_REQUESTED:{time.time()}".encode()).hexdigest()
+                "sha256_hash": hashlib.sha256(f"{task_id}:{block_id}:BLOCK_REQUESTED:{time.time()}".encode()).hexdigest()
             }])
             audit_df.to_sql("audit_log", conn, if_exists="append", index=False)
-        return jsonify({"status": "success", "message": f"Block requested for task {task_id}"})
+
+        return jsonify({
+            "status": "success",
+            "task_id": task_id,
+            "block_id": block_id,
+            "start_minute": start_minute,
+            "end_minute": end_minute,
+            "window": window_str,
+            "message": f"Block {block_id} requested for task {task_id} ({window_str}). Queued in Human Review & Audit."
+        })
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
@@ -1286,27 +1357,68 @@ def request_task_block(task_id):
 def schedule_task_block(task_id):
     engine = get_db_engine()
     data = request.json or {}
-    block_id = data.get("block_id", "BLK-ALLOCATED")
+    block_id = data.get("block_id")
     try:
         with engine.begin() as conn:
+            t_row = conn.execute(sql_text("""
+                SELECT duration_minutes, section_id, start_minute, end_minute, combined_group_id
+                FROM maintenance_tasks WHERE task_id = :tid
+            """), {"tid": task_id}).first()
+
+            dur = int(t_row[0] or 120) if t_row else 120
+            smin = int(data.get("start_minute") or (t_row[2] if t_row and t_row[2] else 1570))
+            emin = int(data.get("end_minute") or (smin + dur))
+
+            if not block_id:
+                clean_num = task_id.replace('TASK-DH-', '').replace('TASK-', '').replace('-', '')
+                block_id = f"BLK-REQ-{clean_num}"
+
             conn.execute(sql_text("""
                 UPDATE maintenance_tasks 
-                SET status = 'UNDER_REVIEW', updated_at = :now
+                SET status = 'UNDER_REVIEW',
+                    combined_group_id = :bid,
+                    start_minute = :smin,
+                    end_minute = :emin,
+                    updated_at = :now
                 WHERE task_id = :tid
-            """), {"tid": task_id, "now": datetime.now()})
+            """), {
+                "tid": task_id,
+                "bid": block_id,
+                "smin": smin,
+                "emin": emin,
+                "now": datetime.now()
+            })
+
+            day = (smin // 1440) + 1
+            sh = (smin % 1440) // 60
+            sm = smin % 60
+            eh = (emin % 1440) // 60
+            em = emin % 60
+            window_str = f"Day {day} {sh:02d}:{sm:02d} - {eh:02d}:{em:02d}"
 
             audit_df = pd.DataFrame([{
                 "log_id": f"AUD_SCH_{task_id}_{int(time.time())}",
                 "event_type": "SENT_TO_HUMAN_REVIEW",
                 "entity_id": task_id,
                 "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                "user_id": "CP_SAT_SOLVER",
-                "details_json": json.dumps({"allocated_block": block_id, "action": "Awaiting Controller Approval"}),
+                "user_id": data.get("user", "CP_SAT_SOLVER"),
+                "details_json": json.dumps({
+                    "allocated_block": block_id,
+                    "window": window_str,
+                    "action": "Awaiting Controller Approval"
+                }),
                 "status": "UNDER_REVIEW",
-                "sha256_hash": hashlib.sha256(f"{task_id}:UNDER_REVIEW:{time.time()}".encode()).hexdigest()
+                "sha256_hash": hashlib.sha256(f"{task_id}:{block_id}:UNDER_REVIEW:{time.time()}".encode()).hexdigest()
             }])
             audit_df.to_sql("audit_log", conn, if_exists="append", index=False)
-        return jsonify({"status": "success", "message": f"Task {task_id} scheduled with {block_id} and queued for human review."})
+
+        return jsonify({
+            "status": "success",
+            "task_id": task_id,
+            "block_id": block_id,
+            "window": window_str,
+            "message": f"Task {task_id} assigned block {block_id} ({window_str}) and queued for human review."
+        })
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
@@ -1888,6 +2000,299 @@ def manage_approvals():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+@app.route('/api/approvals/requests', methods=['GET'])
+def get_pending_block_requests():
+    """Returns all block requests awaiting human controller approval."""
+    engine = get_db_engine()
+    try:
+        with engine.connect() as conn:
+            query = sql_text("""
+                SELECT m.task_id, m.asset_id, m.department, m.task_type, m.criticality,
+                       m.priority_score, m.section_id, s.name as section_name,
+                       m.duration_minutes, m.start_minute, m.end_minute,
+                       m.combined_group_id, m.affects_line, m.status,
+                       m.updated_at, m.created_at
+                FROM maintenance_tasks m
+                LEFT JOIN sections s ON m.section_id = s.section_id
+                WHERE m.status IN ('BLOCK_REQUESTED', 'UNDER_REVIEW')
+                ORDER BY m.updated_at DESC, m.priority_score DESC
+            """)
+            rows = conn.execute(query).mappings().all()
+            trains_df = pd.read_sql("SELECT section_id, entry_time, exit_time FROM train_movements", engine)
+            if len(trains_df):
+                trains_df['entry_min'] = (pd.to_datetime(trains_df['entry_time']) - PLAN_BASE_TIME).dt.total_seconds() / 60
+                trains_df['exit_min'] = (pd.to_datetime(trains_df['exit_time']) - PLAN_BASE_TIME).dt.total_seconds() / 60
+
+            results = []
+            for r in rows:
+                item = dict(r)
+                tid = item['task_id']
+                dur = int(item['duration_minutes'] or 120)
+                smin = int(item['start_minute'] or 0)
+                emin = int(item['end_minute'] or 0)
+
+                if smin <= 0 or emin <= smin:
+                    smin = 1570
+                    emin = smin + dur
+                    item['start_minute'] = smin
+                    item['end_minute'] = emin
+
+                block_id = item['combined_group_id']
+                if not block_id:
+                    clean_num = tid.replace('TASK-DH-', '').replace('TASK-', '').replace('-', '')
+                    block_id = f"BLK-REQ-{clean_num}"
+                item['block_id'] = block_id
+
+                day = (smin // 1440) + 1
+                sh = (smin % 1440) // 60
+                sm = smin % 60
+                eh = (emin % 1440) // 60
+                em = emin % 60
+                item['window_display'] = f"Day {day} {sh:02d}:{sm:02d} - {eh:02d}:{em:02d}"
+
+                sec = item['section_id']
+                conflicts = len(trains_df[(trains_df['section_id'] == sec) & (trains_df['entry_min'] < emin) & (trains_df['exit_min'] > smin)]) if len(trains_df) else 0
+                item['train_conflicts_count'] = conflicts
+
+                item['priority_score'] = round(float(item['priority_score'] or 0.0), 2)
+                item['section_name'] = item['section_name'] or item['section_id']
+                results.append(item)
+
+            return jsonify({"status": "success", "count": len(results), "data": results})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/approvals/requests/<task_id>/approve', methods=['POST'])
+def approve_pending_block_request(task_id):
+    """Supervisor / Controller approves a requested block, inserting it into scheduled_tasks."""
+    engine = get_db_engine()
+    body = request.get_json() or {}
+    supervisor = body.get('supervisor_name', 'Chief Section Controller, BSB Division')
+    remarks = body.get('remarks', 'Track possession window validated with 0 train conflicts and approved.')
+    req_block_id = body.get('block_id')
+    now = datetime.now()
+    now_str = now.strftime('%Y-%m-%d %H:%M:%S')
+
+    try:
+        with engine.begin() as conn:
+            # 1. Fetch maintenance task details
+            t_row = conn.execute(sql_text("""
+                SELECT m.task_id, m.asset_id, m.department, m.task_type, m.criticality,
+                       m.priority_score, m.section_id, m.duration_minutes,
+                       m.start_minute, m.end_minute, m.combined_group_id, m.affects_line,
+                       m.corridor_id, s.name as section_name, s.corridor_id as sec_corridor_id,
+                       s.start_lat, s.start_lon, a.location_lat, a.location_lon
+                FROM maintenance_tasks m
+                LEFT JOIN sections s ON m.section_id = s.section_id
+                LEFT JOIN assets a ON m.asset_id = a.asset_id
+                WHERE m.task_id = :tid
+            """), {"tid": task_id}).mappings().first()
+
+            if not t_row:
+                return jsonify({"status": "error", "message": f"Task {task_id} not found"}), 404
+
+            dur = int(t_row['duration_minutes'] or 120)
+            smin = int(t_row['start_minute'] or 0)
+            emin = int(t_row['end_minute'] or 0)
+            if smin <= 0 or emin <= smin:
+                smin = 1570
+                emin = smin + dur
+
+            block_id = req_block_id or t_row['combined_group_id']
+            if not block_id:
+                clean_num = task_id.replace('TASK-DH-', '').replace('TASK-', '').replace('-', '')
+                block_id = f"BLK-REQ-{clean_num}"
+
+            # Calculate assigned_start_time and assigned_end_time from PLAN_BASE_TIME
+            start_dt = PLAN_BASE_TIME + timedelta(minutes=smin)
+            end_dt = PLAN_BASE_TIME + timedelta(minutes=emin)
+            assigned_start_time = start_dt.strftime('%Y-%m-%d %H:%M')
+            assigned_end_time = end_dt.strftime('%Y-%m-%d %H:%M')
+
+            # Determine coordinates
+            lat = float(t_row['location_lat'] or t_row['start_lat'] or 26.85)
+            lon = float(t_row['location_lon'] or t_row['start_lon'] or 80.94)
+
+            corridor = t_row['corridor_id'] or t_row['sec_corridor_id'] or 'COR-DH-01'
+            section_name = t_row['section_name'] or t_row['section_id']
+            version_id = get_live_version_id() or 'VER-20260915-7D-151141'
+
+            # 2. Update maintenance_tasks status to APPROVED
+            conn.execute(sql_text("""
+                UPDATE maintenance_tasks
+                SET status = 'APPROVED',
+                    combined_group_id = :bid,
+                    start_minute = :smin,
+                    end_minute = :emin,
+                    updated_at = :now
+                WHERE task_id = :tid
+            """), {
+                "bid": block_id,
+                "smin": smin,
+                "emin": emin,
+                "now": now,
+                "tid": task_id
+            })
+
+            # 3. Upsert into scheduled_tasks
+            task_exists = conn.execute(sql_text("SELECT 1 FROM scheduled_tasks WHERE task_id = :tid"), {"tid": task_id}).first()
+
+            sched_params = {
+                "vid": version_id,
+                "tid": task_id,
+                "aid": t_row['asset_id'] or '',
+                "dept": t_row['department'] or 'Engineering',
+                "ttype": t_row['task_type'] or 'Routine Maintenance',
+                "crit": t_row['criticality'] or 'MEDIUM',
+                "pscore": float(t_row['priority_score'] or 50.0),
+                "sid": t_row['section_id'] or 'SEC-DH-01',
+                "sname": section_name,
+                "cid": corridor,
+                "dur": dur,
+                "smin": smin,
+                "emin": emin,
+                "ast": assigned_start_time,
+                "aet": assigned_end_time,
+                "bid": block_id,
+                "line": t_row['affects_line'] or 'BOTH',
+                "lat": lat,
+                "lon": lon
+            }
+
+            if task_exists:
+                conn.execute(sql_text("""
+                    UPDATE scheduled_tasks
+                    SET version_id = :vid,
+                        asset_id = :aid,
+                        department = :dept,
+                        task_type = :ttype,
+                        criticality = :crit,
+                        priority_score = :pscore,
+                        section_id = :sid,
+                        section_name = :sname,
+                        corridor_id = :cid,
+                        duration_minutes = :dur,
+                        start_minute = :smin,
+                        end_minute = :emin,
+                        assigned_start_time = :ast,
+                        assigned_end_time = :aet,
+                        combined_group_id = :bid,
+                        affects_line = :line,
+                        lat = :lat,
+                        lon = :lon
+                    WHERE task_id = :tid
+                """), sched_params)
+            else:
+                conn.execute(sql_text("""
+                    INSERT INTO scheduled_tasks (
+                        version_id, task_id, asset_id, department, task_type,
+                        criticality, priority_score, section_id, section_name,
+                        corridor_id, duration_minutes, start_minute, end_minute,
+                        assigned_start_time, assigned_end_time, combined_group_id,
+                        affects_line, lat, lon
+                    ) VALUES (
+                        :vid, :tid, :aid, :dept, :ttype,
+                        :crit, :pscore, :sid, :sname,
+                        :cid, :dur, :smin, :emin,
+                        :ast, :aet, :bid,
+                        :line, :lat, :lon
+                    )
+                """), sched_params)
+
+            # 4. Immutable audit record
+            audit_id = f"AUD_BLK_APP_{task_id}_{int(time.time())}"
+            day = (smin // 1440) + 1
+            sh = (smin % 1440) // 60
+            sm = smin % 60
+            eh = (emin % 1440) // 60
+            em = emin % 60
+            window_display = f"Day {day} {sh:02d}:{sm:02d} - {eh:02d}:{em:02d}"
+
+            audit_details = {
+                "action": "BLOCK_APPROVED_AND_SCHEDULED",
+                "block_id": block_id,
+                "task_id": task_id,
+                "department": t_row['department'],
+                "section_id": t_row['section_id'],
+                "section_name": section_name,
+                "assigned_window": window_display,
+                "assigned_start_time": assigned_start_time,
+                "assigned_end_time": assigned_end_time,
+                "duration_minutes": dur,
+                "remarks": remarks,
+                "authorized_by": supervisor
+            }
+            conn.execute(sql_text("""
+                INSERT INTO audit_log (log_id, event_type, entity_id, timestamp, user_id, details_json, status, sha256_hash)
+                VALUES (:lid, 'BLOCK_APPROVED_AND_SCHEDULED', :tid, :ts, :user, :det, 'APPROVED', :hash)
+            """), {
+                "lid": audit_id,
+                "tid": task_id,
+                "ts": now_str,
+                "user": supervisor,
+                "det": json.dumps(audit_details),
+                "hash": hashlib.sha256(f"{task_id}:{block_id}:APPROVED:{time.time()}".encode()).hexdigest()
+            })
+
+        # Sync scheduled_tasks table to SCHEDULE_CSV if present
+        try:
+            df_sched = pd.read_sql("SELECT * FROM scheduled_tasks", engine)
+            if len(df_sched) and os.path.exists(os.path.dirname(SCHEDULE_CSV)):
+                df_sched.to_csv(SCHEDULE_CSV, index=False)
+        except Exception as e:
+            print(f"Warning: Failed to update schedule CSV cache: {e}")
+
+        return jsonify({
+            "status": "success",
+            "message": f"Block {block_id} for Task {task_id} successfully approved by {supervisor} and assigned to Weekly Block Planner.",
+            "block_id": block_id,
+            "task_id": task_id,
+            "assigned_window": window_display,
+            "assigned_start_time": assigned_start_time,
+            "assigned_end_time": assigned_end_time
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/approvals/requests/<task_id>/reject', methods=['POST'])
+def reject_pending_block_request(task_id):
+    """Rejects or defers a pending block request back to backlog."""
+    engine = get_db_engine()
+    body = request.get_json() or {}
+    supervisor = body.get('supervisor_name', 'Chief Section Controller, BSB Division')
+    remarks = body.get('remarks', 'Possession request rejected/deferred for operational revisions.')
+    now_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    try:
+        with engine.begin() as conn:
+            conn.execute(sql_text("""
+                UPDATE maintenance_tasks
+                SET status = 'Pending', updated_at = :now
+                WHERE task_id = :tid
+            """), {"now": datetime.now(), "tid": task_id})
+
+            conn.execute(sql_text("DELETE FROM scheduled_tasks WHERE task_id = :tid"), {"tid": task_id})
+
+            audit_id = f"AUD_BLK_REJ_{task_id}_{int(time.time())}"
+            conn.execute(sql_text("""
+                INSERT INTO audit_log (log_id, event_type, entity_id, timestamp, user_id, details_json, status, sha256_hash)
+                VALUES (:lid, 'BLOCK_REQUEST_REJECTED', :tid, :ts, :user, :det, 'REJECTED', :hash)
+            """), {
+                "lid": audit_id,
+                "tid": task_id,
+                "ts": now_str,
+                "user": supervisor,
+                "det": json.dumps({"action": "BLOCK_REQUEST_REJECTED", "remarks": remarks, "task_id": task_id}),
+                "hash": hashlib.sha256(f"{task_id}:REJECTED:{time.time()}".encode()).hexdigest()
+            })
+
+        return jsonify({
+            "status": "success",
+            "message": f"Block request for Task {task_id} has been rejected/deferred back to backlog."
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 @app.route('/api/audit', methods=['GET'])
 def get_audit_trail():
     engine = get_db_engine()
@@ -1895,7 +2300,7 @@ def get_audit_trail():
         df = pd.read_sql("""
             SELECT log_id, event_type, entity_id, timestamp, user_id, details_json, status
             FROM audit_log
-            ORDER BY timestamp DESC
+            ORDER BY rowid DESC
             LIMIT 50
         """, engine)
         logs = []

@@ -147,6 +147,7 @@ def coordination_stats(tasks):
     disruptions_avoided = max(0, total_coord_tasks - valid_groups)
     return valid_groups, disruptions_avoided, total_coord_tasks
 
+@app.route('/health', methods=['GET'])
 @app.route('/api/health', methods=['GET'])
 def health():
     try:

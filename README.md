@@ -219,6 +219,66 @@ The platform orchestrates daily railway operations across 6 verified user journe
 5. **Workflow 5: Mathematical Proof Gate & Verification Suite** (Section 16) — Validates 6 physical railway laws and executes 12 assertion checks in 35 milliseconds.
 6. **Workflow 6: Shift Changeover & Operational Handover** (Sections 1, 15) — Coordinates 24-hour military clock synchronization and digital handover checklists between incoming and outgoing controllers.
 
+### 5.1 End-to-End Block Generation, Review, Approval & Weekly Planner Flow
+
+The diagram and step-by-step execution below demonstrates the verified lifecycle of how a departmental possession demand is generated, reviewed by human controllers, approved with an immutable audit stamp, and displayed and searchable on the Master Weekly Block Planner:
+
+```
+[Step 1: Departmental Work Demand]
+Operator opens Section 3 ("Task Generator & Block Allocation") or Section 4 ("Weekly Block Planner" Unallocated Backlog)
+  -> Selects Department (Engineering / TRD / S&T) & Corridor Section (e.g. SEC-DH-01)
+  -> Configures asset, duration, and criticality
+  -> Clicks [Request Block] or [Submit to Human Review]
+```
+$$\Downarrow$$
+```
+[Step 2: Automated Block ID & Candidate Slot Proposal]
+API executes POST /api/tasks/:task_id/request-block
+  -> Generates deterministic Block ID: BLK-REQ-XXXXXX (e.g. BLK-REQ-004317)
+  -> Evaluates maintenance slot: e.g. Day 2 02:10 – 03:03 (53 mins)
+  -> Database updates: maintenance_tasks.status = 'BLOCK_REQUESTED'
+  -> Appends SHA-256 tamper-evident entry to audit_log
+  -> Queues task into Section Controller Review Queue
+```
+$$\Downarrow$$
+```
+[Step 3: Section Controller Review Queue]
+Section Controller navigates to Section 15 ("Human Review & Audit")
+  -> "Pending Block Requests & Controller Review Queue" automatically displays the requested block
+  -> Controller inspects:
+       • Assigned Block ID (e.g. BLK-REQ-004317 with badge)
+       • Department & Task Type (e.g. Engineering · Track Repair)
+       • Corridor Section & Track Direction (e.g. Delhi – Kanpur · UP Track)
+       • Proposed Possession Window (e.g. Day 2 02:10 – 03:03, 53 mins)
+       • Safety Validation: 0 Train Conflicts (Safe Interval Wall Verified)
+       • Criticality & Priority Score
+```
+$$\Downarrow$$
+```
+[Step 4: Formal Controller Electronic Sign-Off]
+Controller reviews remarks & enters supervisor authority
+  -> Controller clicks [Approve & Assign Block]
+  -> API calls POST /api/approvals/requests/:task_id/approve
+  -> Database updates:
+       • maintenance_tasks.status = 'APPROVED'
+       • Task committed into scheduled_tasks with combined_group_id = 'BLK-REQ-004317'
+       • Assigned timestamps locked: assigned_start_time = '2026-09-16 02:10', assigned_end_time = '2026-09-16 03:03'
+       • Immutable audit ledger record logged: BLOCK_APPROVED_AND_SCHEDULED
+  -> UI shows success notification: "Block BLK-REQ-004317 approved and assigned to Weekly Block Planner"
+```
+$$\Downarrow$$
+```
+[Step 5: Visual Representation & Search on Weekly Block Planner]
+User clicks [View in Weekly Block Planner] or navigates to Section 4
+  -> Master schedule reloads with the newly approved block
+  -> User enters "BLK-REQ-004317" into the search bar:
+       • Gantt Timeline: The corridor lane (SEC-DH-01) instantly highlights the possession block
+         with an animated pulsing border (ring-4 ring-[#FF9933] animate-pulse) and displays the Block ID
+       • Assigned Corridor Possessions Table: The task appears under the "Block ID / Group"
+         column with a dedicated badge: [BLK-REQ-004317]
+       • Clicking the block opens the detail modal displaying train movement buffers, duration, and asset coordinates
+```
+
 ---
 
 ## 6. Resources & Machinery Modeling
